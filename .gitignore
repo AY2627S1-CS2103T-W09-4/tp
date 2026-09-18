@@ -8,6 +8,9 @@ src/main/resources/docs/
 /out/
 /*.iml
 
+# VS Code files
+/.vscode/
+
 # Storage/log files
 /data/
 /preferences.json
@@ -26,6 +29,7 @@ AGENTS.md
 CLAUDE.md
 /.claude/
 /.codex/
+
 
 # Temp files
 _temp/
