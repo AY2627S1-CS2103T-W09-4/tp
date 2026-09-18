@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalPersons.IDA;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.testutil.PersonBuilder;
 
 public class JsonAddressBookStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonAddressBookStorageTest");
@@ -58,6 +60,20 @@ public class JsonAddressBookStorageTest {
     @Test
     public void readAddressBook_invalidAndValidPersonAddressBook_throwDataLoadingException() {
         assertThrows(DataLoadingException.class, () -> readAddressBook("invalidAndValidPersonAddressBook.json"));
+    }
+
+    @Test
+    public void readAddressBook_legacyPersonWithoutRemark_preservesPerson() throws Exception {
+        Path filePath = testFolder.resolve("legacyAddressBook.json");
+        Files.writeString(filePath, """
+                {"persons":[{"name":"Alice Pauline","phone":"94351253","email":"alice@example.com",
+                "address":"123, Jurong West Ave 6, #08-111","tags":["friends"]}]}
+                """);
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        ReadOnlyAddressBook loaded = storage.readAddressBook().orElseThrow();
+        assertEquals(new PersonBuilder(ALICE).withRemark("").build(), loaded.getPersonList().get(0));
+        storage.saveAddressBook(loaded);
+        assertEquals(loaded, storage.readAddressBook().orElseThrow());
     }
 
     @Test
