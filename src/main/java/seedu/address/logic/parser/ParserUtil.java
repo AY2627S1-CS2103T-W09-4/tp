@@ -13,6 +13,7 @@ import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Phone;
+import seedu.address.model.person.Remark;
 import seedu.address.model.tag.Tag;
 
 /**
@@ -120,5 +121,21 @@ public class ParserUtil {
             tagSet.add(parseTag(tagName));
         }
         return tagSet;
+    }
+
+    /**
+     * Parses a {@code String remark} into a {@code Remark}.
+     * Leading and trailing whitespaces will be trimmed.
+     * 
+     * @param remark
+     * @return {@code Remark} instance
+     * @throws ParseException
+     */
+    public static Remark parseRemark(String remark) throws ParseException {
+        if (remark == null) {
+            return new Remark("");
+        }
+        String trimmedRemark = remark.trim();
+        return new Remark(trimmedRemark);
     }
 }
