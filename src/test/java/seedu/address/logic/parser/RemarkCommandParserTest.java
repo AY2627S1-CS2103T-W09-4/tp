@@ -16,7 +16,7 @@ public class RemarkCommandParserTest {
     private final Remark emptyRemark = new Remark("");
     private final Remark nonEmptyRemark = new Remark("Like skiing.");
     private final RemarkCommandParser parser = new RemarkCommandParser();
-    
+
     @Test
     public void parse_indexSpecified_success() {
         // have remark
