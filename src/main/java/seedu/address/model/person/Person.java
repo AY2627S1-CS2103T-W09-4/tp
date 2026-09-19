@@ -36,7 +36,11 @@ public class Person {
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
-        this.remark = remark;
+        if (remark == null) {
+            this.remark = new Remark("");
+        } else {
+            this.remark = remark;
+        }
     }
 
     public Name getName() {
