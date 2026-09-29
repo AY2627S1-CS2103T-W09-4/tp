@@ -9,15 +9,15 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
-### John Doe
+### Jonathan Zheng
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/jonathanzheng.png" width="200px">
 
 [[homepage](http://www.comp.nus.edu.sg/~damithch)]
-[[github](https://github.com/johndoe)]
+[[github](https://github.com/JonathanZheng)]
 [[portfolio](team/johndoe.md)]
 
-* Role: Project Advisor
+* Role: Project Member
 
 ### Jane Doe
 
