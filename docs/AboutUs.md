@@ -48,12 +48,10 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### James Doe
+### Chia Po Zhe Cravan
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/firebean850.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/firebean850)]
 
-* Role: Developer
-* Responsibilities: UI
+* Role: Project Member
