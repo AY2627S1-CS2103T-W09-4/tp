@@ -19,6 +19,16 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 * Role: Developer
 
+### Denzel Goo Yew Kiat
+
+<img src="images/denzelgoo.png" width="200px">
+
+[[homepage]()]
+[[github](https://github.com/denzelgoo)]
+[[portfolio]()]
+
+* Role: Project Member
+
 ### Jane Doe
 
 <img src="images/johndoe.png" width="200px">
@@ -48,12 +58,11 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
-### James Doe
+### Benjamin Wong
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/benjaminwong33.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](https://github.com/BenjaminWong33)]
+[[portfolio]()]
 
-* Role: Developer
-* Responsibilities: UI
+* Role: Developer 

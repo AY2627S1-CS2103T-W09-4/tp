@@ -32,3 +32,9 @@ CLAUDE.md
 
 # Temp files
 _temp/
+
+# Build outputs
+bin/
+
+# IDE and Editor configurations
+.vscode/
