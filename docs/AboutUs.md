@@ -13,47 +13,42 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 <img src="images/jonathanzheng.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
+[[homepage]()]
 [[github](https://github.com/JonathanZheng)]
-[[portfolio](team/johndoe.md)]
+[[portfolio]()]
+
+### Wilson Ang Zi Jun
+
+<img src="images/burpzes.png" width="200px">
+
+[[homepage]()]
+[[github](https://github.com/BurpZes)]
+[[portfolio]()]
+
+* Role: Developer
+
+### Denzel Goo Yew Kiat
+
+<img src="images/denzelgoo.png" width="200px">
+
+[[homepage]()]
+[[github](https://github.com/denzelgoo)]
+[[portfolio]()]
 
 * Role: Project Member
 
-### Jane Doe
+### Chia Po Zhe Cravan
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/firebean850.png" width="200px">
 
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[github](http://github.com/firebean850)]
 
-* Role: Team Lead
-* Responsibilities: UI
+* Role: Project Member
+### Benjamin Wong
 
-### Johnny Doe
+<img src="images/benjaminwong33.png" width="200px">
 
-<img src="images/johndoe.png" width="200px">
+[[github](https://github.com/BenjaminWong33)]
+[[portfolio]()]
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Data
-
-### Jean Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
-
-### James Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-* Role: Developer
-* Responsibilities: UI
+* Role: Developer 
