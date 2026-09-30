@@ -26,6 +26,7 @@ AGENTS.md
 CLAUDE.md
 /.claude/
 /.codex/
+/.vscode/
 
 # Temp files
 _temp/
