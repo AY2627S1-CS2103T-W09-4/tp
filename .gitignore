@@ -8,6 +8,9 @@ src/main/resources/docs/
 /out/
 /*.iml
 
+# VSCode files
+/.vscode/*
+
 # Storage/log files
 /data/
 /preferences.json
@@ -29,3 +32,9 @@ CLAUDE.md
 
 # Temp files
 _temp/
+
+# Build outputs
+bin/
+
+# IDE and Editor configurations
+.vscode/

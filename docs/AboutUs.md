@@ -9,15 +9,25 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
-### John Doe
+### Wilson Ang Zi Jun
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/burpzes.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
-[[github](https://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
+[[homepage]()]
+[[github](https://github.com/BurpZes)]
+[[portfolio]()]
 
-* Role: Project Advisor
+* Role: Developer
+
+### Denzel Goo Yew Kiat
+
+<img src="images/denzelgoo.png" width="200px">
+
+[[homepage]()]
+[[github](https://github.com/denzelgoo)]
+[[portfolio]()]
+
+* Role: Project Member
 
 ### Jane Doe
 
@@ -55,3 +65,11 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/firebean850)]
 
 * Role: Project Member
+### Benjamin Wong
+
+<img src="images/benjaminwong33.png" width="200px">
+
+[[github](https://github.com/BenjaminWong33)]
+[[portfolio]()]
+
+* Role: Developer 
