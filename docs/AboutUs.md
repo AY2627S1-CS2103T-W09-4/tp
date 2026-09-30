@@ -9,13 +9,23 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Wilson Ang Zi Jun
+
+<img src="images/burpzes.png" width="200px">
+
+[[homepage]()]
+[[github](https://github.com/BurpZes)]
+[[portfolio]()]
+
+* Role: Developer
+
 ### Denzel Goo Yew Kiat
 
 <img src="images/denzelgoo.png" width="200px">
 
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
+[[homepage]()]
 [[github](https://github.com/denzelgoo)]
-[[portfolio](team/johndoe.md)]
+[[portfolio]()]
 
 * Role: Project Member
 
