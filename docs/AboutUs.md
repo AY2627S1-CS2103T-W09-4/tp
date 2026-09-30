@@ -58,6 +58,13 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Dev Ops + Threading
 
+### Chia Po Zhe Cravan
+
+<img src="images/firebean850.png" width="200px">
+
+[[github](http://github.com/firebean850)]
+
+* Role: Project Member
 ### Benjamin Wong
 
 <img src="images/benjaminwong33.png" width="200px">
