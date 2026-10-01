@@ -261,13 +261,14 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* has a need to manage a significant number of contacts
+* works in insurance as an agent
+* has a need to manage a significant number of clients / policies
 * prefers desktop apps over other types of applications
 * can type fast
 * prefers typing to mouse interactions
 * is reasonably comfortable using CLI apps
 
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value proposition**: Provide fast access to client contact / policy details, optimized for users who prefer a CLI as opposed to searching solely via policy number which is hard to remember.
 
 
 ### User stories
