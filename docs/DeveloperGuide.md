@@ -261,14 +261,17 @@ _{Explain here how the data archiving feature will be implemented}_
 
 **Target user profile**:
 
-* works in insurance as an agent
-* has a need to manage a significant number of clients / policies
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
+* is an insurance agent (or financial adviser) based in Singapore
+* manages a large portfolio of customers (up to about 1000), each holding one or more insurance policies
+* handles many policies, claims, renewals and follow-ups daily
+* needs to pull up a customer's contact details and policies quickly, for example while the customer is on the line
+* finds it hard to remember customers' policy numbers, but remembers their names
+* does most of their administrative work on a laptop or desktop computer
+* can type fast and prefers typing to mouse interactions
 * is reasonably comfortable using CLI apps
 
-**Value proposition**: Provide fast access to client contact / policy details, optimized for users who prefer a CLI as opposed to searching solely via policy number which is hard to remember.
+**Value proposition**: InsureConnect gives an insurance agent fast access to customer contact and policy details through typed commands, so that a customer can be found by name instead of by a policy number that is hard to remember. It is faster than a spreadsheet or a mouse-driven CRM, keeps all data on the agent's own computer and works without an internet connection.
+>>>>>>> Stashed changes
 
 
 ### User stories
@@ -288,45 +291,177 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+(For all use cases below, the **System** is `InsureConnect` and the **Actor** is the `agent`, unless specified otherwise)
 
-**Use case: Delete a person**
+**Use case: UC01 - Add a customer**
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  Agent requests to add a customer, providing the customer's details.
+2.  InsureConnect adds the customer and shows the details of the added customer.
 
     Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 1a. A compulsory detail (name, phone, email, address or at least one policy number) is missing.
+
+    * 1a1. InsureConnect shows an error message stating the expected format.
+
+      Use case resumes at step 1.
+
+* 1b. A detail is in an invalid format (e.g. the phone number contains letters).
+
+    * 1b1. InsureConnect shows an error message stating which detail is invalid and what values are accepted.
+
+      Use case resumes at step 1.
+
+* 1c. A customer with the same name and phone number already exists.
+
+    * 1c1. InsureConnect informs the agent that the customer already exists and does not add the customer.
+
+      Use case ends.
+
+* 1d. A given policy number already belongs to an existing customer.
+
+    * 1d1. InsureConnect informs the agent which customer the policy number belongs to and does not add the customer.
+
+      Use case resumes at step 1.
+
+**Use case: UC02 - Find a customer**
+
+**MSS**
+
+1.  Agent requests to find customers, providing one or more keywords.
+2.  InsureConnect shows the customers who have a word in their name starting with any of the keywords, together with the number of matches.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. No keyword is given.
+
+    * 1a1. InsureConnect shows an error message stating the expected format.
+
+      Use case resumes at step 1.
+
+* 2a. No customer matches the keywords.
+
+    * 2a1. InsureConnect shows an empty list and informs the agent that 0 customers were found.
+
+      Use case ends.
+
+**Use case: UC03 - Delete a customer**
+
+**MSS**
+
+1.  Agent <u>finds the customer (UC02)</u>.
+2.  Agent requests to delete a specific customer in the displayed list.
+3.  InsureConnect deletes the customer and shows the details of the deleted customer.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The customer is not found.
 
   Use case ends.
 
-* 3a. The given index is invalid.
+* 2a. The given index is invalid.
 
-    * 3a1. AddressBook shows an error message.
+    * 2a1. InsureConnect shows an error message.
 
       Use case resumes at step 2.
 
-*{More to be added}*
+**Use case: UC04 - Edit a customer's details**
+
+**MSS**
+
+1.  Agent <u>finds the customer (UC02)</u>.
+2.  Agent requests to edit a specific customer in the displayed list, providing the new details.
+3.  InsureConnect updates the customer and shows the updated details.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The customer is not found.
+
+  Use case ends.
+
+* 2a. The given index is invalid.
+
+    * 2a1. InsureConnect shows an error message.
+
+      Use case resumes at step 2.
+
+* 2b. No new details are given, or a new detail is in an invalid format.
+
+    * 2b1. InsureConnect shows an error message stating which detail is missing or invalid.
+
+      Use case resumes at step 2.
+
+* 2c. The edit would make the customer a duplicate of another existing customer, or a new policy number already belongs to another customer.
+
+    * 2c1. InsureConnect informs the agent that the customer already exists and does not apply the edit.
+
+      Use case ends.
+
+**Use case: UC05 - Start the app with an unreadable data file**
+
+**MSS**
+
+1.  Agent launches InsureConnect.
+2.  InsureConnect detects that the data file cannot be read and warns the agent that the existing data was not loaded.
+3.  InsureConnect starts with an empty customer list and leaves the existing data file untouched.
+4.  Agent closes InsureConnect and repairs or replaces the data file.
+
+    Use case ends.
+
+**Extensions**
+
+* 2a. The data file does not exist.
+
+    * 2a1. InsureConnect starts without showing a warning and creates a new data file when the first change is saved.
+
+      Use case ends.
+
+* 3a. Agent makes a change to the customer list before closing InsureConnect.
+
+    * 3a1. InsureConnect does not overwrite the unreadable data file and warns the agent that the change was not saved.
+
+      Use case resumes at step 4.
 
 ### Non-Functional Requirements
 
 1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
-3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+2.  Should be able to hold up to 1000 customers without noticeable sluggishness in performance for typical usage.
+3.  Should respond to any command within 2 seconds when holding up to 1000 customers.
+4.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
+5.  Should be usable by a single user only; data is not shared between users or computers.
+6.  Should store data locally in a human editable text file, so that an advanced user can inspect and correct the data without the app.
+7.  Should not depend on a database management system or a remote server, and should work fully without an internet connection.
+8.  Should save data to the hard disk after every command that changes data, so that no change is lost if the app is closed unexpectedly. If a save fails, the user should be told so in the result of that same command.
+9.  Should never overwrite an existing data file that it failed to read.
+10. Should be packaged as a single JAR file of no more than 100MB that runs without an installer.
+11. The GUI should work well (i.e. no resolution related inconvenience) for screen resolutions 1920x1080 and higher, and screen scales 100% and 125%.
+12. The GUI should remain usable (i.e. all functions can be used even if the experience is not optimal) for screen resolutions 1280x720 and higher, and screen scales 150%.
+13. Every error message for an invalid command should state the expected command format or the accepted values, so that the user can correct the command without consulting the User Guide.
 
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Agent**: An insurance agent or financial adviser who sells insurance policies and uses InsureConnect to manage their customers
+* **Customer**: A person whose details are recorded in InsureConnect, who holds at least one insurance policy sold by the agent
+* **Policy**: An insurance contract held by a customer, such as a life, health, motor or travel insurance plan
+* **Policy number**: The unique code that identifies a policy, made up of 1 to 30 letters and digits (e.g. `LIFE20481`). Every customer has at least one, and no two customers can share the same policy number. Entered with the `t/` prefix
+* **Remark**: A free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`)
+* **Duplicate customer**: A customer whose name (ignoring case and extra spaces) and phone number are both identical to those of an existing customer. Two customers with the same name but different phone numbers are not duplicates
+* **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
+* **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
+* **Prefix**: The short marker that comes before a value in a command, such as `n/` for name or `p/` for phone
+* **Data file**: The JSON file in which InsureConnect stores all customer records on the user's computer
+* **MSS**: Main Success Scenario, the most common sequence of steps in a use case when nothing goes wrong
 
 --------------------------------------------------------------------------------------------------------------------
 
