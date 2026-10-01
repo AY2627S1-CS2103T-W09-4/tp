@@ -17,6 +17,8 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](https://github.com/JonathanZheng)]
 [[portfolio]()]
 
+* Role: Project Member
+
 ### Wilson Ang Zi Jun
 
 <img src="images/burpzes.png" width="200px">
@@ -44,6 +46,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/firebean850)]
 
 * Role: Project Member
+
 ### Benjamin Wong
 
 <img src="images/benjaminwong33.png" width="200px">
