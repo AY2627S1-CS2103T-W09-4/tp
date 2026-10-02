@@ -278,16 +278,41 @@ _{Explain here how the data archiving feature will be implemented}_
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| Priority | Story | As an …​                          | I want to …​                                                | So that I can…​                                              |
+|--------|-------|-----------------------------------|-------------------------------------------------------------|--------------------------------------------------------------|
+| `* * *` | US01  | insurance agent (regular user)    | add a customer record                                       | track customer contact information in the system             |
+| `* *`  | US02  | insurance agent (first time user) | view a help guide                                           | learn the available commands                                 |
+| `* * *` | US03  | insurance agent (regular user)    | search for a customer by name                               | quickly find the customer's record                           |
+| `* *`  | US04  | insurance agent (beginner user)   | search for a customer by customer ID                        | retrieve the correct record efficiently                      |
+| `* *`  | US05  | insurance agent (beginner user)   | search for a customer by phone number                       | identify the customer using information they provide         |
+| `* *`  | US06  | insurance agent (beginner user)   | search for a policy by policy number                        | immediately retrieve its details                             |
+| `* *`  | US07  | insurance agent (beginner user)   | view all policies belonging to a customer                   | understand the customer's insurance coverage                 |
+| `* *`  | US08  | insurance agent (beginner user)   | view detailed information about a policy                    | answer customer enquiries                                    |
+| `* *`  | US09  | insurance agent (beginner user)   | add notes to a customer record                              | keep track of previous interactions                          |
+| `* *`  | US10  | insurance agent (beginner user)   | update customer contact information                         | keep records accurate                                        |
+| `* *`  | US11  | insurance agent (beginner user)   | create a follow-up task                                     | not forget required actions                                  |
+| `* * ` | US12  | insurance agent (beginner user)   | specify a due date for a follow-up task                     | know when it needs to be completed                           |
+| `* *`  | US13  | insurance agent (beginner user)   | view outstanding tasks                                      | know what work remains                                       |
+| `* *`  | US14  | insurance agent  (regular user)   | view overdue tasks                                          | prioritise missed follow-ups                                 |
+| `* *`  | US15  | insurance agent (regular user)    | mark tasks as completed                                     | keep my task list up to date                                 |
+| `* *`  | US16  | insurance agent (regular user)    | view policies approaching renewal                           | follow up with customers in time                             |
+| `* *`  | US17  | insurance agent  (regular user)   | filter policies by status                                   | focus on relevant records                                    |
+| `* *`  | US18  | insurance agent  (regular user)   | filter policies by renewal date                             | identify policies requiring attention soon                   |
+| `* *`  | US19  | insurance agent with many clients | filter and sort large lists                                 | quickly locate relevant information                          |
+| `*`    | US20  | insurance agent (regular user)    | use command autocomplete                                    | enter commands faster and avoid syntax errors                |
+| `* *`  | US22  | insurance agent (regular user)    | navigate between related customer and policy records        | handle enquiries efficiently                                 |
+| `*`    | US21  | insurance agent  (regular user)   | access command history                                      | quickly repeat frequently used commands                      |
+| `*`    | US23  | insurance agent (expert user)     | perform batch operations                                    | process multiple records efficiently                         |
+| `*`    | US24  | insurance agent   (expert user)   | archive old or completed records                            | prevent unnecessary information from cluttering my workspace |
+| `* * *` | US25  | insurance agent  (regular user)   | delete customer or policy records that are no longer needed | keep the system organised                                    |
+| `* *`  | US26  | insurance agent (expert user)     | receive confirmation before destructive operations          | avoid accidentally removing important information            |
+| `* *`  | US27  | insurance agent (regular user)    | receive clear success and error messages                    | know whether my command was executed correctly               |
+| `* *`  | US28  | insurance agent  (regular user)   | view upcoming tasks and renewals at the start of my shift   | plan my workload                                             |
+| `*`    | US29  | insurance agent (expert user)     | review remaining tasks before ending my shift               | avoid forgetting important work                              |
+| `* * *` | US30  | insurance agent  (regular user)   | list all records in the system                              | view all records at once                                     |
+| `* * *` | US31  | insurance agent  (regular user)   | edit all records in the system                              | avoid deleting and creating a new record                     |
 
-*{More to be added}*
+
 
 ### Use cases
 
