@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
 
 /**
- * Represents a Tag in the InsureConnect.
+ * Represents a Tag in InsureConnect.
  * Guarantees: immutable; name is valid as declared in {@link #isValidTagName(String)}
  */
 public class Tag {

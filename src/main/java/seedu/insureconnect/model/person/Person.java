@@ -11,7 +11,7 @@ import seedu.insureconnect.commons.util.ToStringBuilder;
 import seedu.insureconnect.model.tag.Tag;
 
 /**
- * Represents a Person in the InsureConnect.
+ * Represents a Person in InsureConnect.
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
 public class Person {

@@ -35,7 +35,7 @@ public interface Storage {
     void saveUserPrefs(ReadOnlyUserPrefs userPrefs) throws IOException;
 
     /**
-     * Returns the file path of the InsureConnect data file.
+     * Returns the file path of InsureConnect data file.
      */
     Path getInsureConnectFilePath();
 

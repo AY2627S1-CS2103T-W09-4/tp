@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
 
 /**
- * Represents a Person's address in the InsureConnect.
+ * Represents a Person's address in InsureConnect.
  * Guarantees: immutable; is valid as declared in {@link #isValidAddress(String)}
  */
 public class Address {

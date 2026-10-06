@@ -33,30 +33,30 @@ public interface Model {
      */
     void setInsureConnect(ReadOnlyInsureConnect insureConnect);
 
-    /** Returns the InsureConnect */
+    /** Returns InsureConnect */
     ReadOnlyInsureConnect getInsureConnect();
 
     /**
-     * Returns true if a person with the same identity as {@code person} exists in the InsureConnect.
+     * Returns true if a person with the same identity as {@code person} exists in InsureConnect.
      */
     boolean hasPerson(Person person);
 
     /**
      * Deletes the given person.
-     * The person must exist in the InsureConnect.
+     * The person must exist in InsureConnect.
      */
     void deletePerson(Person target);
 
     /**
      * Adds the given person.
-     * {@code person} must not already exist in the InsureConnect.
+     * {@code person} must not already exist in InsureConnect.
      */
     void addPerson(Person person);
 
     /**
      * Replaces the given person {@code target} with {@code editedPerson}.
-     * {@code target} must exist in the InsureConnect.
-     * The person identity of {@code editedPerson} must not be the same as another existing person in the InsureConnect.
+     * {@code target} must exist in InsureConnect.
+     * The person identity of {@code editedPerson} must not be the same as another existing person in InsureConnect.
      */
     void setPerson(Person target, Person editedPerson);
 

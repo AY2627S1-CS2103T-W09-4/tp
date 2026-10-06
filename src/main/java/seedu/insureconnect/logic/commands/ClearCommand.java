@@ -6,7 +6,7 @@ import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.Model;
 
 /**
- * Clears the InsureConnect.
+ * Clears InsureConnect.
  */
 public class ClearCommand extends Command {
 

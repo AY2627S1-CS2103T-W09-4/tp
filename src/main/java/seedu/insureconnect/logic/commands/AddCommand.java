@@ -14,13 +14,13 @@ import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Adds a person to the InsureConnect.
+ * Adds a person to InsureConnect.
  */
 public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to the InsureConnect. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to InsureConnect. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -36,7 +36,7 @@ public class AddCommand extends Command {
             + PREFIX_TAG + "owesMoney";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the InsureConnect.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in InsureConnect.";
 
     private final Person toAdd;
 

@@ -13,7 +13,7 @@ import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Represents the in-memory model of the InsureConnect data.
+ * Represents the in-memory model of InsureConnect data.
  */
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
