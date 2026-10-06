@@ -49,7 +49,7 @@ public class InsureConnect implements ReadOnlyInsureConnect {
     //// person-level operations
 
     /**
-     * Returns true if a person with the same identity as {@code person} exists in the address book.
+     * Returns true if a person with the same identity as {@code person} exists in the InsureConnect.
      */
     public boolean hasPerson(Person person) {
         requireNonNull(person);
@@ -57,8 +57,8 @@ public class InsureConnect implements ReadOnlyInsureConnect {
     }
 
     /**
-     * Adds a person to the address book.
-     * The person must not already exist in the address book.
+     * Adds a person to the InsureConnect.
+     * The person must not already exist in the InsureConnect.
      */
     public void addPerson(Person p) {
         persons.add(p);
@@ -66,8 +66,8 @@ public class InsureConnect implements ReadOnlyInsureConnect {
 
     /**
      * Replaces the given person {@code target} in the list with {@code editedPerson}.
-     * {@code target} must exist in the address book.
-     * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
+     * {@code target} must exist in the InsureConnect.
+     * The person identity of {@code editedPerson} must not be the same as another existing person in the InsureConnect.
      */
     public void setPerson(Person target, Person editedPerson) {
         requireNonNull(editedPerson);
@@ -77,7 +77,7 @@ public class InsureConnect implements ReadOnlyInsureConnect {
 
     /**
      * Removes {@code key} from this {@code InsureConnect}.
-     * {@code key} must exist in the address book.
+     * {@code key} must exist in the InsureConnect.
      */
     public void removePerson(Person key) {
         persons.remove(key);

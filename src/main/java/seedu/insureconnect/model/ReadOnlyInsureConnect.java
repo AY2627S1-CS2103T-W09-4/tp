@@ -4,7 +4,7 @@ import javafx.collections.ObservableList;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Unmodifiable view of an address book
+ * Unmodifiable view of an InsureConnect
  */
 public interface ReadOnlyInsureConnect {
 

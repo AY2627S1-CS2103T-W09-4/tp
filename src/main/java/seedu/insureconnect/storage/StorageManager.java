@@ -21,7 +21,7 @@ public class StorageManager implements Storage {
     private JsonUserPrefsStorage userPrefsStorage;
 
     /**
-     * Creates a {@code StorageManager} with the given address book and user prefs storage.
+     * Creates a {@code StorageManager} with the given InsureConnect and user prefs storage.
      */
     public StorageManager(JsonInsureConnectStorage insureConnectStorage, JsonUserPrefsStorage userPrefsStorage) {
         this.insureConnectStorage = insureConnectStorage;

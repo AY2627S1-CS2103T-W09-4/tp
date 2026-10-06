@@ -36,6 +36,7 @@ public class MainApp extends Application {
 
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
+    // Keep the legacy filename so existing installations continue to load their records.
     private static final Path INSURE_CONNECT_FILE_PATH = Paths.get("data", "addressbook.json");
 
     protected Ui ui;
@@ -61,9 +62,9 @@ public class MainApp extends Application {
     }
 
     /**
-     * Returns a {@code ModelManager} with the data from {@code storage}'s address book and {@code userPrefs}. <br>
-     * The data from the sample address book will be used instead if {@code storage}'s address book is not found,
-     * or an empty address book will be used instead if errors occur when reading {@code storage}'s address book.
+     * Returns a {@code ModelManager} with the data from {@code storage}'s InsureConnect and {@code userPrefs}. <br>
+     * The data from the sample InsureConnect will be used instead if {@code storage}'s InsureConnect is not found,
+     * or an empty InsureConnect will be used instead if errors occur when reading {@code storage}'s InsureConnect.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getInsureConnectFilePath());

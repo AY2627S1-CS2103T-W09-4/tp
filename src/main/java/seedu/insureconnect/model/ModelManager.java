@@ -13,7 +13,7 @@ import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Represents the in-memory model of the address book data.
+ * Represents the in-memory model of the InsureConnect data.
  */
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
@@ -28,7 +28,7 @@ public class ModelManager implements Model {
     public ModelManager(ReadOnlyInsureConnect insureConnect, ReadOnlyUserPrefs userPrefs) {
         requireAllNonNull(insureConnect, userPrefs);
 
-        logger.fine("Initializing with address book: " + insureConnect + " and user prefs " + userPrefs);
+        logger.fine("Initializing with InsureConnect: " + insureConnect + " and user prefs " + userPrefs);
 
         this.insureConnect = new InsureConnect(insureConnect);
         this.userPrefs = new UserPrefs(userPrefs);

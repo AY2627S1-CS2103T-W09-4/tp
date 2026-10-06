@@ -6,7 +6,7 @@ import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import seedu.insureconnect.model.Model;
 
 /**
- * Lists all persons in the address book to the user.
+ * Lists all persons in the InsureConnect to the user.
  */
 public class ListCommand extends Command {
 

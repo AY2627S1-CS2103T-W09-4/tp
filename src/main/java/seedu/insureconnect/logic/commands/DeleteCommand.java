@@ -12,7 +12,7 @@ import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Deletes a person identified using its displayed index from the address book.
+ * Deletes a person identified using its displayed index from the InsureConnect.
  */
 public class DeleteCommand extends Command {
 
