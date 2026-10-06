@@ -7,7 +7,7 @@ import seedu.insureconnect.commons.util.StringUtil;
 import seedu.insureconnect.commons.util.ToStringBuilder;
 
 /**
- * Tests that a {@code Person}'s {@code Name} matches any of the keywords given.
+ * Tests that any word in a {@code Person}'s {@code Name} starts with any given keyword, ignoring case.
  */
 public class NameContainsKeywordsPredicate implements Predicate<Person> {
     private final List<String> keywords;
@@ -19,7 +19,7 @@ public class NameContainsKeywordsPredicate implements Predicate<Person> {
     @Override
     public boolean test(Person person) {
         return keywords.stream()
-                .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword));
+                .anyMatch(keyword -> StringUtil.hasWordStartingWithIgnoreCase(person.getName().fullName, keyword));
     }
 
     @Override

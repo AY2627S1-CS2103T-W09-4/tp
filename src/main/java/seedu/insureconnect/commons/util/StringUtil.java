@@ -39,6 +39,24 @@ public class StringUtil {
     }
 
     /**
+     * Returns true if any whitespace-separated word in {@code sentence} starts with {@code prefix}, ignoring case.
+     *
+     * @param sentence cannot be null
+     * @param prefix cannot be null, cannot be empty, must be a single word; surrounding whitespace is ignored
+     */
+    public static boolean hasWordStartingWithIgnoreCase(String sentence, String prefix) {
+        requireNonNull(sentence);
+        requireNonNull(prefix);
+
+        String trimmedPrefix = prefix.trim();
+        checkArgument(!trimmedPrefix.isEmpty(), "Prefix parameter cannot be empty");
+        checkArgument(trimmedPrefix.split("\\s+").length == 1, "Prefix parameter should be a single word");
+
+        return Arrays.stream(sentence.split("\\s+"))
+                .anyMatch(word -> word.regionMatches(true, 0, trimmedPrefix, 0, trimmedPrefix.length()));
+    }
+
+    /**
      * Returns a detailed message of {@code t}, including the stack trace.
      */
     public static String getDetails(Throwable t) {
