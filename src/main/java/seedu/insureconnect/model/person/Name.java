@@ -11,13 +11,13 @@ public class Name {
 
     public static final String MESSAGE_CONSTRAINTS =
             "Names should start with an alphanumeric character, and can only contain alphanumeric characters, "
-            + "spaces, and the characters: - ' .";
+            + "spaces, and the characters: - ' . /";
 
     /*
      * The first character of the name must be an alphanumeric character.
      * This ensures names cannot be blank or consist solely of punctuation (e.g. "---").
      */
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} '\\-\\.]*";
+    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} '\\-\\./]*";
 
     public final String fullName;
 

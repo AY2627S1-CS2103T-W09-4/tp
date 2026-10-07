@@ -38,16 +38,38 @@ public class ParserUtil {
     /**
      * Parses a {@code String name} into a {@code Name}.
      * Leading and trailing whitespaces will be trimmed.
+     * The escape character '!' is removed before validation (e.g. "!a" -> "a", "!/" -> "/").
      *
      * @throws ParseException if the given {@code name} is invalid.
      */
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
         String trimmedName = name.trim();
-        if (!Name.isValidName(trimmedName)) {
+        String unescapedName = unescapeName(trimmedName);
+        if (!Name.isValidName(unescapedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
-        return new Name(trimmedName);
+        return new Name(unescapedName);
+    }
+
+    /**
+     * Unescapes characters preceded by '!' in a name field. E.g. "!a" -> "a", "!/" -> "/", "!!" -> "!".
+     */
+    public static String unescapeName(String input) {
+        if (!input.contains("!")) {
+            return input;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            if (c == '!' && i + 1 < input.length()) {
+                sb.append(input.charAt(i + 1));
+                i++;
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
     }
 
     /**

@@ -85,6 +85,29 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseName_validValueWithSlash_returnsName() throws Exception {
+        String nameWithSlash = "Ravi s/o Muthu";
+        Name expectedName = new Name(nameWithSlash);
+        assertEquals(expectedName, ParserUtil.parseName(nameWithSlash));
+    }
+
+    @Test
+    public void parseName_validValueWithEscapedPrefix_returnsUnescapedName() throws Exception {
+        assertEquals(new Name("Mohd a/l Kassim"), ParserUtil.parseName("Mohd !a/l Kassim"));
+        assertEquals(new Name("Mohd a/l Kassim"), ParserUtil.parseName("Mohd a!/l Kassim"));
+        assertEquals(new Name("Tan t/o Smith"), ParserUtil.parseName("Tan !t/o Smith"));
+    }
+
+    @Test
+    public void unescapeName() {
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd !a/l Kassim"));
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd a!/l Kassim"));
+        assertEquals("Ravi s/o Muthu", ParserUtil.unescapeName("Ravi s/o Muthu"));
+        assertEquals("!Exclamation", ParserUtil.unescapeName("!!Exclamation"));
+        assertEquals("Ending with !", ParserUtil.unescapeName("Ending with !"));
+    }
+
+    @Test
     public void parsePhone_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parsePhone((String) null));
     }
