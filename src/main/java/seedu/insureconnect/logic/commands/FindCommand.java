@@ -8,15 +8,16 @@ import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 
 /**
- * Finds and lists all persons in InsureConnect whose name contains any of the argument keywords.
+ * Finds and lists all persons in InsureConnect with a name word starting with any of the argument keywords.
  * Keyword matching is case insensitive.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Finds all persons whose names contain any of "
-            + "the specified keywords (case-insensitive) and displays them as a list with index numbers.\n"
+    public static final String MESSAGE_USAGE = COMMAND_WORD
+            + ": Finds all persons with a name word starting with any of the specified keywords (case-insensitive) "
+            + "and displays them as a list with index numbers.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
             + "Example: " + COMMAND_WORD + " alice bob charlie";
 
