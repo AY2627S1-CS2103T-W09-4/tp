@@ -19,9 +19,9 @@ public class Person {
     // Identity fields
     private final Name name;
     private final Phone phone;
-    private final Email email;
 
     // Data fields
+    private final Email email;
     private final Address address;
     private final Set<Tag> tags = new HashSet<>();
 
@@ -62,7 +62,7 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same name.
+     * Returns true if both persons have the same name (ignoring case and extra spaces) and phone number.
      * This defines a weaker notion of equality between two persons.
      */
     public boolean isSamePerson(Person otherPerson) {
@@ -71,7 +71,15 @@ public class Person {
         }
 
         return otherPerson != null
-                && otherPerson.getName().equals(getName());
+                && otherPerson.getPhone().equals(getPhone())
+                && getNormalizedName().equalsIgnoreCase(otherPerson.getNormalizedName());
+    }
+
+    /**
+     * Returns the name with surrounding spaces removed and repeated spaces collapsed.
+     */
+    private String getNormalizedName() {
+        return name.fullName.trim().replaceAll(" +", " ");
     }
 
     /**
