@@ -29,6 +29,16 @@ public class NameTest {
         assertFalse(Name.isValidName(" ")); // spaces only
         assertFalse(Name.isValidName("^")); // only non-alphanumeric characters
         assertFalse(Name.isValidName("peter*")); // contains non-alphanumeric characters
+        assertFalse(Name.isValidName("-")); // only hyphen
+        assertFalse(Name.isValidName("---")); // multiple hyphens only
+        assertFalse(Name.isValidName(".")); // only period
+        assertFalse(Name.isValidName("...")); // multiple periods only
+        assertFalse(Name.isValidName("'")); // only apostrophe
+        assertFalse(Name.isValidName("'''")); // multiple apostrophes only
+        assertFalse(Name.isValidName("-'.")); // combination of punctuation only
+        assertFalse(Name.isValidName("-Mary")); // starts with hyphen
+        assertFalse(Name.isValidName(".Tan")); // starts with period
+        assertFalse(Name.isValidName("Mary/Jane")); // contains slash
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
@@ -36,6 +46,14 @@ public class NameTest {
         assertTrue(Name.isValidName("peter the 2nd")); // alphanumeric characters
         assertTrue(Name.isValidName("Capital Tan")); // with capital letters
         assertTrue(Name.isValidName("David Roger Jackson Ray Jr 2nd")); // long names
+        assertTrue(Name.isValidName("Mary-Jane")); // with hyphen
+        assertTrue(Name.isValidName("Anne-Marie Smith-Jones")); // with multiple hyphens
+        assertTrue(Name.isValidName("O'Connor")); // with apostrophe
+        assertTrue(Name.isValidName("D'Souza")); // with apostrophe
+        assertTrue(Name.isValidName("Dr. Tan")); // with period
+        assertTrue(Name.isValidName("John Jr.")); // with trailing period
+        assertTrue(Name.isValidName("J.K. Rowling")); // with multiple periods
+        assertTrue(Name.isValidName("Dr. John O'Connor-Smith Jr.")); // with hyphen, apostrophe, and period
     }
 
     @Test
