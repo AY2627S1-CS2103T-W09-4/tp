@@ -12,6 +12,8 @@ import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.BOB;
 
+import java.time.Instant;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.testutil.PersonBuilder;
@@ -68,6 +70,17 @@ public class PersonTest {
         assertFalse(BOB.isSamePerson(editedBob));
     }
 
+
+    @Test
+    public void getCreatedAt_returnsCreationTimestamp() {
+        Instant createdAt = Instant.parse("2026-02-01T00:00:00Z");
+        Person person = new PersonBuilder()
+                .withCreatedAt(createdAt)
+                .build();
+
+        assertEquals(createdAt, person.getCreatedAt());
+    }
+
     @Test
     public void equals() {
         // same values -> returns true
@@ -105,6 +118,7 @@ public class PersonTest {
         // different tags -> returns false
         editedAlice = new PersonBuilder(ALICE).withTags(VALID_TAG_HUSBAND).build();
         assertFalse(ALICE.equals(editedAlice));
+
     }
 
     @Test
