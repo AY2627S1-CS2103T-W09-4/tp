@@ -77,6 +77,12 @@ Format: `help`
 
 Adds a person to InsureConnect.
 
+A person is a duplicate only when both their name and phone number match an existing person.
+Name matching ignores case, leading or trailing spaces, and repeated spaces between words.
+For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
+People with the same name but different phone numbers, or different names with the same phone number, are allowed.
+Names are displayed as entered after surrounding spaces are trimmed by the command parser.
+
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
@@ -102,6 +108,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
 * To remove all of a person's tags, enter `t/` without a tag after it.
 
