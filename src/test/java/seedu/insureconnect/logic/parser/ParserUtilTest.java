@@ -78,6 +78,13 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseName_validValueWithPunctuation_returnsName() throws Exception {
+        String nameWithPunctuation = "Dr. John O'Connor-Smith Jr.";
+        Name expectedName = new Name(nameWithPunctuation);
+        assertEquals(expectedName, ParserUtil.parseName(nameWithPunctuation));
+    }
+
+    @Test
     public void parsePhone_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parsePhone((String) null));
     }

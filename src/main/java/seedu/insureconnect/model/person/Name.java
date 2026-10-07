@@ -10,13 +10,14 @@ import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
 public class Name {
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Names should only contain alphanumeric characters and spaces, and should not be blank";
+            "Names should start with an alphanumeric character, and can only contain alphanumeric characters, "
+            + "spaces, and the characters: - ' .";
 
     /*
-     * The first character of the name must not be a whitespace,
-     * otherwise " " (a blank string) becomes a valid input.
+     * The first character of the name must be an alphanumeric character.
+     * This ensures names cannot be blank or consist solely of punctuation (e.g. "---").
      */
-    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} ]*";
+    public static final String VALIDATION_REGEX = "[\\p{Alnum}][\\p{Alnum} '\\-\\.]*";
 
     public final String fullName;
 
