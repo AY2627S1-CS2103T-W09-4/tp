@@ -2,6 +2,7 @@ package seedu.insureconnect.model.person;
 
 import static seedu.insureconnect.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class Person {
     // Identity fields
     private final Name name;
     private final Phone phone;
+    private final Instant createdAt;
 
     // Data fields
     private final Email email;
@@ -28,13 +30,14 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags) {
-        requireAllNonNull(name, phone, email, address, tags);
+    public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags, Instant createdAt) {
+        requireAllNonNull(name, phone, email, address, tags, createdAt);
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.address = address;
         this.tags.addAll(tags);
+        this.createdAt = createdAt;
     }
 
     public Name getName() {
@@ -51,6 +54,10 @@ public class Person {
 
     public Address getAddress() {
         return address;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
     }
 
     /**
