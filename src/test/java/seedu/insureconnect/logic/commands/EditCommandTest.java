@@ -147,6 +147,56 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_sameNameDifferentPhone_success() {
+        Person firstPerson = model.getFilteredPersonList().get(0);
+        Person secondPerson = model.getFilteredPersonList().get(1);
+        Person editedPerson = new PersonBuilder(secondPerson).withName(firstPerson.getName().fullName).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withName(firstPerson.getName().fullName).build();
+        Model expectedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        expectedModel.setPerson(secondPerson, editedPerson);
+
+        assertCommandSuccess(new EditCommand(INDEX_SECOND_PERSON, descriptor), model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_phoneChangeCreatesDuplicate_failure() {
+        Person firstPerson = model.getFilteredPersonList().get(0);
+        Person secondPerson = model.getFilteredPersonList().get(1);
+        Person sameNamePerson = new PersonBuilder(secondPerson).withName("aLICE   pAULINE  ").build();
+        model.setPerson(secondPerson, sameNamePerson);
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withPhone(firstPerson.getPhone().value).build();
+
+        assertCommandFailure(new EditCommand(INDEX_SECOND_PERSON, descriptor), model,
+                EditCommand.MESSAGE_DUPLICATE_PERSON);
+    }
+
+    @Test
+    public void execute_normalizedDuplicateOutsideFilteredList_failure() {
+        showPersonAtIndex(model, INDEX_SECOND_PERSON);
+        Person firstPerson = model.getInsureConnect().getPersonList().get(0);
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName("aLICE   pAULINE  ")
+                .withPhone(firstPerson.getPhone().value).build();
+
+        assertCommandFailure(new EditCommand(INDEX_FIRST_PERSON, descriptor), model,
+                EditCommand.MESSAGE_DUPLICATE_PERSON);
+    }
+
+    @Test
+    public void execute_normalizeOwnName_success() {
+        Person firstPerson = model.getFilteredPersonList().get(0);
+        Person editedPerson = new PersonBuilder(firstPerson).withName("aLICE   pAULINE  ").build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName("aLICE   pAULINE  ").build();
+        Model expectedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        expectedModel.setPerson(firstPerson, editedPerson);
+
+        assertCommandSuccess(new EditCommand(INDEX_FIRST_PERSON, descriptor), model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+    }
+
+    @Test
     public void equals() {
         final EditCommand standardCommand = new EditCommand(INDEX_FIRST_PERSON, DESC_AMY);
 

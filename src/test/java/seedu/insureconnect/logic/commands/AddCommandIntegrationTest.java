@@ -45,4 +45,24 @@ public class AddCommandIntegrationTest {
                 AddCommand.MESSAGE_DUPLICATE_PERSON);
     }
 
+    @Test
+    public void execute_sameNameDifferentPhone_success() {
+        Person personInList = model.getInsureConnect().getPersonList().get(0);
+        Person newPerson = new PersonBuilder(personInList).withPhone("88888888").build();
+        Model expectedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        expectedModel.addPerson(newPerson);
+
+        assertCommandSuccess(new AddCommand(newPerson), model,
+                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(newPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_normalizedNameAndSamePhone_throwsCommandException() {
+        Person personInList = model.getInsureConnect().getPersonList().get(0);
+        Person duplicatePerson = new PersonBuilder(personInList).withName("aLICE   pAULINE  ")
+                .withEmail("different@example.com").build();
+
+        assertCommandFailure(new AddCommand(duplicatePerson), model, AddCommand.MESSAGE_DUPLICATE_PERSON);
+    }
+
 }

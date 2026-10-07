@@ -5,12 +5,15 @@ import static seedu.insureconnect.testutil.Assert.assertThrows;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.commons.exceptions.IllegalValueException;
 import seedu.insureconnect.commons.util.JsonUtil;
 import seedu.insureconnect.model.InsureConnect;
+import seedu.insureconnect.model.person.Person;
+import seedu.insureconnect.testutil.PersonBuilder;
 import seedu.insureconnect.testutil.TypicalPersons;
 
 public class JsonSerializableInsureConnectTest {
@@ -42,6 +45,30 @@ public class JsonSerializableInsureConnectTest {
                 JsonSerializableInsureConnect.class).get();
         assertThrows(IllegalValueException.class, JsonSerializableInsureConnect.MESSAGE_DUPLICATE_PERSON,
                 dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_sameNameDifferentPhone_success() throws Exception {
+        Person firstPerson = TypicalPersons.ALICE;
+        Person secondPerson = new PersonBuilder(firstPerson).withPhone("88888888").build();
+        InsureConnect original = new InsureConnect();
+        original.addPerson(firstPerson);
+        original.addPerson(secondPerson);
+
+        String json = JsonUtil.toJsonString(new JsonSerializableInsureConnect(original));
+        JsonSerializableInsureConnect restored = JsonUtil.fromJsonString(json, JsonSerializableInsureConnect.class);
+        assertEquals(original, restored.toModelType());
+    }
+
+    @Test
+    public void toModelType_normalizedDuplicate_throwsIllegalValueException() {
+        Person firstPerson = TypicalPersons.ALICE;
+        Person secondPerson = new PersonBuilder(firstPerson).withName("aLICE   pAULINE  ").build();
+        JsonSerializableInsureConnect data = new JsonSerializableInsureConnect(List.of(
+                new JsonAdaptedPerson(firstPerson), new JsonAdaptedPerson(secondPerson)));
+
+        assertThrows(IllegalValueException.class, JsonSerializableInsureConnect.MESSAGE_DUPLICATE_PERSON,
+                data::toModelType);
     }
 
 }
