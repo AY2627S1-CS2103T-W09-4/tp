@@ -27,6 +27,11 @@ public class PersonTest {
     }
 
     @Test
+    public void constructor_noPolicyNumbers_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> new PersonBuilder().withTags().build());
+    }
+
+    @Test
     public void isSamePerson() {
         // same object -> returns true
         assertTrue(ALICE.isSamePerson(ALICE));

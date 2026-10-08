@@ -142,11 +142,9 @@ public class AddCommandParserTest {
     }
 
     @Test
-    public void parse_optionalFieldsMissing_success() {
-        // zero tags
-        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
-        assertParseSuccess(parser, NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY,
-                new AddCommand(expectedPerson));
+    public void parse_policyNumberMissing_failure() {
+        assertParseFailure(parser, NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
     }
 
     @Test
@@ -197,7 +195,8 @@ public class AddCommandParserTest {
                 + INVALID_TAG_DESC + VALID_TAG_FRIEND, Tag.MESSAGE_CONSTRAINTS);
 
         // two invalid values, only first invalid value reported
-        assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC,
+        assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC
+                        + TAG_DESC_FRIEND,
                 Name.MESSAGE_CONSTRAINTS);
 
         // non-empty preamble
@@ -222,24 +221,22 @@ public class AddCommandParserTest {
     @Test
     public void parse_remarkMissing_success() {
         Person expectedPerson = new PersonBuilder(AMY)
-                .withTags()
                 .withRemark("")
                 .build();
 
         assertParseSuccess(parser,
-                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + TAG_DESC_FRIEND,
                 new AddCommand(expectedPerson));
     }
 
     @Test
     public void parse_emptyRemark_success() {
         Person expectedPerson = new PersonBuilder(AMY)
-                .withTags()
                 .withRemark("")
                 .build();
 
         assertParseSuccess(parser,
-                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + TAG_DESC_FRIEND
                         + " " + PREFIX_REMARK,
                 new AddCommand(expectedPerson));
     }
@@ -260,7 +257,7 @@ public class AddCommandParserTest {
 
         assertParseFailure(parser,
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                        + ADDRESS_DESC_BOB + invalidRemarkDescription,
+                        + ADDRESS_DESC_BOB + TAG_DESC_FRIEND + invalidRemarkDescription,
                 Remark.MESSAGE_CONSTRAINTS);
     }
 
@@ -270,13 +267,12 @@ public class AddCommandParserTest {
                 + "  Prefers   WhatsApp after 6pm  ";
 
         Person expectedPerson = new PersonBuilder(AMY)
-                .withTags()
                 .withRemark(VALID_REMARK)
                 .build();
 
         assertParseSuccess(parser,
                 NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY
-                        + ADDRESS_DESC_AMY + remarkWithExtraWhitespace,
+                        + ADDRESS_DESC_AMY + TAG_DESC_FRIEND + remarkWithExtraWhitespace,
                 new AddCommand(expectedPerson));
     }
 

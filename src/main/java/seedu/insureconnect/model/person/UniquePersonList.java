@@ -5,11 +5,13 @@ import static seedu.insureconnect.commons.util.CollectionUtil.requireAllNonNull;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.insureconnect.model.person.exceptions.DuplicatePersonException;
 import seedu.insureconnect.model.person.exceptions.PersonNotFoundException;
+import seedu.insureconnect.model.tag.Tag;
 
 /**
  * A list of persons that enforces uniqueness between its elements and does not allow nulls.
@@ -45,6 +47,9 @@ public class UniquePersonList implements Iterable<Person> {
         if (contains(toAdd)) {
             throw new DuplicatePersonException();
         }
+        if (internalList.stream().anyMatch(existing -> sharesPolicyNumber(existing, toAdd))) {
+            throw new DuplicatePersonException();
+        }
         internalList.add(toAdd);
     }
 
@@ -62,6 +67,11 @@ public class UniquePersonList implements Iterable<Person> {
         }
 
         if (!target.isSamePerson(editedPerson) && contains(editedPerson)) {
+            throw new DuplicatePersonException();
+        }
+        Person personBeingReplaced = internalList.get(index);
+        if (internalList.stream().anyMatch(existing -> existing != personBeingReplaced
+                && sharesPolicyNumber(existing, editedPerson))) {
             throw new DuplicatePersonException();
         }
 
@@ -139,11 +149,17 @@ public class UniquePersonList implements Iterable<Person> {
     private boolean personsAreUnique(List<Person> persons) {
         for (int i = 0; i < persons.size() - 1; i++) {
             for (int j = i + 1; j < persons.size(); j++) {
-                if (persons.get(i).isSamePerson(persons.get(j))) {
+                if (persons.get(i).isSamePerson(persons.get(j))
+                        || sharesPolicyNumber(persons.get(i), persons.get(j))) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private static boolean sharesPolicyNumber(Person first, Person second) {
+        Set<Tag> firstPolicies = first.getTags();
+        return second.getTags().stream().anyMatch(firstPolicies::contains);
     }
 }

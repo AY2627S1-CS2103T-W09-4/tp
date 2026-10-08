@@ -167,8 +167,8 @@ public class LogicManagerTest {
 
         // Triggers the saveInsureConnect method by executing an add command
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
-                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY;
-        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + " t/POLICY90001";
+        Person expectedPerson = new PersonBuilder(AMY).withTags("POLICY90001").build();
         ModelManager expectedModel = new ModelManager();
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
         assertFalse(model.hasPerson(expectedPerson));
@@ -194,8 +194,8 @@ public class LogicManagerTest {
 
         // Mutating command fails and rolls back in-memory changes
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
-                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY;
-        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + " t/POLICY90001";
+        Person expectedPerson = new PersonBuilder(AMY).withTags("POLICY90001").build();
         ModelManager expectedModel = new ModelManager();
         assertCommandFailure(addCommand, CommandException.class, String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT,

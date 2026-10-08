@@ -57,6 +57,13 @@ public class UniquePersonListTest {
     }
 
     @Test
+    public void add_sharedPolicyNumber_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        Person otherCustomer = new PersonBuilder(ALICE).withName("Other Customer").withPhone("88888888").build();
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.add(otherCustomer));
+    }
+
+    @Test
     public void setPerson_nullTargetPerson_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> uniquePersonList.setPerson(null, ALICE));
     }
@@ -105,6 +112,25 @@ public class UniquePersonListTest {
         uniquePersonList.add(ALICE);
         uniquePersonList.add(BOB);
         assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, BOB));
+    }
+
+    @Test
+    public void setPerson_equivalentTargetInstance_success() {
+        uniquePersonList.add(ALICE);
+        Person equivalentTarget = new PersonBuilder(ALICE).build();
+        Person editedAlice = new PersonBuilder(ALICE).withAddress(VALID_ADDRESS_BOB).build();
+
+        uniquePersonList.setPerson(equivalentTarget, editedAlice);
+
+        assertEquals(List.of(editedAlice), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_sharedPolicyNumber_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedBob = new PersonBuilder(BOB).withTags(ALICE.getTags().iterator().next().tagName).build();
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(BOB, editedBob));
     }
 
     @Test
@@ -158,6 +184,12 @@ public class UniquePersonListTest {
     public void setPersons_listWithDuplicatePersons_throwsDuplicatePersonException() {
         List<Person> listWithDuplicatePersons = List.of(ALICE, ALICE);
         assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPersons(listWithDuplicatePersons));
+    }
+
+    @Test
+    public void setPersons_listWithSharedPolicyNumber_throwsDuplicatePersonException() {
+        Person otherCustomer = new PersonBuilder(ALICE).withName("Other Customer").withPhone("88888888").build();
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPersons(List.of(ALICE, otherCustomer)));
     }
 
     @Test

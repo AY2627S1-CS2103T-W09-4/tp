@@ -41,7 +41,7 @@ public class PersonBuilder {
         phone = new Phone(DEFAULT_PHONE);
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
-        tags = new HashSet<>();
+        tags = SampleDataUtil.getTagSet("P" + DEFAULT_PHONE);
         remark = new Remark("");
         createdAt = DEFAULT_CREATED_AT;
     }
@@ -87,6 +87,9 @@ public class PersonBuilder {
      * Sets the {@code Phone} of the {@code Person} that we are building.
      */
     public PersonBuilder withPhone(String phone) {
+        if (tags.equals(SampleDataUtil.getTagSet("P" + this.phone.value))) {
+            tags = SampleDataUtil.getTagSet("P" + phone);
+        }
         this.phone = new Phone(phone);
         return this;
     }

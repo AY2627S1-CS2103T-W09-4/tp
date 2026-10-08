@@ -113,6 +113,9 @@ class JsonAdaptedPerson {
         final Address modelAddress = new Address(address);
 
         final Set<Tag> modelTags = new HashSet<>(personTags);
+        if (modelTags.isEmpty()) {
+            throw new IllegalValueException(Person.MESSAGE_MISSING_POLICY_NUMBER);
+        }
 
         if (createdAt == null) {
             throw new IllegalValueException(
