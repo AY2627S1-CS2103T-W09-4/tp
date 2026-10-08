@@ -32,6 +32,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
+    private final String remark;
     private final String createdAt;
 
     /**
@@ -40,7 +41,8 @@ class JsonAdaptedPerson {
     @JsonCreator
     public JsonAdaptedPerson(@JsonProperty("name") String name, @JsonProperty("phone") String phone,
             @JsonProperty("email") String email, @JsonProperty("address") String address,
-            @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("createdAt") String createdAt) {
+            @JsonProperty("tags") List<JsonAdaptedTag> tags, @JsonProperty("remark") String remark,
+            @JsonProperty("createdAt") String createdAt) {
         this.name = name;
         this.phone = phone;
         this.email = email;
@@ -48,6 +50,7 @@ class JsonAdaptedPerson {
         if (tags != null) {
             this.tags.addAll(tags);
         }
+        this.remark = remark;
         this.createdAt = createdAt;
     }
 
@@ -62,6 +65,7 @@ class JsonAdaptedPerson {
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
+        remark = source.getRemark().value;
         createdAt = source.getCreatedAt().toString();
     }
 
@@ -121,6 +125,15 @@ class JsonAdaptedPerson {
         } catch (DateTimeParseException e) {
             throw new IllegalValueException("Invalid createdAt timestamp: " + createdAt);
         }
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, new Remark(""), modelCreatedAt);
+
+        String remarkValue = remark == null ? "" : remark;
+
+        if (!Remark.isValidRemark(remarkValue)) {
+            throw new IllegalValueException(Remark.MESSAGE_CONSTRAINTS);
+        }
+
+        Remark modelRemark = new Remark(remarkValue);
+
+        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelRemark, modelCreatedAt);
     }
 }
