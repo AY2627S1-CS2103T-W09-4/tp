@@ -50,18 +50,20 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
   For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  For example, `edit INDEX [n/NAME]` can be used as `edit 1 n/John Doe` or as `edit 1 p/98765432`.
 
 * Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
+  For example, `[t/POLICY_NUMBER]…​` in `edit` may be omitted, or written as `t/LIFE20481` or `t/LIFE20481 t/HEALTH20482`.
 
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
 * **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, and `/`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
 
+* **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer.
+
 * **Escape character (`!`) for name prefix collisions**:
-  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for tag). Names that contain patterns such as ` a/` (common in Malaysian and Singaporean names with `a/l` or `a/p`, e.g. `Mohd a/l Kassim`) will conflict with these command prefixes if typed directly.<br>
+  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names that contain patterns such as ` a/` (common in Malaysian and Singaporean names with `a/l` or `a/p`, e.g. `Mohd a/l Kassim`) will conflict with these command prefixes if typed directly.<br>
   To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name field:
   * `n/Mohd !a/l Kassim` or `n/Mohd a!/l Kassim` will be saved as `Mohd a/l Kassim`.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
@@ -93,17 +95,17 @@ For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicate
 People with the same name but different phone numbers, or different names with the same phone number, are allowed.
 Names are displayed as entered after surrounding spaces are trimmed by the command parser.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
+A customer must have at least one policy number. An existing customer's policy number cannot be reused.
 </div>
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
-* `add n/Ravi s/o Muthu p/91234567 e/ravi@example.com a/Blk 123 Jurong West`
-* `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3`
+* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
+* `add n/Betsy Crowe t/LIFE20482 e/betsycrowe@example.com a/Newgate Prison p/1234567 t/HEALTH20483`
+* `add n/Ravi s/o Muthu p/91234567 e/ravi@example.com a/Blk 123 Jurong West t/LIFE20484`
+* `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20485`
 
 ### Listing all persons: `list`
 
@@ -115,18 +117,18 @@ Format: `list`
 
 Edits an existing person in InsureConnect.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
+* When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
+* At least one policy number must remain. `t/` without a value is rejected.
 
 Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
 *  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
 
 ### Locating persons by name: `find`
@@ -211,10 +213,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3`
+**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **Help** | `help`

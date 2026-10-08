@@ -4,13 +4,14 @@
     "phone": "94351253",
     "email": "alice@example.com",
     "address": "123, Jurong West Ave 6, #08-111",
-    "tags": [ "friends" ],
+    "tags": [ "LIFE20001" ],
     "createdAt": "2026-01-01T00:00:00Z"
   }, {
     "name": "Alice Pauline",
     "phone": "94351253",
     "email": "pauline@example.com",
     "address": "4th street",
+    "tags": [ "LIFE20002" ],
     "createdAt": "2026-01-01T01:00:00Z"
   } ]
 }

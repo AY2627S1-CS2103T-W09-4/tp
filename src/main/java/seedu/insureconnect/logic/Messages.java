@@ -43,7 +43,7 @@ public class Messages {
                 .append(person.getEmail())
                 .append("; Address: ")
                 .append(person.getAddress())
-                .append("; Tags: ");
+                .append("; Policy numbers: ");
         person.getTags().forEach(builder::append);
         builder.append("; Remark: ")
                 .append(person.getRemark());

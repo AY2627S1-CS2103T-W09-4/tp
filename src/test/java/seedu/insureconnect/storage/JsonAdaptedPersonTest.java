@@ -123,6 +123,13 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
+    public void toModelType_missingPolicyNumbers_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, List.of(), null, VALID_CREATED_AT);
+        assertThrows(IllegalValueException.class, Person.MESSAGE_MISSING_POLICY_NUMBER, person::toModelType);
+    }
+
+    @Test
     public void toModelType_nullCreatedAt_throwsIllegalValueException() {
         JsonAdaptedPerson person = new JsonAdaptedPerson(
                 VALID_NAME,

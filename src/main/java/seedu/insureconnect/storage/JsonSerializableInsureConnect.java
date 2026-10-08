@@ -20,6 +20,7 @@ import seedu.insureconnect.model.person.Person;
 class JsonSerializableInsureConnect {
 
     public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
+    public static final String MESSAGE_DUPLICATE_POLICY_NUMBER = "Persons list contains duplicate policy numbers.";
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
 
@@ -51,6 +52,11 @@ class JsonSerializableInsureConnect {
             Person person = jsonAdaptedPerson.toModelType();
             if (insureConnect.hasPerson(person)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_PERSON);
+            }
+            for (Person existing : insureConnect.getPersonList()) {
+                if (person.getTags().stream().anyMatch(existing.getTags()::contains)) {
+                    throw new IllegalValueException(MESSAGE_DUPLICATE_POLICY_NUMBER);
+                }
             }
             insureConnect.addPerson(person);
         }

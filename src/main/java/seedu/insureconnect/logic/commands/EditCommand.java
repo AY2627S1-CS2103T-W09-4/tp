@@ -45,7 +45,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_PHONE + "PHONE] "
             + "[" + PREFIX_EMAIL + "EMAIL] "
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "TAG]...\n"
+            + "[" + PREFIX_TAG + "POLICY_NUMBER]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -79,10 +79,25 @@ public class EditCommand extends Command {
         }
 
         Person personToEdit = lastShownList.get(index.getZeroBased());
+        if (editPersonDescriptor.getTags().isPresent() && editPersonDescriptor.getTags().get().isEmpty()) {
+            throw new CommandException(Person.MESSAGE_MISSING_POLICY_NUMBER);
+        }
         Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
 
         if (!personToEdit.isSamePerson(editedPerson) && model.hasPerson(editedPerson)) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        }
+
+        for (Person existing : model.getInsureConnect().getPersonList()) {
+            if (existing.isSamePerson(personToEdit)) {
+                continue;
+            }
+            for (Tag policyNumber : editedPerson.getTags()) {
+                if (existing.getTags().contains(policyNumber)) {
+                    throw new CommandException(String.format(AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                            policyNumber.tagName, existing.getName().fullName, existing.getPhone().value));
+                }
+            }
         }
 
         model.setPerson(personToEdit, editedPerson);

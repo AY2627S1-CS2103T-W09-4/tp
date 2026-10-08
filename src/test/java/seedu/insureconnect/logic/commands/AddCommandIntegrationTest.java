@@ -48,12 +48,24 @@ public class AddCommandIntegrationTest {
     @Test
     public void execute_sameNameDifferentPhone_success() {
         Person personInList = model.getInsureConnect().getPersonList().get(0);
-        Person newPerson = new PersonBuilder(personInList).withPhone("88888888").build();
+        Person newPerson = new PersonBuilder(personInList).withPhone("88888888")
+                .withTags("LIFE88888").build();
         Model expectedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
         expectedModel.addPerson(newPerson);
 
         assertCommandSuccess(new AddCommand(newPerson), model,
                 String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(newPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_policyNumberBelongsToAnotherCustomer_failure() {
+        Person owner = model.getInsureConnect().getPersonList().get(0);
+        String policyNumber = owner.getTags().iterator().next().tagName;
+        Person newPerson = new PersonBuilder().withTags(policyNumber).build();
+
+        assertCommandFailure(new AddCommand(newPerson), model,
+                String.format(AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                        policyNumber, owner.getName().fullName, owner.getPhone().value));
     }
 
     @Test

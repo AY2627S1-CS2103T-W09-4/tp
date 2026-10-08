@@ -17,6 +17,8 @@ import seedu.insureconnect.model.tag.Tag;
  */
 public class Person {
 
+    public static final String MESSAGE_MISSING_POLICY_NUMBER = "A customer must have at least one policy number.";
+
     // Identity fields
     private final Name name;
     private final Phone phone;
@@ -34,6 +36,9 @@ public class Person {
     public Person(Name name, Phone phone, Email email, Address address, Set<Tag> tags,
                   Remark remark, Instant createdAt) {
         requireAllNonNull(name, phone, email, address, tags, remark, createdAt);
+        if (tags.isEmpty()) {
+            throw new IllegalArgumentException(MESSAGE_MISSING_POLICY_NUMBER);
+        }
         this.name = name;
         this.phone = phone;
         this.email = email;

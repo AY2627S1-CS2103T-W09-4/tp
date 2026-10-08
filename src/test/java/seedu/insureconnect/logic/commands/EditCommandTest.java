@@ -161,6 +161,25 @@ public class EditCommandTest {
     }
 
     @Test
+    public void execute_policyNumberBelongsToAnotherCustomer_failure() {
+        Person owner = model.getInsureConnect().getPersonList().get(0);
+        String policyNumber = owner.getTags().iterator().next().tagName;
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withTags(policyNumber).build();
+
+        assertCommandFailure(new EditCommand(INDEX_SECOND_PERSON, descriptor), model,
+                String.format(AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                        policyNumber, owner.getName().fullName, owner.getPhone().value));
+    }
+
+    @Test
+    public void execute_removeAllPolicyNumbers_failure() {
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withTags().build();
+
+        assertCommandFailure(new EditCommand(INDEX_FIRST_PERSON, descriptor), model,
+                Person.MESSAGE_MISSING_POLICY_NUMBER);
+    }
+
+    @Test
     public void execute_phoneChangeCreatesDuplicate_failure() {
         Person firstPerson = model.getFilteredPersonList().get(0);
         Person secondPerson = model.getFilteredPersonList().get(1);

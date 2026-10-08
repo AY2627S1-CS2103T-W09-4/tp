@@ -50,7 +50,8 @@ public class JsonSerializableInsureConnectTest {
     @Test
     public void toModelType_sameNameDifferentPhone_success() throws Exception {
         Person firstPerson = TypicalPersons.ALICE;
-        Person secondPerson = new PersonBuilder(firstPerson).withPhone("88888888").build();
+        Person secondPerson = new PersonBuilder(firstPerson).withPhone("88888888")
+                .withTags("LIFE88888").build();
         InsureConnect original = new InsureConnect();
         original.addPerson(firstPerson);
         original.addPerson(secondPerson);
@@ -68,6 +69,17 @@ public class JsonSerializableInsureConnectTest {
                 new JsonAdaptedPerson(firstPerson), new JsonAdaptedPerson(secondPerson)));
 
         assertThrows(IllegalValueException.class, JsonSerializableInsureConnect.MESSAGE_DUPLICATE_PERSON,
+                data::toModelType);
+    }
+
+    @Test
+    public void toModelType_duplicatePolicyNumber_throwsIllegalValueException() {
+        Person firstPerson = TypicalPersons.ALICE;
+        Person secondPerson = new PersonBuilder(firstPerson).withPhone("88888888").build();
+        JsonSerializableInsureConnect data = new JsonSerializableInsureConnect(List.of(
+                new JsonAdaptedPerson(firstPerson), new JsonAdaptedPerson(secondPerson)));
+
+        assertThrows(IllegalValueException.class, JsonSerializableInsureConnect.MESSAGE_DUPLICATE_POLICY_NUMBER,
                 data::toModelType);
     }
 
