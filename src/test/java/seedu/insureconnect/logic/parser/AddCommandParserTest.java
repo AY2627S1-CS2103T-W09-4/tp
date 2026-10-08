@@ -16,16 +16,16 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PREAMBLE_NON_EMPTY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.REMARK_DESC;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.REMARK_DESC;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
@@ -45,8 +45,8 @@ import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.Phone;
-import seedu.insureconnect.model.tag.Tag;
 import seedu.insureconnect.model.person.Remark;
+import seedu.insureconnect.model.tag.Tag;
 import seedu.insureconnect.testutil.PersonBuilder;
 
 public class AddCommandParserTest {

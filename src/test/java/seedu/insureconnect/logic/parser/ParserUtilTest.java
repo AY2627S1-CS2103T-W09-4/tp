@@ -3,7 +3,6 @@ package seedu.insureconnect.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
-import seedu.insureconnect.model.person.Remark;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -17,6 +16,7 @@ import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.model.tag.Tag;
 
 public class ParserUtilTest {

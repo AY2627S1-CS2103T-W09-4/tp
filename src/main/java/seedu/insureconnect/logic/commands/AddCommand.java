@@ -5,8 +5,8 @@ import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 
 import seedu.insureconnect.commons.util.ToStringBuilder;
 import seedu.insureconnect.logic.Messages;

@@ -18,7 +18,6 @@ import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.Phone;
 import seedu.insureconnect.model.person.Remark;
-
 import seedu.insureconnect.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
