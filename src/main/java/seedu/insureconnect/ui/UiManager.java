@@ -25,6 +25,7 @@ public class UiManager implements Ui {
 
     private Logic logic;
     private Path dataFilePath;
+    private String initialFeedback;
     private MainWindow mainWindow;
 
     /**
@@ -32,8 +33,17 @@ public class UiManager implements Ui {
      * to show in the status bar.
      */
     public UiManager(Logic logic, Path dataFilePath) {
+        this(logic, dataFilePath, null);
+    }
+
+    /**
+     * Creates a {@code UiManager} with the given {@code Logic}, data file path,
+     * and initial feedback message.
+     */
+    public UiManager(Logic logic, Path dataFilePath, String initialFeedback) {
         this.logic = logic;
         this.dataFilePath = dataFilePath;
+        this.initialFeedback = initialFeedback;
     }
 
     @Override
@@ -44,7 +54,7 @@ public class UiManager implements Ui {
         primaryStage.getIcons().add(getImage(ICON_APPLICATION));
 
         try {
-            mainWindow = new MainWindow(primaryStage, logic, dataFilePath);
+            mainWindow = new MainWindow(primaryStage, logic, dataFilePath, initialFeedback);
             mainWindow.show(); //This should be called before creating other UI parts
             mainWindow.fillInnerParts();
 

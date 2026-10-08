@@ -1,6 +1,7 @@
 package seedu.insureconnect.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
 import static seedu.insureconnect.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.ListCommand;
@@ -168,7 +170,37 @@ public class LogicManagerTest {
                 + EMAIL_DESC_AMY + ADDRESS_DESC_AMY;
         Person expectedPerson = new PersonBuilder(AMY).withTags().build();
         ModelManager expectedModel = new ModelManager();
-        expectedModel.addPerson(expectedPerson);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
+        assertFalse(model.hasPerson(expectedPerson));
+    }
+
+    @Test
+    public void execute_unreadableStorageFile_rollsBackAndNonMutatingSucceeds() throws Exception {
+        Path filePath = temporaryFolder.resolve("unreadableAddressBook.json");
+        FileUtil.writeToFile(filePath, "invalid json");
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(filePath);
+        try {
+            insureConnectStorage.readInsureConnect();
+        } catch (Exception ignored) {
+            // expected DataLoadingException marking file as unreadable
+        }
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("unreadableUserPrefs.json"));
+        StorageManager storage = new StorageManager(insureConnectStorage, userPrefsStorage);
+        logic = new LogicManager(model, storage);
+
+        // Non-mutating command succeeds
+        assertCommandSuccess(ListCommand.COMMAND_WORD, ListCommand.MESSAGE_SUCCESS, model);
+
+        // Mutating command fails and rolls back in-memory changes
+        String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY;
+        Person expectedPerson = new PersonBuilder(AMY).withTags().build();
+        ModelManager expectedModel = new ModelManager();
+        assertCommandFailure(addCommand, CommandException.class, String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT,
+                "The existing data file at " + filePath + " is unreadable and cannot be overwritten."),
+                expectedModel);
+        assertFalse(model.hasPerson(expectedPerson));
     }
 }

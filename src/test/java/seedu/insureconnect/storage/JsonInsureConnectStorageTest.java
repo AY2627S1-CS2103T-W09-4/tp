@@ -2,6 +2,7 @@ package seedu.insureconnect.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.HOON;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import seedu.insureconnect.commons.exceptions.DataLoadingException;
+import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
 
@@ -107,5 +109,37 @@ public class JsonInsureConnectStorageTest {
     @Test
     public void saveInsureConnect_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveInsureConnect(new InsureConnect(), null));
+    }
+
+    @Test
+    public void saveInsureConnect_unreadableFile_throwsIoException() throws Exception {
+        Path filePath = testFolder.resolve("unreadable.json");
+        FileUtil.writeToFile(filePath, "invalid json");
+        JsonInsureConnectStorage jsonInsureConnectStorage = new JsonInsureConnectStorage(filePath);
+
+        // First attempt to read should fail and record it as unreadable
+        assertThrows(DataLoadingException.class, () -> jsonInsureConnectStorage.readInsureConnect(filePath));
+        assertTrue(jsonInsureConnectStorage.isUnreadableFile(filePath));
+
+        // Attempt to save to this file should throw IOException
+        assertThrows(IOException.class, () -> jsonInsureConnectStorage.saveInsureConnect(
+                new InsureConnect(), filePath));
+    }
+
+    @Test
+    public void readInsureConnect_validFileAfterCorrupted_clearsUnreadableStatus() throws Exception {
+        Path filePath = testFolder.resolve("unreadableThenValid.json");
+        FileUtil.writeToFile(filePath, "invalid json");
+        JsonInsureConnectStorage jsonInsureConnectStorage = new JsonInsureConnectStorage(filePath);
+
+        assertThrows(DataLoadingException.class, () -> jsonInsureConnectStorage.readInsureConnect(filePath));
+        assertTrue(jsonInsureConnectStorage.isUnreadableFile(filePath));
+
+        // Now write valid json
+        FileUtil.writeToFile(filePath, "{\n  \"persons\" : [ ]\n}");
+
+        // Read again should succeed and remove unreadable status
+        jsonInsureConnectStorage.readInsureConnect(filePath);
+        assertFalse(jsonInsureConnectStorage.isUnreadableFile(filePath));
     }
 }

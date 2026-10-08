@@ -68,4 +68,11 @@ public interface Model {
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
+
+    /**
+     * Returns the current predicate of the filtered person list.
+     */
+    default Predicate<Person> getFilteredPersonListPredicate() {
+        return PREDICATE_SHOW_ALL_PERSONS;
+    }
 }
