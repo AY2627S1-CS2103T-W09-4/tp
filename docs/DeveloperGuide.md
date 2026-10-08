@@ -271,7 +271,6 @@ _{Explain here how the data archiving feature will be implemented}_
 * is reasonably comfortable using CLI apps
 
 **Value proposition**: InsureConnect gives an insurance agent fast access to customer contact and policy details through typed commands, so that a customer can be found by name instead of by a policy number that is hard to remember. It is faster than a spreadsheet or a mouse-driven CRM, keeps all data on the agent's own computer and works without an internet connection.
->>>>>>> Stashed changes
 
 
 ### User stories
@@ -485,6 +484,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
 * **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
 * **Prefix**: The short marker that comes before a value in a command, such as `n/` for name or `p/` for phone
+* **Escape character**: A character (`!`) used within the `n/` name field to prevent patterns (like ` a/` in Malaysian/Singaporean patronymics `a/l` and `a/p`, or ` t/`) from being misinterpreted as command prefixes
 * **Data file**: The JSON file in which InsureConnect stores all customer records on the user's computer
 * **MSS**: Main Success Scenario, the most common sequence of steps in a use case when nothing goes wrong
 

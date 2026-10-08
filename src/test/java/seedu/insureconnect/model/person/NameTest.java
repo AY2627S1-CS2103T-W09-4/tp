@@ -36,9 +36,11 @@ public class NameTest {
         assertFalse(Name.isValidName("'")); // only apostrophe
         assertFalse(Name.isValidName("'''")); // multiple apostrophes only
         assertFalse(Name.isValidName("-'.")); // combination of punctuation only
+        assertFalse(Name.isValidName("/")); // only slash
+        assertFalse(Name.isValidName("///")); // multiple slashes only
         assertFalse(Name.isValidName("-Mary")); // starts with hyphen
         assertFalse(Name.isValidName(".Tan")); // starts with period
-        assertFalse(Name.isValidName("Mary/Jane")); // contains slash
+        assertFalse(Name.isValidName("/Mary")); // starts with slash
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
@@ -54,6 +56,12 @@ public class NameTest {
         assertTrue(Name.isValidName("John Jr.")); // with trailing period
         assertTrue(Name.isValidName("J.K. Rowling")); // with multiple periods
         assertTrue(Name.isValidName("Dr. John O'Connor-Smith Jr.")); // with hyphen, apostrophe, and period
+        assertTrue(Name.isValidName("Mary/Jane")); // with slash
+        assertTrue(Name.isValidName("Ravi s/o Muthu")); // Indian name with s/o
+        assertTrue(Name.isValidName("Priya d/o Muthu")); // Indian name with d/o
+        assertTrue(Name.isValidName("Mohd a/l Kassim")); // Malaysian name with a/l
+        assertTrue(Name.isValidName("Siti a/p Ahmad")); // Malaysian name with a/p
+        assertTrue(Name.isValidName("Tan a/k/a Teck")); // with a/k/a
     }
 
     @Test

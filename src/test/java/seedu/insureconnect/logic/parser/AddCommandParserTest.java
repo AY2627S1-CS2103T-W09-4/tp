@@ -66,6 +66,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_nameWithEscapedPrefix_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withName("Mohd a/l Kassim")
+                .withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, " n/Mohd !a/l Kassim " + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + ADDRESS_DESC_BOB + TAG_DESC_FRIEND, new AddCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_repeatedNonTagValue_failure() {
         String validExpectedPersonString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;
