@@ -18,16 +18,19 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.PREAMBLE_NON_EM
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.REMARK_DESC;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.insureconnect.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.insureconnect.testutil.TypicalPersons.AMY;
@@ -43,6 +46,7 @@ import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.Phone;
 import seedu.insureconnect.model.tag.Tag;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.testutil.PersonBuilder;
 
 public class AddCommandParserTest {
@@ -201,4 +205,80 @@ public class AddCommandParserTest {
                 + ADDRESS_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND,
                 String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
     }
+
+    @Test
+    public void parse_remarkPresent_success() {
+        Person expectedPerson = new PersonBuilder(BOB)
+                .withTags(VALID_TAG_FRIEND)
+                .withRemark(VALID_REMARK)
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                        + ADDRESS_DESC_BOB + TAG_DESC_FRIEND + REMARK_DESC,
+                new AddCommand(expectedPerson));
+    }
+
+    @Test
+    public void parse_remarkMissing_success() {
+        Person expectedPerson = new PersonBuilder(AMY)
+                .withTags()
+                .withRemark("")
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY,
+                new AddCommand(expectedPerson));
+    }
+
+    @Test
+    public void parse_emptyRemark_success() {
+        Person expectedPerson = new PersonBuilder(AMY)
+                .withTags()
+                .withRemark("")
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY
+                        + " " + PREFIX_REMARK,
+                new AddCommand(expectedPerson));
+    }
+
+    @Test
+    public void parse_duplicateRemark_failure() {
+        String validCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;
+
+        assertParseFailure(parser,
+                validCommand + REMARK_DESC + REMARK_DESC,
+                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
+    }
+
+    @Test
+    public void parse_remarkTooLong_failure() {
+        String invalidRemarkDescription = " " + PREFIX_REMARK + "a".repeat(501);
+
+        assertParseFailure(parser,
+                NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                        + ADDRESS_DESC_BOB + invalidRemarkDescription,
+                Remark.MESSAGE_CONSTRAINTS);
+    }
+
+    @Test
+    public void parse_remarkWhitespaceNormalized_success() {
+        String remarkWithExtraWhitespace = " " + PREFIX_REMARK
+                + "  Prefers   WhatsApp after 6pm  ";
+
+        Person expectedPerson = new PersonBuilder(AMY)
+                .withTags()
+                .withRemark(VALID_REMARK)
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY
+                        + ADDRESS_DESC_AMY + remarkWithExtraWhitespace,
+                new AddCommand(expectedPerson));
+    }
+
+
 }
