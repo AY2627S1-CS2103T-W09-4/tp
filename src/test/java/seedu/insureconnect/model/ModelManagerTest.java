@@ -9,11 +9,13 @@ import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.BENSON;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
+import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.testutil.InsureConnectBuilder;
 
 public class ModelManagerTest {
@@ -108,5 +110,20 @@ public class ModelManagerTest {
         UserPrefs differentUserPrefs = new UserPrefs();
         differentUserPrefs.setGuiSettings(new GuiSettings(1, 2, 3, 4));
         assertFalse(modelManager.equals(new ModelManager(insureConnect, differentUserPrefs)));
+    }
+
+    @Test
+    public void getFilteredPersonListPredicate_success() {
+        // default predicate is PREDICATE_SHOW_ALL_PERSONS
+        assertEquals(PREDICATE_SHOW_ALL_PERSONS, modelManager.getFilteredPersonListPredicate());
+
+        // updated predicate
+        Predicate<Person> predicate = new NameContainsKeywordsPredicate(List.of("Alice"));
+        modelManager.updateFilteredPersonList(predicate);
+        assertEquals(predicate, modelManager.getFilteredPersonListPredicate());
+
+        // reset back to show all
+        modelManager.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        assertEquals(PREDICATE_SHOW_ALL_PERSONS, modelManager.getFilteredPersonListPredicate());
     }
 }
