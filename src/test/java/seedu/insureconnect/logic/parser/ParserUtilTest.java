@@ -16,6 +16,7 @@ import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.model.tag.Tag;
 
 public class ParserUtilTest {
@@ -221,4 +222,23 @@ public class ParserUtilTest {
 
         assertEquals(expectedTagSet, actualTagSet);
     }
+
+    @Test
+    public void parseRemark_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseRemark(null));
+    }
+
+    @Test
+    public void parseRemark_validValue_returnsNormalizedRemark() throws Exception {
+        assertEquals(new Remark("Prefers WhatsApp after 6pm"),
+                ParserUtil.parseRemark("   Prefers   WhatsApp after 6pm   "));
+        assertEquals(new Remark(""), ParserUtil.parseRemark("   "));
+    }
+
+    @Test
+    public void parseRemark_tooLong_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseRemark("a".repeat(501)));
+    }
+
+
 }
