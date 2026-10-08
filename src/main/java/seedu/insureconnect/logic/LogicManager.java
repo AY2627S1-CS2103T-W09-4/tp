@@ -2,6 +2,7 @@ package seedu.insureconnect.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
@@ -12,7 +13,9 @@ import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.InsureConnectParser;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
+import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.Model;
+import seedu.insureconnect.model.ReadOnlyInsureConnect;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.storage.Storage;
 
@@ -46,14 +49,29 @@ public class LogicManager implements Logic {
 
         CommandResult commandResult;
         Command command = insureConnectParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
+        Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
 
         try {
-            storage.saveInsureConnect(model.getInsureConnect());
-        } catch (AccessDeniedException e) {
-            throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
-        } catch (IOException ioe) {
-            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
+            commandResult = command.execute(model);
+        } catch (CommandException ce) {
+            model.setInsureConnect(previousData);
+            model.updateFilteredPersonList(previousFilter);
+            throw ce;
+        }
+
+        if (!previousData.equals(model.getInsureConnect())) {
+            try {
+                storage.saveInsureConnect(model.getInsureConnect());
+            } catch (AccessDeniedException e) {
+                model.setInsureConnect(previousData);
+                model.updateFilteredPersonList(previousFilter);
+                throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
+            } catch (IOException ioe) {
+                model.setInsureConnect(previousData);
+                model.updateFilteredPersonList(previousFilter);
+                throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
+            }
         }
 
         return commandResult;

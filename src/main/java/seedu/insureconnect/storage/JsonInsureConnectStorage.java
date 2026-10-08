@@ -4,7 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import seedu.insureconnect.commons.core.LogsCenter;
@@ -21,6 +23,7 @@ public class JsonInsureConnectStorage {
 
     private static final Logger logger = LogsCenter.getLogger(JsonInsureConnectStorage.class);
 
+    private final Set<Path> unreadableFilePaths = new HashSet<>();
     private Path filePath;
 
     public JsonInsureConnectStorage(Path filePath) {
@@ -29,6 +32,14 @@ public class JsonInsureConnectStorage {
 
     public Path getInsureConnectFilePath() {
         return filePath;
+    }
+
+    /**
+     * Returns true if the data file at {@code filePath} failed to load and is marked unreadable.
+     */
+    public boolean isUnreadableFile(Path filePath) {
+        requireNonNull(filePath);
+        return unreadableFilePaths.contains(filePath.toAbsolutePath().normalize());
     }
 
     /**
@@ -49,18 +60,26 @@ public class JsonInsureConnectStorage {
      */
     public Optional<ReadOnlyInsureConnect> readInsureConnect(Path filePath) throws DataLoadingException {
         requireNonNull(filePath);
-
-        Optional<JsonSerializableInsureConnect> jsonInsureConnect = JsonUtil.readJsonFile(
-                filePath, JsonSerializableInsureConnect.class);
-        if (!jsonInsureConnect.isPresent()) {
-            return Optional.empty();
-        }
+        Path normalizedPath = filePath.toAbsolutePath().normalize();
 
         try {
-            return Optional.of(jsonInsureConnect.get().toModelType());
-        } catch (IllegalValueException ive) {
-            logger.info("Illegal values found in " + filePath + ": " + ive.getMessage());
-            throw new DataLoadingException(ive);
+            Optional<JsonSerializableInsureConnect> jsonInsureConnect = JsonUtil.readJsonFile(
+                    filePath, JsonSerializableInsureConnect.class);
+            if (!jsonInsureConnect.isPresent()) {
+                return Optional.empty();
+            }
+
+            ReadOnlyInsureConnect loaded = jsonInsureConnect.get().toModelType();
+            unreadableFilePaths.remove(normalizedPath);
+            return Optional.of(loaded);
+        } catch (DataLoadingException | IllegalValueException e) {
+            unreadableFilePaths.add(normalizedPath);
+            if (e instanceof DataLoadingException) {
+                throw (DataLoadingException) e;
+            } else {
+                logger.info("Illegal values found in " + filePath + ": " + e.getMessage());
+                throw new DataLoadingException(e);
+            }
         }
     }
 
@@ -81,6 +100,12 @@ public class JsonInsureConnectStorage {
     public void saveInsureConnect(ReadOnlyInsureConnect insureConnect, Path filePath) throws IOException {
         requireNonNull(insureConnect);
         requireNonNull(filePath);
+        Path normalizedPath = filePath.toAbsolutePath().normalize();
+
+        if (unreadableFilePaths.contains(normalizedPath)) {
+            throw new IOException("The existing data file at " + filePath
+                    + " is unreadable and cannot be overwritten.");
+        }
 
         FileUtil.createIfMissing(filePath);
         JsonUtil.saveJsonFile(new JsonSerializableInsureConnect(insureConnect), filePath);

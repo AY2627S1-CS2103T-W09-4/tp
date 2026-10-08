@@ -34,6 +34,9 @@ public class MainApp extends Application {
 
     public static final String VERSION = "V0.5.1";
 
+    public static final String MESSAGE_DATA_FILE_ERROR =
+            "Warning: Data file at %s could not be loaded. Will be starting with an empty contact list.";
+
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     // Keep the legacy filename so existing installations continue to load their records.
@@ -43,6 +46,7 @@ public class MainApp extends Application {
     protected Logic logic;
     protected Storage storage;
     protected Model model;
+    protected String initialFeedback;
 
     @Override
     public void init() throws Exception {
@@ -58,7 +62,7 @@ public class MainApp extends Application {
 
         logic = new LogicManager(model, storage);
 
-        ui = new UiManager(logic, storage.getInsureConnectFilePath());
+        ui = new UiManager(logic, storage.getInsureConnectFilePath(), initialFeedback);
     }
 
     /**
@@ -81,6 +85,7 @@ public class MainApp extends Application {
         } catch (DataLoadingException e) {
             logger.warning("Data file at " + storage.getInsureConnectFilePath() + " could not be loaded."
                     + " Will be starting with an empty InsureConnect.");
+            initialFeedback = String.format(MESSAGE_DATA_FILE_ERROR, storage.getInsureConnectFilePath());
             initialData = new InsureConnect();
         }
 
