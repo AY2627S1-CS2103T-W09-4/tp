@@ -5,7 +5,7 @@ import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
 
 /**
  * Represents an optional free-text remark attached to a customer.
- * Contains at most 500 of any character.
+ * Guarantees: value is at most 500 characters long.
  */
 public class Remark {
     public static final String MESSAGE_CONSTRAINTS = "Remarks should be at most 500 characters long.";
@@ -14,8 +14,7 @@ public class Remark {
     public final String value;
 
     /**
-     * Constructs a {@code Remark
-     * }
+     * Constructs a {@code Remark}
      * @param remark A valid remark, possibly empty;
      */
     public Remark(String remark) {
@@ -25,7 +24,7 @@ public class Remark {
     }
 
     /**
-     * returns true if the remark is no longer than {@value MAX_LENGTH}
+     * Returns true if the given remark is at most {@value #MAX_LENGTH} characters long.
      */
     public static boolean isValidRemark(String test) {
         requireNonNull(test);
