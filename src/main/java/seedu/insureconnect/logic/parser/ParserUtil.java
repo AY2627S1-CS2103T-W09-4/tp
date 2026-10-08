@@ -9,10 +9,7 @@ import java.util.Set;
 import seedu.insureconnect.commons.core.index.Index;
 import seedu.insureconnect.commons.util.StringUtil;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
-import seedu.insureconnect.model.person.Address;
-import seedu.insureconnect.model.person.Email;
-import seedu.insureconnect.model.person.Name;
-import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.*;
 import seedu.insureconnect.model.tag.Tag;
 
 /**
@@ -142,5 +139,16 @@ public class ParserUtil {
             tagSet.add(parseTag(tagName));
         }
         return tagSet;
+    }
+
+    public static Remark parseRemark(String remark) throws ParseException {
+        requireNonNull(remark);
+        String normalizedRemark = remark.trim().replaceAll("\\s+", " ");
+
+        if (!Remark.isValidRemark(normalizedRemark)) {
+            throw new ParseException(Remark.MESSAGE_CONSTRAINTS);
+        }
+
+        return new Remark(normalizedRemark);
     }
 }

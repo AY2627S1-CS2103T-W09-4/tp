@@ -3,6 +3,7 @@ package seedu.insureconnect.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
+import seedu.insureconnect.model.person.Remark;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -221,4 +222,23 @@ public class ParserUtilTest {
 
         assertEquals(expectedTagSet, actualTagSet);
     }
+
+    @Test
+    public void parseRemark_null_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> ParserUtil.parseRemark(null));
+    }
+
+    @Test
+    public void parseRemark_validValue_returnsNormalizedRemark() throws Exception {
+        assertEquals(new Remark("Prefers WhatsApp after 6pm"),
+                ParserUtil.parseRemark("   Prefers   WhatsApp after 6pm   "));
+        assertEquals(new Remark(""), ParserUtil.parseRemark("   "));
+    }
+
+    @Test
+    public void parseRemark_tooLong_throwsParseException() {
+        assertThrows(ParseException.class, () -> ParserUtil.parseRemark("a".repeat(501)));
+    }
+
+
 }
