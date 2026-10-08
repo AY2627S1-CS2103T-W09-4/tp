@@ -48,4 +48,8 @@ public class Remark {
         return value.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return value;
+    }
 }
