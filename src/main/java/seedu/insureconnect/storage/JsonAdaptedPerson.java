@@ -17,6 +17,7 @@ import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.model.tag.Tag;
 
 /**
@@ -120,6 +121,6 @@ class JsonAdaptedPerson {
         } catch (DateTimeParseException e) {
             throw new IllegalValueException("Invalid createdAt timestamp: " + createdAt);
         }
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelCreatedAt);
+        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, new Remark(""), modelCreatedAt);
     }
 }

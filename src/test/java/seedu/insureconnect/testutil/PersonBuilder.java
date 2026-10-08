@@ -9,6 +9,7 @@ import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.model.tag.Tag;
 import seedu.insureconnect.model.util.SampleDataUtil;
 
@@ -29,6 +30,7 @@ public class PersonBuilder {
     private Email email;
     private Address address;
     private Set<Tag> tags;
+    private Remark remark;
     private Instant createdAt;
 
     /**
@@ -40,6 +42,7 @@ public class PersonBuilder {
         email = new Email(DEFAULT_EMAIL);
         address = new Address(DEFAULT_ADDRESS);
         tags = new HashSet<>();
+        remark = new Remark("");
         createdAt = DEFAULT_CREATED_AT;
     }
 
@@ -52,6 +55,7 @@ public class PersonBuilder {
         email = personToCopy.getEmail();
         address = personToCopy.getAddress();
         tags = new HashSet<>(personToCopy.getTags());
+        remark = personToCopy.getRemark();
         createdAt = personToCopy.getCreatedAt();
     }
 
@@ -104,7 +108,7 @@ public class PersonBuilder {
     }
 
     public Person build() {
-        return new Person(name, phone, email, address, tags, createdAt);
+        return new Person(name, phone, email, address, tags, remark, createdAt);
     }
 
 }
