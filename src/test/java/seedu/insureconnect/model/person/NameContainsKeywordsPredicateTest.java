@@ -10,6 +10,9 @@ import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.testutil.PersonBuilder;
 
+/**
+ * Tests name-only matching and keyword combinations for customer searches.
+ */
 public class NameContainsKeywordsPredicateTest {
 
     @Test
@@ -70,6 +73,52 @@ public class NameContainsKeywordsPredicateTest {
         predicate = new NameContainsKeywordsPredicate(List.of("12345", "alice@email.com", "Main", "Street"));
         assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("12345")
                 .withEmail("alice@email.com").withAddress("Main Street").build()));
+    }
+
+    /**
+     * Partial keywords match the first, middle, or last name word regardless of case.
+     */
+    @Test
+    public void test_nameWordPrefixes_returnsTrue() {
+        Person person = new PersonBuilder().withName("Alice   Mary Bob").build();
+        assertTrue(new NameContainsKeywordsPredicate(List.of("aL")).test(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("mA")).test(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("bO")).test(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("a")).test(person));
+    }
+
+    /**
+     * One matching prefix is sufficient, regardless of keyword order or repetition.
+     */
+    @Test
+    public void test_multiplePrefixesWithOneMatch_returnsTrue() {
+        Person person = new PersonBuilder().withName("Alice Bob").build();
+        assertTrue(new NameContainsKeywordsPredicate(List.of("Car", "Al")).test(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("Al", "Car")).test(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("Al", "Al")).test(person));
+    }
+
+    /**
+     * Matching inside a word or extending beyond a complete word is insufficient.
+     */
+    @Test
+    public void test_infixSuffixAndLongerKeywords_returnsFalse() {
+        Person person = new PersonBuilder().withName("Alice Bob").build();
+        assertFalse(new NameContainsKeywordsPredicate(List.of("lic", "ice", "ob")).test(person));
+        assertFalse(new NameContainsKeywordsPredicate(List.of("Alicee", "Bobby")).test(person));
+    }
+
+    /**
+     * Prefixes of contact details, policy numbers, and remarks must not match the name.
+     */
+    @Test
+    public void test_prefixesOnlyMatchOtherFields_returnsFalse() {
+        Person person = new PersonBuilder().withName("Alice Bob").withPhone("98765432")
+                .withEmail("carol@example.com").withAddress("Main Street").withTags("LIFE123")
+                .withRemark("Follow up").build();
+        NameContainsKeywordsPredicate predicate =
+                new NameContainsKeywordsPredicate(List.of("987", "car", "Mai", "LIF", "Fol"));
+        assertFalse(predicate.test(person));
     }
 
     @Test
