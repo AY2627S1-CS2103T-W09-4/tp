@@ -70,7 +70,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
   * If you need a literal exclamation mark in a name, type `!!`.
   * **Note:** `!` is treated as an escape character **only for the name field (`n/`)**. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character, ensuring that characters like `!` in email addresses (e.g. `user!name@example.com`) are preserved as-is.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -109,9 +109,11 @@ Examples:
 
 ### Listing all persons: `list`
 
-Shows a list of all persons in InsureConnect.
+Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged.
 
-Format: `list`
+Format: `list [n/|c/]`
+
+Use either `n/` or `c/`, without a value. Other arguments are invalid.
 
 ### Editing a person: `edit`
 
@@ -218,5 +220,5 @@ Action | Format, Examples
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
-**List** | `list`
+**List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`

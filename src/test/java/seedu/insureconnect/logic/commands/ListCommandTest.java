@@ -1,16 +1,26 @@
 package seedu.insureconnect.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.showPersonAtIndex;
+import static seedu.insureconnect.logic.commands.ListCommand.SortOrder.CREATED_AT;
+import static seedu.insureconnect.logic.commands.ListCommand.SortOrder.NAME;
 import static seedu.insureconnect.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
+
+import java.time.Instant;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.ModelManager;
 import seedu.insureconnect.model.UserPrefs;
+import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
+import seedu.insureconnect.model.person.Person;
+import seedu.insureconnect.testutil.PersonBuilder;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for ListCommand.
@@ -35,5 +45,33 @@ public class ListCommandTest {
     public void execute_listIsFiltered_showsEverything() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
         assertCommandSuccess(new ListCommand(), model, ListCommand.MESSAGE_SUCCESS, expectedModel);
+    }
+
+    @Test
+    public void execute_sortVariants_changeDisplayOrderWithoutChangingStoredOrder() {
+        Person zoe = new PersonBuilder().withName("Zoe").withPhone("11111111")
+                .withCreatedAt(Instant.parse("2026-03-01T00:00:00Z")).build();
+        Person alice = new PersonBuilder().withName("alice").withPhone("22222222")
+                .withCreatedAt(Instant.parse("2026-02-01T00:00:00Z")).build();
+        Person bob = new PersonBuilder().withName("Bob").withPhone("33333333")
+                .withCreatedAt(Instant.parse("2026-01-01T00:00:00Z")).build();
+        InsureConnect data = new InsureConnect();
+        data.setPersons(List.of(zoe, alice, bob));
+        Model sortedModel = new ModelManager(data, new UserPrefs());
+
+        new ListCommand(NAME).execute(sortedModel);
+        assertEquals(List.of(alice, bob, zoe), sortedModel.getFilteredPersonList());
+
+        new ListCommand(CREATED_AT).execute(sortedModel);
+        assertEquals(List.of(bob, alice, zoe), sortedModel.getFilteredPersonList());
+        assertEquals(List.of(zoe, alice, bob), sortedModel.getInsureConnect().getPersonList());
+
+        new FindCommand(new NameContainsKeywordsPredicate(List.of("Zoe", "alice", "Bob")))
+                .execute(sortedModel);
+        assertEquals(List.of(zoe, alice, bob), sortedModel.getFilteredPersonList());
+
+        new ListCommand(NAME).execute(sortedModel);
+        new ListCommand().execute(sortedModel);
+        assertEquals(List.of(zoe, alice, bob), sortedModel.getFilteredPersonList());
     }
 }

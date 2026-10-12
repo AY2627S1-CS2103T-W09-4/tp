@@ -21,6 +21,7 @@ import seedu.insureconnect.logic.commands.ExitCommand;
 import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.commands.HelpCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
+import seedu.insureconnect.logic.commands.ListCommand.SortOrder;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
@@ -83,8 +84,9 @@ public class InsureConnectParserTest {
 
     @Test
     public void parseCommand_list() throws Exception {
-        assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD) instanceof ListCommand);
-        assertTrue(parser.parseCommand(ListCommand.COMMAND_WORD + " 3") instanceof ListCommand);
+        assertEquals(new ListCommand(), parser.parseCommand(ListCommand.COMMAND_WORD));
+        assertEquals(new ListCommand(SortOrder.NAME), parser.parseCommand(ListCommand.COMMAND_WORD + " n/"));
+        assertEquals(new ListCommand(SortOrder.CREATED_AT), parser.parseCommand(ListCommand.COMMAND_WORD + " c/"));
     }
 
     @Test
