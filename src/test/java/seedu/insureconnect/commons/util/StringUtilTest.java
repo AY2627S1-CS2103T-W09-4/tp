@@ -5,9 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 
 import java.io.FileNotFoundException;
+import java.util.Locale;
 
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tests string matching, numeric validation, and exception formatting utilities.
+ */
 public class StringUtilTest {
 
     //---------------- Tests for isNonZeroUnsignedInteger --------------------------------------
@@ -121,6 +125,75 @@ public class StringUtilTest {
 
         // Matches multiple words in sentence
         assertTrue(StringUtil.containsWordIgnoreCase("AAA bBb ccc  bbb", "bbB"));
+    }
+
+    /**
+     * Null sentences and prefixes are rejected independently.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_nullInputs_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> StringUtil.hasWordStartingWithIgnoreCase(null, "Jo"));
+        assertThrows(NullPointerException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", null));
+    }
+
+    /**
+     * Prefixes must contain exactly one nonempty word after trimming.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_invalidPrefix_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", ""));
+        assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", " \t "));
+        assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", "Jo Ta"));
+        assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", "Jo\tTa"));
+    }
+
+    /**
+     * Prefixes can match any word, including single-character prefixes and full words.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_matchingPrefix_returnsTrue() {
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "jO"));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "mA"));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "tA"));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "j"));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "JOHN"));
+    }
+
+    /**
+     * Whitespace separates name words and surrounding prefix whitespace is ignored.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_extraWhitespace_returnsTrue() {
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("  John   Mary\tTan\nLee  ", " mA "));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John\tTan", "\tTa\t"));
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John\nLee", "Le"));
+    }
+
+    /**
+     * Empty sentences, infixes, suffixes, and longer or unrelated prefixes do not match.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_nonMatchingPrefix_returnsFalse() {
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("", "Jo"));
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase(" \t ", "Jo"));
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "oh"));
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "ohn"));
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "Johnny"));
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "Mary"));
+    }
+
+    /**
+     * Case-insensitive matching does not depend on the machine's default locale.
+     */
+    @Test
+    public void hasWordStartingWithIgnoreCase_turkishLocale_returnsTrue() {
+        Locale originalLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("tr-TR"));
+            assertTrue(StringUtil.hasWordStartingWithIgnoreCase("Fiona", "FI"));
+        } finally {
+            Locale.setDefault(originalLocale);
+        }
     }
 
     //---------------- Tests for getDetails --------------------------------------
