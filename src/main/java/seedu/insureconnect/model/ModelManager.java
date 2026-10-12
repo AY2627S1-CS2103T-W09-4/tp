@@ -3,11 +3,13 @@ package seedu.insureconnect.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.insureconnect.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.model.person.Person;
@@ -21,6 +23,7 @@ public class ModelManager implements Model {
     private final InsureConnect insureConnect;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private final SortedList<Person> displayedPersons;
 
     /**
      * Initializes a ModelManager with the given insureConnect and userPrefs.
@@ -33,6 +36,7 @@ public class ModelManager implements Model {
         this.insureConnect = new InsureConnect(insureConnect);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.insureConnect.getPersonList());
+        displayedPersons = new SortedList<>(filteredPersons);
     }
 
     public ModelManager() {
@@ -96,18 +100,22 @@ public class ModelManager implements Model {
     //=========== Filtered Person List Accessors =============================================================
 
     /**
-     * Returns an unmodifiable view of the list of {@code Person} backed by the internal list of
-     * {@code insureConnect}
+     * Returns the filtered and sorted view of the persons in {@code insureConnect}.
      */
     @Override
     public ObservableList<Person> getFilteredPersonList() {
-        return filteredPersons;
+        return displayedPersons;
     }
 
     @Override
     public void updateFilteredPersonList(Predicate<Person> predicate) {
         requireNonNull(predicate);
         filteredPersons.setPredicate(predicate);
+    }
+
+    @Override
+    public void updatePersonListComparator(Comparator<Person> comparator) {
+        displayedPersons.setComparator(comparator);
     }
 
     @Override
@@ -130,7 +138,7 @@ public class ModelManager implements Model {
 
         return insureConnect.equals(otherModelManager.insureConnect)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+                && displayedPersons.equals(otherModelManager.displayedPersons);
     }
 
 }

@@ -1,5 +1,6 @@
 package seedu.insureconnect.model;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
@@ -68,6 +69,9 @@ public interface Model {
      * @throws NullPointerException if {@code predicate} is null.
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
+
+    /** Updates the display order. A null comparator restores the stored order. */
+    void updatePersonListComparator(Comparator<Person> comparator);
 
     /**
      * Returns the current predicate of the filtered person list.
