@@ -143,6 +143,10 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * The search considers only names.
 * Keywords match the start of any name word; for example, `Han` matches `Hans` and `Bo Hans`.
+* Customers with an exact name-word match appear before prefix-only matches. For example, `find John` shows
+  `John Tan` before `Johnny Lim`. Matching is case-insensitive and considers any name word or keyword.
+* Customers tied in match quality retain their stored order. Searching only changes the displayed order;
+  `list` restores the full list in stored order, while `list n/` and `list c/` apply their respective sorts.
 * Full words also match, but middle-of-word and suffix matches do not; for example, `ans` does not match `Hans`.
 * Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
