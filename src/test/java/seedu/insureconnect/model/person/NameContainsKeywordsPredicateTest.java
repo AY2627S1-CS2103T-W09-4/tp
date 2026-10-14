@@ -129,4 +129,26 @@ public class NameContainsKeywordsPredicateTest {
         String expected = NameContainsKeywordsPredicate.class.getCanonicalName() + "{keywords=" + keywords + "}";
         assertEquals(expected, predicate.toString());
     }
+
+    /**
+     * Exact matches consider any name word and any keyword without case sensitivity.
+     */
+    @Test
+    public void hasExactMatch_completeWord_returnsTrue() {
+        Person person = new PersonBuilder().withName("Alice   Mary Bob").build();
+        assertTrue(new NameContainsKeywordsPredicate(List.of("aLICE")).hasExactMatch(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("car", "MARY")).hasExactMatch(person));
+        assertTrue(new NameContainsKeywordsPredicate(List.of("bob", "bob")).hasExactMatch(person));
+    }
+
+    /**
+     * Partial words and absent keywords do not qualify for the higher match rank.
+     */
+    @Test
+    public void hasExactMatch_partialOrMissingWord_returnsFalse() {
+        Person person = new PersonBuilder().withName("Alice Bob").build();
+        assertFalse(new NameContainsKeywordsPredicate(List.of("Al", "Bo")).hasExactMatch(person));
+        assertFalse(new NameContainsKeywordsPredicate(List.of("lice", "Bobby")).hasExactMatch(person));
+        assertFalse(new NameContainsKeywordsPredicate(List.of()).hasExactMatch(person));
+    }
 }

@@ -22,6 +22,14 @@ public class NameContainsKeywordsPredicate implements Predicate<Person> {
                 .anyMatch(keyword -> StringUtil.hasWordStartingWithIgnoreCase(person.getName().fullName, keyword));
     }
 
+    /**
+     * Returns true if any keyword matches a complete name word, ignoring case.
+     */
+    public boolean hasExactMatch(Person person) {
+        return keywords.stream()
+                .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(person.getName().fullName, keyword));
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {

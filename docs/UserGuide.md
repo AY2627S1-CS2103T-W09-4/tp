@@ -133,7 +133,7 @@ Examples:
 *  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
 *  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
 
-### Locating persons by name: `find`
+### Locating persons by name or phone number: `find`
 
 Finds persons with a word in their name starting with any of the given keywords.
 
@@ -141,8 +141,12 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* The search considers only names.
+* Without `p/`, the search considers only names, including when the keyword contains digits.
 * Keywords match the start of any name word; for example, `Han` matches `Hans` and `Bo Hans`.
+* Customers with an exact name-word match appear before prefix-only matches. For example, `find John` shows
+  `John Tan` before `Johnny Lim`. Matching is case-insensitive and considers any name word or keyword.
+* Customers tied in match quality retain their stored order. Searching only changes the displayed order;
+  `list` restores the full list in stored order, while `list n/` and `list c/` apply their respective sorts.
 * Full words also match, but middle-of-word and suffix matches do not; for example, `ans` does not match `Hans`.
 * Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
@@ -151,6 +155,17 @@ Examples:
 * `find jo` returns `John Doe` and `Mary Jones`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
+
+To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `find p/98765432`.
+
+* Phone searches match the beginning of the phone number, including the complete number.
+  For example, `find p/9876` matches `98765432`, but `find p/7654` does not match that number.
+* Supply one nonempty sequence of digits (`0-9`). A single digit is allowed. Leading zeros are preserved.
+  Spaces around the digits are allowed; spaces within the digits, letters, `+`, and punctuation are rejected.
+* Each command searches either names or phones. Combining name keywords with `p/`, or supplying multiple
+  phone prefixes, is not supported and produces an error.
+* All customers with matching phone numbers are shown in stored order, including customers sharing a number.
+  A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
 
 ### Deleting a person: `delete`
 
@@ -219,6 +234,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
-**Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find p/DIGITS`<br> e.g., `find James Jake`, `find p/9876`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`

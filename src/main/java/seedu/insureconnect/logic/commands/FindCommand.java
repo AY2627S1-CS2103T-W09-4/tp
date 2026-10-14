@@ -2,14 +2,18 @@ package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 
+import java.util.Comparator;
+import java.util.function.Predicate;
+
 import seedu.insureconnect.commons.util.ToStringBuilder;
 import seedu.insureconnect.logic.Messages;
 import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
+import seedu.insureconnect.model.person.Person;
 
 /**
- * Finds and lists all persons in InsureConnect with a name word starting with any of the argument keywords.
- * Keyword matching is case insensitive.
+ * Finds customers by case-insensitive name prefixes or by a phone number prefix.
+ * Exact name-word matches appear before prefix-only name matches.
  */
 public class FindCommand extends Command {
 
@@ -17,21 +21,42 @@ public class FindCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Finds all persons with a name word starting with any of the specified keywords (case-insensitive) "
-            + "and displays them as a list with index numbers.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]...\n"
-            + "Example: " + COMMAND_WORD + " alice bob charlie";
+            + "and displays them as a list with index numbers, with exact name words before prefix-only matches.\n"
+            + "Alternatively, searches for phone numbers starting with the digits after p/.\n"
+            + "Parameters: KEYWORD [MORE_KEYWORDS]... OR p/DIGITS\n"
+            + "Examples: " + COMMAND_WORD + " alice bob charlie; " + COMMAND_WORD + " p/9876";
 
-    private final NameContainsKeywordsPredicate predicate;
+    private final Predicate<Person> predicate;
 
-    public FindCommand(NameContainsKeywordsPredicate predicate) {
-        this.predicate = predicate;
+    /**
+     * Creates a search using the supplied customer matching rule.
+     */
+    public FindCommand(Predicate<Person> predicate) {
+        this.predicate = requireNonNull(predicate);
     }
 
     @Override
     public CommandResult execute(Model model) {
         requireNonNull(model);
-        model.updatePersonListComparator(null);
+        model.updatePersonListComparator(getResultComparator());
         model.updateFilteredPersonList(predicate);
+        return createResult(model);
+    }
+
+    /**
+     * Ranks name matches by relevance and leaves phone matches in stored order.
+     */
+    private Comparator<Person> getResultComparator() {
+        if (predicate instanceof NameContainsKeywordsPredicate namePredicate) {
+            return Comparator.comparing(namePredicate::hasExactMatch).reversed();
+        }
+        return null;
+    }
+
+    /**
+     * Reports the number of customers in the search results.
+     */
+    private CommandResult createResult(Model model) {
         return new CommandResult(
                 String.format(Messages.MESSAGE_PERSONS_LISTED_OVERVIEW, model.getFilteredPersonList().size()));
     }
