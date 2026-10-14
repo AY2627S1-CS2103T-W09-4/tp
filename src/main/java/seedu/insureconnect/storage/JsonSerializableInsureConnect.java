@@ -19,8 +19,8 @@ import seedu.insureconnect.model.person.Person;
 @JsonRootName(value = "insureconnect")
 class JsonSerializableInsureConnect {
 
-    public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
-    public static final String MESSAGE_DUPLICATE_POLICY_NUMBER = "Persons list contains duplicate policy numbers.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "Customer list contains duplicate customer(s).";
+    public static final String MESSAGE_DUPLICATE_POLICY_NUMBER = "Customer list contains duplicate policy numbers.";
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
 
