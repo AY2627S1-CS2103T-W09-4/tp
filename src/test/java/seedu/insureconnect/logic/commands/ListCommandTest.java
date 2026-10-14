@@ -37,14 +37,31 @@ public class ListCommandTest {
     }
 
     @Test
-    public void execute_listIsNotFiltered_showsSameList() {
-        assertCommandSuccess(new ListCommand(), model, ListCommand.MESSAGE_SUCCESS, expectedModel);
+    public void execute_listIsNotFiltered_showsSameListAndCustomerCount() {
+        String expectedMessage = "Listed all "
+                + expectedModel.getFilteredPersonList().size()
+                + " customer(s).";
+        assertCommandSuccess(new ListCommand(), model, expectedMessage, expectedModel);
     }
 
     @Test
-    public void execute_listIsFiltered_showsEverything() {
+    public void execute_listIsFiltered_showsEverythingAndCustomerCount() {
         showPersonAtIndex(model, INDEX_FIRST_PERSON);
-        assertCommandSuccess(new ListCommand(), model, ListCommand.MESSAGE_SUCCESS, expectedModel);
+
+        String expectedMessage = "Listed all "
+                + expectedModel.getFilteredPersonList().size()
+                + " customer(s).";
+        assertCommandSuccess(new ListCommand(), model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_emptyList_displaysZeroCustomerCount() {
+        model = new ModelManager(new InsureConnect(), new UserPrefs());
+        expectedModel = new ModelManager(new InsureConnect(), new UserPrefs());
+
+        String expectedMessage = "Listed all 0 customer(s).";
+
+        assertCommandSuccess(new ListCommand(), model, expectedMessage, expectedModel);
     }
 
     @Test

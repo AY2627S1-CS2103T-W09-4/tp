@@ -9,20 +9,19 @@ import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Lists all persons in InsureConnect to the user.
+ * Lists all customers in InsureConnect to the user.
  */
 public class ListCommand extends Command {
 
     public static final String COMMAND_WORD = "list";
-
-    public static final String MESSAGE_SUCCESS = "Listed all persons.";
+    public static final String MESSAGE_SUCCESS = "Listed all %1$d customer(s).";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Lists all persons, optionally sorted by name or creation time.\n"
+            + ": Lists all customers, optionally sorted by name or creation time.\n"
             + "Parameters: [n/|c/]\n"
             + "Examples: list, list n/, list c/";
 
-    /** The order in which persons are displayed. */
+    /** The order in which customers are displayed. */
     public enum SortOrder {
         STORED, NAME, CREATED_AT
     }
@@ -47,7 +46,8 @@ public class ListCommand extends Command {
             case CREATED_AT -> Comparator.comparing(Person::getCreatedAt);
         };
         model.updatePersonListComparator(comparator);
-        return new CommandResult(MESSAGE_SUCCESS);
+        return new CommandResult(String.format(MESSAGE_SUCCESS,
+                model.getFilteredPersonList().size()));
     }
 
     @Override

@@ -69,7 +69,9 @@ public class LogicManagerTest {
     @Test
     public void execute_validCommand_success() throws Exception {
         String listCommand = ListCommand.COMMAND_WORD;
-        assertCommandSuccess(listCommand, ListCommand.MESSAGE_SUCCESS, model);
+        assertCommandSuccess(listCommand,
+                String.format(ListCommand.MESSAGE_SUCCESS, model.getFilteredPersonList().size()),
+                model);
     }
 
     @Test
@@ -190,7 +192,9 @@ public class LogicManagerTest {
         logic = new LogicManager(model, storage);
 
         // Non-mutating command succeeds
-        assertCommandSuccess(ListCommand.COMMAND_WORD, ListCommand.MESSAGE_SUCCESS, model);
+        assertCommandSuccess(ListCommand.COMMAND_WORD,
+                String.format(ListCommand.MESSAGE_SUCCESS, model.getFilteredPersonList().size()),
+                model);
 
         // Mutating command fails and rolls back in-memory changes
         String addCommand = AddCommand.COMMAND_WORD + NAME_DESC_AMY + PHONE_DESC_AMY
