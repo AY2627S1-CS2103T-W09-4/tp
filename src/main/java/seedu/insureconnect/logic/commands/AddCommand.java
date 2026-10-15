@@ -7,6 +7,7 @@ import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
+import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import seedu.insureconnect.commons.util.ToStringBuilder;
 import seedu.insureconnect.logic.Messages;
@@ -22,7 +23,7 @@ public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to InsureConnect. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a customer to InsureConnect. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -38,8 +39,10 @@ public class AddCommand extends Command {
             + PREFIX_TAG + "LIFE20481 "
             + PREFIX_TAG + "HEALTH20482";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in InsureConnect.";
+    public static final String MESSAGE_SUCCESS = "New customer added: %1$s";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This customer is a duplicate "
+            + "because a customer with the same "
+            + "name and phone number already exists. Existing record at index %d: %s (phone: %s).";
     public static final String MESSAGE_DUPLICATE_POLICY_NUMBER =
             "Policy number %s already belongs to %s (phone: %s).";
 
@@ -57,8 +60,15 @@ public class AddCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (model.hasPerson(toAdd)) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        Person duplicate = model.getInsureConnect().getPersonList().stream()
+                .filter(toAdd::isSamePerson)
+                .findFirst()
+                .orElse(null);
+        if (duplicate != null) {
+            model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+            int displayedIndex = model.getFilteredPersonList().indexOf(duplicate) + 1;
+            throw new CommandException(String.format(MESSAGE_DUPLICATE_PERSON, displayedIndex,
+                    duplicate.getName().fullName, duplicate.getPhone().value));
         }
 
         for (Person existing : model.getInsureConnect().getPersonList()) {
