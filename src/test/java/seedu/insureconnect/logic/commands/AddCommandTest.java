@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.logic.Messages;
@@ -50,7 +51,9 @@ public class AddCommandTest {
         AddCommand addCommand = new AddCommand(validPerson);
         ModelStub modelStub = new ModelStubWithPerson(validPerson);
 
-        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_PERSON, () -> addCommand.execute(modelStub));
+        String expectedMessage = String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, 1,
+                validPerson.getName().fullName, validPerson.getPhone().value);
+        assertThrows(CommandException.class, expectedMessage, () -> addCommand.execute(modelStub));
     }
 
     @Test
@@ -154,10 +157,29 @@ public class AddCommandTest {
      */
     private class ModelStubWithPerson extends ModelStub {
         private final Person person;
+        private final InsureConnect insureConnect = new InsureConnect();
+        private final ObservableList<Person> filteredPersons;
 
         ModelStubWithPerson(Person person) {
             requireNonNull(person);
             this.person = person;
+            insureConnect.addPerson(person);
+            filteredPersons = FXCollections.observableArrayList(person);
+        }
+
+        @Override
+        public ReadOnlyInsureConnect getInsureConnect() {
+            return insureConnect;
+        }
+
+        @Override
+        public ObservableList<Person> getFilteredPersonList() {
+            return filteredPersons;
+        }
+
+        @Override
+        public void updateFilteredPersonList(Predicate<Person> predicate) {
+            // The stub contains only the duplicate person, so it remains visible after removing the filter.
         }
 
         @Override

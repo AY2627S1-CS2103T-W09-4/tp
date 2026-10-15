@@ -1,13 +1,18 @@
 package seedu.insureconnect.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.logic.Messages;
+import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.ModelManager;
 import seedu.insureconnect.model.UserPrefs;
@@ -41,8 +46,10 @@ public class AddCommandIntegrationTest {
     @Test
     public void execute_duplicatePerson_throwsCommandException() {
         Person personInList = model.getInsureConnect().getPersonList().get(0);
+        int displayedIndex = model.getFilteredPersonList().indexOf(personInList) + 1;
         assertCommandFailure(new AddCommand(personInList), model,
-                AddCommand.MESSAGE_DUPLICATE_PERSON);
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, displayedIndex,
+                        personInList.getName().fullName, personInList.getPhone().value));
     }
 
     @Test
@@ -74,7 +81,28 @@ public class AddCommandIntegrationTest {
         Person duplicatePerson = new PersonBuilder(personInList).withName("aLICE   pAULINE  ")
                 .withEmail("different@example.com").build();
 
-        assertCommandFailure(new AddCommand(duplicatePerson), model, AddCommand.MESSAGE_DUPLICATE_PERSON);
+        int displayedIndex = model.getFilteredPersonList().indexOf(personInList) + 1;
+        assertCommandFailure(new AddCommand(duplicatePerson), model,
+                String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, displayedIndex,
+                        personInList.getName().fullName, personInList.getPhone().value));
+    }
+
+    @Test
+    public void execute_duplicatePersonHiddenByFilter_clearsFilterAndReportsDisplayedIndex() {
+        Person duplicate = model.getInsureConnect().getPersonList().get(0);
+        model.updatePersonListComparator((first, second) -> second.getName().fullName
+                .compareToIgnoreCase(first.getName().fullName));
+        List<Person> fullDisplayedList = List.copyOf(model.getFilteredPersonList());
+        int expectedIndex = fullDisplayedList.indexOf(duplicate) + 1;
+        model.updateFilteredPersonList(person -> !person.isSamePerson(duplicate));
+
+        CommandException exception = assertThrows(CommandException.class, () -> new AddCommand(duplicate)
+                .execute(model));
+
+        assertEquals(String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, expectedIndex,
+                duplicate.getName().fullName, duplicate.getPhone().value), exception.getMessage());
+        assertEquals(fullDisplayedList, model.getFilteredPersonList());
+        assertEquals(getTypicalInsureConnect(), model.getInsureConnect());
     }
 
 }
