@@ -23,7 +23,7 @@ public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a person to InsureConnect. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a customer to InsureConnect. "
             + "Parameters: "
             + PREFIX_NAME + "NAME "
             + PREFIX_PHONE + "PHONE "
@@ -39,8 +39,9 @@ public class AddCommand extends Command {
             + PREFIX_TAG + "LIFE20481 "
             + PREFIX_TAG + "HEALTH20482";
 
-    public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person is a duplicate because a person with the same "
+    public static final String MESSAGE_SUCCESS = "New customer added: %1$s";
+    public static final String MESSAGE_DUPLICATE_PERSON = "This customer is a duplicate "
+            + "because a customer with the same "
             + "name and phone number already exists. Existing record at index %d: %s (phone: %s).";
     public static final String MESSAGE_DUPLICATE_POLICY_NUMBER =
             "Policy number %s already belongs to %s (phone: %s).";
