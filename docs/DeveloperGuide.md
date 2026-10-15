@@ -342,7 +342,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 1c. A customer with the same name and phone number already exists.
 
-    * 1c1. InsureConnect informs the agent that the customer already exists and does not add the customer.
+    * 1c1. InsureConnect explains that matching name and phone number make the entry a duplicate, clears any active
+      filter, and identifies the existing customer by name, phone number, and 1-based index. The customer is not added.
 
       Use case ends.
 

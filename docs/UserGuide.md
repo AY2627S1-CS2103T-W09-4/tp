@@ -94,6 +94,9 @@ Name matching ignores case, leading or trailing spaces, and repeated spaces betw
 For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
 People with the same name but different phone numbers, or different names with the same phone number, are allowed.
 Names are displayed as entered after surrounding spaces are trimmed by the command parser.
+If an added person is a duplicate, InsureConnect explains that the name and phone number already exist and identifies
+the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
+so the index refers to the full displayed list.
 
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​`
 
