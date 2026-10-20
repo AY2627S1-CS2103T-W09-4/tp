@@ -228,6 +228,18 @@ _Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
 
+### Loading contact files from older versions
+
+Contact files without `createdAt` timestamps load automatically. Their existing
+contact details are preserved, and unknown creation dates use
+`1970-01-01T00:00:00Z` as a stable fallback for creation-date sorting. This is a
+migration value, not the actual creation date. The timestamp is written on the
+next successful save; loading alone does not rewrite the file. Existing valid
+timestamps are retained. Malformed timestamps and other invalid contact data
+still produce a loading warning. Old labels are not converted into policy
+numbers: policy numbers must still be valid and unique across contacts.
+
+
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
