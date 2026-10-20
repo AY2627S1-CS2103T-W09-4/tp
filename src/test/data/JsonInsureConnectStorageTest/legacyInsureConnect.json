@@ -1,0 +1,24 @@
+{
+  "persons": [
+    {
+      "name": "Alice Pauline",
+      "phone": "94351253",
+      "email": "alice@example.com",
+      "address": "123, Jurong West Ave 6, #08-111",
+      "tags": [
+        "LIFE20001"
+      ]
+    },
+    {
+      "name": "Benson Meier",
+      "phone": "98765432",
+      "email": "johnd@example.com",
+      "address": "311, Clementi Ave 2, #02-25",
+      "tags": [
+        "LIFE20002",
+        "HEALTH20002"
+      ],
+      "createdAt": "2026-01-02T00:00:00Z"
+    }
+  ]
+}
