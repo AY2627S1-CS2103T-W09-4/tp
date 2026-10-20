@@ -40,6 +40,19 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 --------------------------------------------------------------------------------------------------------------------
 
+## Keyboard navigation
+
+Press **F6** to move focus between the **command box → output box → contacts list → command box**.
+Press **Shift+F6** to move in the reverse direction. A blue outline marks the focused area.
+These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
+If focus is outside these areas, F6 enters the command box and Shift+F6 enters the contacts list.
+
+In the contacts list, use **Up/Down** to move between contacts and **Page Up/Page Down** to browse longer lists.
+In the output box, use the arrow keys to move through feedback, **Shift+arrow keys** to select text,
+and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on macOS) to copy it.
+The output is read-only. Press F6 twice from the output box to return to command entry.
+On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F6.
+
 ## Features
 
 <div markdown="block" class="alert alert-info">

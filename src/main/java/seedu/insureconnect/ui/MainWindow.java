@@ -124,21 +124,69 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
+        fillPersonListPanel();
+        fillResultDisplay();
+        fillStatusBar();
+        configureFocusNavigation(fillCommandBox());
+    }
+
+    /**
+     * Adds the contacts list to its placeholder.
+     */
+    private void fillPersonListPanel() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+    }
 
+    /**
+     * Adds the output area and displays any startup feedback.
+     */
+    private void fillResultDisplay() {
+        createResultDisplay();
+        showInitialFeedback();
+    }
+
+    /**
+     * Creates and attaches the output area.
+     */
+    private void createResultDisplay() {
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
+    }
 
+    /**
+     * Displays startup feedback when the caller supplied it.
+     */
+    private void showInitialFeedback() {
         if (initialFeedback != null) {
             resultDisplay.setFeedbackToUser(initialFeedback);
         }
+    }
 
+    /**
+     * Adds the storage location footer to its placeholder.
+     */
+    private void fillStatusBar() {
         StatusBarFooter statusBarFooter = new StatusBarFooter(dataFilePath);
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
+    }
 
+    /**
+     * Adds the command input and returns it for keyboard navigation setup.
+     */
+    private CommandBox fillCommandBox() {
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+        return commandBox;
+    }
+
+    /**
+     * Captures area shortcuts before text controls can consume function keys.
+     */
+    private void configureFocusNavigation(CommandBox commandBox) {
+        FocusNavigation navigation = new FocusNavigation(commandBox.getFocusTarget(), resultDisplay.getFocusTarget(),
+                personListPanel.getFocusTarget());
+        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, navigation::handleKeyPressed);
     }
 
     /**

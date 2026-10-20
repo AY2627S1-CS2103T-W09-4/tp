@@ -18,3 +18,8 @@
 .tooltip-text {
     -fx-text-fill: white;
 }
+
+/* Outline the working area without changing its size or hiding command errors. */
+.navigation-target:focused {
+    -fx-effect: dropshadow(gaussian, #80c8ff, 5, 0.8, 0, 0);
+}
