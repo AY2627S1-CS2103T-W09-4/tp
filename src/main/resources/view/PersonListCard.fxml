@@ -6,32 +6,54 @@
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox id="cardPane" fx:id="cardPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <GridPane HBox.hgrow="ALWAYS">
+<VBox id="cardPane" fx:id="cardPane" minHeight="190" maxWidth="Infinity"
+      styleClass="person-card" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <padding>
+    <Insets top="16" right="18" bottom="16" left="18" />
+  </padding>
+  <HBox alignment="CENTER_LEFT" spacing="12">
+    <Label fx:id="id" minWidth="48" minHeight="48" styleClass="card-number" />
+    <Label fx:id="name" maxWidth="Infinity" styleClass="card-name" wrapText="true" HBox.hgrow="ALWAYS" />
+    <FlowPane fx:id="tags" alignment="CENTER_RIGHT" hgap="6" maxWidth="260"
+              prefWrapLength="210" vgap="6" />
+  </HBox>
+  <GridPane fx:id="details" hgap="18" vgap="12" VBox.vgrow="ALWAYS">
+    <padding>
+      <Insets left="60" />
+    </padding>
     <columnConstraints>
-      <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="150" />
+      <ColumnConstraints hgrow="ALWAYS" percentWidth="50" minWidth="0" />
+      <ColumnConstraints hgrow="ALWAYS" percentWidth="50" minWidth="0" />
     </columnConstraints>
-    <VBox alignment="CENTER_LEFT" minHeight="105" GridPane.columnIndex="0">
-      <padding>
-        <Insets top="5" right="5" bottom="5" left="15" />
-      </padding>
-      <HBox spacing="0.5" alignment="CENTER_LEFT">
-        <Label fx:id="id" styleClass="cell_big_label">
-          <minWidth>
-            <!-- Ensures that the label text is never truncated -->
-            <Region fx:constant="USE_PREF_SIZE" />
-          </minWidth>
-        </Label>
-        <Label fx:id="name" text="\$first" styleClass="cell_big_label" />
+    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="0">
+      <HBox alignment="CENTER_LEFT" spacing="7">
+        <Label text="☎" styleClass="field-icon" />
+        <Label text="PHONE" styleClass="field-caption" />
       </HBox>
-      <FlowPane fx:id="tags" />
-      <Label fx:id="phone" styleClass="cell_small_label" text="\$phone" />
-      <Label fx:id="address" styleClass="cell_small_label" text="\$address" />
-      <Label fx:id="email" styleClass="cell_small_label" text="\$email" />
-      <Label fx:id="remark" styleClass="cell_small_label" text="$remark" />
+      <Label fx:id="phone" maxWidth="Infinity" styleClass="field-value" wrapText="true" />
+    </VBox>
+    <VBox spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="0">
+      <HBox alignment="CENTER_LEFT" spacing="7">
+        <Label text="✉" styleClass="field-icon" />
+        <Label text="EMAIL" styleClass="field-caption" />
+      </HBox>
+      <Label fx:id="email" maxWidth="Infinity" styleClass="field-value" wrapText="true" />
+    </VBox>
+    <VBox spacing="4" GridPane.columnIndex="0" GridPane.rowIndex="1">
+      <HBox alignment="CENTER_LEFT" spacing="7">
+        <Label text="⌖" styleClass="field-icon" />
+        <Label text="ADDRESS" styleClass="field-caption" />
+      </HBox>
+      <Label fx:id="address" maxWidth="Infinity" styleClass="field-value" wrapText="true" />
+    </VBox>
+    <VBox fx:id="remarkPane" spacing="4" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <HBox alignment="CENTER_LEFT" spacing="7">
+        <Label text="▤" styleClass="field-icon" />
+        <Label text="REMARK" styleClass="field-caption" />
+      </HBox>
+      <Label fx:id="remark" maxWidth="Infinity" styleClass="field-value" wrapText="true" />
     </VBox>
   </GridPane>
-</HBox>
+</VBox>
