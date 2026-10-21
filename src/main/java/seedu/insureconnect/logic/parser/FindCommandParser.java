@@ -11,6 +11,7 @@ import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
 import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
+import seedu.insureconnect.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a new FindCommand object
@@ -66,13 +67,10 @@ public class FindCommandParser implements Parser<FindCommand> {
      * Parses one exact policy number without accepting additional criteria.
      */
     private FindCommand parsePolicyNumberSearch(String query) throws ParseException {
-        String policyNumber = query.substring(PREFIX_TAG.getPrefix().length()).trim();
+        String policyNumber = query.substring(PREFIX_TAG.getPrefix().length());
+        Tag policy = ParserUtil.parseTag(policyNumber);
 
-        if (!PolicyNumberMatchesPredicate.isValidPolicyNumber(policyNumber)) {
-            throw new ParseException(PolicyNumberMatchesPredicate.MESSAGE_CONSTRAINTS);
-        }
-
-        return new FindCommand(new PolicyNumberMatchesPredicate(policyNumber));
+        return new FindCommand(new PolicyNumberMatchesPredicate(policy.tagName));
     }
 
     /**
