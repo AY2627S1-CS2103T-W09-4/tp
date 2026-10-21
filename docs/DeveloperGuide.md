@@ -76,6 +76,9 @@ The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDi
 
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/ui/MainWindow.java).
 
+`MainWindow` opens the `HelpWindow` when the user enters `help`, selects the Help menu item, or presses F1.
+The window shows the available command formats and a link to the User Guide with a **Copy URL** button.
+
 The `UI` component,
 
 * executes user commands using the `Logic` component.
@@ -113,6 +116,9 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 How the parsing works:
 * When called upon to parse a user command, the `InsureConnectParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `InsureConnectParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+
+`CommandFormats` defines one format string per command, such as `ADD_COMMAND_FORMAT`.
+Commands with usage messages include their format strings; `HelpWindow` combines all the strings into the list shown to the user.
 
 ### Model component
 **API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/model/Model.java)
@@ -155,94 +161,11 @@ Classes used by multiple components are in the `seedu.insureconnect.commons` pac
 
 This section describes some noteworthy details on how certain features are implemented.
 
-### \[Proposed\] Undo/redo feature
+### Editing a customer's remark
 
-#### Proposed Implementation
+`InsureConnectParser` sends an `edit` command to `EditCommandParser`. The parser reads the displayed-list index and the supplied prefixes, including `r/`, then creates an `EditPersonDescriptor`. A missing `r/` leaves the descriptor's remark as `null`, meaning that the existing remark should be kept. If `r/` is present without text, `ParserUtil.parseRemark` creates an empty `Remark`, meaning that the existing remark should be cleared. Remark input is trimmed, repeated whitespace is collapsed, and values longer than 500 characters after normalization are rejected. Duplicate `r/` prefixes are rejected.
 
-The proposed undo/redo mechanism is facilitated by `VersionedInsureConnect`. It extends `InsureConnect` with an undo/redo history, stored internally as an `insureConnectStateList` and `currentStatePointer`. Additionally, it implements the following operations:
-
-* `VersionedInsureConnect#commit()` — Saves the current InsureConnect state in its history.
-* `VersionedInsureConnect#undo()` — Restores the previous InsureConnect state from its history.
-* `VersionedInsureConnect#redo()` — Restores a previously undone InsureConnect state from its history.
-
-These operations are exposed in the `Model` interface as `Model#commitInsureConnect()`, `Model#undoInsureConnect()` and `Model#redoInsureConnect()` respectively.
-
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
-
-Step 1. The user launches the application for the first time. The `VersionedInsureConnect` will be initialized with the initial InsureConnect state, and the `currentStatePointer` pointing to that single InsureConnect state.
-
-![UndoRedoState0](images/UndoRedoState0.png)
-
-Step 2. The user executes `delete 5` command to delete the 5th person in InsureConnect. The `delete` command calls `Model#commitInsureConnect()`, causing the modified state of InsureConnect after the `delete 5` command executes to be saved in the `insureConnectStateList`, and the `currentStatePointer` is shifted to the newly inserted InsureConnect state.
-
-![UndoRedoState1](images/UndoRedoState1.png)
-
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitInsureConnect()`, causing another modified InsureConnect state to be saved into the `insureConnectStateList`.
-
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitInsureConnect()`, so InsureConnect state will not be saved into the `insureConnectStateList`.
-
-</div>
-
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoInsureConnect()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous InsureConnect state, and restores InsureConnect to that state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial InsureConnect state, then there are no previous InsureConnect states to restore. The `undo` command uses `Model#canUndoInsureConnect()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoInsureConnect()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores InsureConnect to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `insureConnectStateList.size() - 1`, pointing to the latest InsureConnect state, then there are no undone InsureConnect states to restore. The `redo` command uses `Model#canRedoInsureConnect()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify InsureConnect, such as `list`, will usually not call `Model#commitInsureConnect()`, `Model#undoInsureConnect()` or `Model#redoInsureConnect()`. Thus, the `insureConnectStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitInsureConnect()`. Since the `currentStatePointer` is not pointing at the end of the `insureConnectStateList`, all InsureConnect states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (current choice):** Saves the entire InsureConnect.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
-
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
+`EditCommand` selects the customer by index from the current filtered list. It creates a replacement `Person` using the supplied descriptor values and retaining existing values for omitted fields, including the remark. The original creation time is retained. After checking for duplicate customers and policy numbers, the command replaces the person in the model and shows the full list. `LogicManager` saves the data when it has changed.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -403,7 +326,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1.  Agent <u>finds the customer (UC02)</u>.
-2.  Agent requests to edit a specific customer in the displayed list, providing the new details.
+2.  Agent requests to edit a specific customer in the displayed list, providing the new details. The agent may provide `r/REMARK` to replace the remark or `r/` to clear it.
 3.  InsureConnect updates the customer and shows the updated details.
 
     Use case ends.
@@ -420,7 +343,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 2b. No new details are given, or a new detail is in an invalid format.
+* 2b. No new details are given, or a new detail is in an invalid format, such as a remark longer than 500 characters after normalization.
 
     * 2b1. InsureConnect shows an error message stating which detail is missing or invalid.
 
@@ -480,7 +403,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Customer**: A person whose details are recorded in InsureConnect, who holds at least one insurance policy sold by the agent
 * **Policy**: An insurance contract held by a customer, such as a life, health, motor or travel insurance plan
 * **Policy number**: The unique code that identifies a policy, made up of 1 to 30 letters and digits (e.g. `LIFE20481`). Every customer has at least one, and no two customers can share the same policy number. Entered with the `t/` prefix
-* **Remark**: A free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`)
+* **Remark**: An optional free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`). The `r/` prefix sets it, and `edit INDEX r/` clears it. An omitted remark is stored as an empty string when adding a customer
 * **Duplicate customer**: A customer whose name (ignoring case and extra spaces) and phone number are both identical to those of an existing customer. Two customers with the same name but different phone numbers are not duplicates
 * **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
 * **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
@@ -507,7 +430,7 @@ testers are expected to do more *exploratory* testing.
    1. Download the JAR file and copy it into an empty folder.
 
    1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+      Expected: The GUI opens with an empty address book. The window size may not be optimal.
 
 1. Saving window preferences
 
@@ -517,6 +440,19 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Viewing help
+
+1. Opening the Help window
+
+   1. Test case: Enter `help`.<br>
+      Expected: The Help window opens with formats for all eight commands and a link to the User Guide.
+
+   1. Test case: Click **Copy URL**.<br>
+      Expected: The User Guide URL is copied to the clipboard.
+
+   1. Test case: Close the Help window, then open it using the Help menu or F1.<br>
+      Expected: The same Help window content appears.
 
 ### Deleting a person
 
@@ -534,6 +470,24 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Editing a remark
+
+1. Set, preserve, and clear a remark
+
+   1. Prerequisites: List all persons using `list`, with at least one person in the list.
+
+   1. Test case: `edit 1 r/Follow up next week`<br>
+      Expected: The first person's remark becomes `Follow up next week`.
+
+   1. Test case: `edit 1 e/updated@example.com`<br>
+      Expected: The email changes and the remark remains `Follow up next week`.
+
+   1. Test case: `edit 1 r/`<br>
+      Expected: The first person's remark becomes empty.
+
+   1. Test case: `edit 1 r/` followed by 501 characters<br>
+      Expected: The edit is rejected because the remark exceeds 500 characters.
 
 ### Saving data
 

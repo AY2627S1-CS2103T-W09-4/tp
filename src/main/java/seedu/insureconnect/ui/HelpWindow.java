@@ -5,10 +5,12 @@ import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.LogsCenter;
+import seedu.insureconnect.logic.commands.CommandFormats;
 
 /**
  * Controller for a help page
@@ -17,6 +19,16 @@ public class HelpWindow extends UiPart<Stage> {
 
     public static final String USERGUIDE_URL = "https://AY2627S1-CS2103T-W09-4.github.io/tp/UserGuide.html";
     public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
+
+    private static final String COMMAND_FORMATS = String.join("\n\n",
+            CommandFormats.ADD_COMMAND_FORMAT,
+            CommandFormats.EDIT_COMMAND_FORMAT,
+            CommandFormats.DELETE_COMMAND_FORMAT,
+            CommandFormats.FIND_COMMAND_FORMAT,
+            CommandFormats.LIST_COMMAND_FORMAT,
+            CommandFormats.CLEAR_COMMAND_FORMAT,
+            CommandFormats.HELP_COMMAND_FORMAT,
+            CommandFormats.EXIT_COMMAND_FORMAT);
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
     private static final String FXML = "HelpWindow.fxml";
@@ -27,6 +39,9 @@ public class HelpWindow extends UiPart<Stage> {
     @FXML
     private Label helpMessage;
 
+    @FXML
+    private TextArea commandFormats;
+
     /**
      * Creates a new HelpWindow.
      *
@@ -35,6 +50,7 @@ public class HelpWindow extends UiPart<Stage> {
     public HelpWindow(Stage root) {
         super(FXML, root);
         helpMessage.setText(HELP_MESSAGE);
+        commandFormats.setText(COMMAND_FORMATS);
     }
 
     /**

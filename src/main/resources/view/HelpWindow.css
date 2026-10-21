@@ -1,19 +1,31 @@
 #copyButton, #helpMessage {
-    -fx-text-fill: white;
+    -fx-text-fill: -ic-text;
 }
 
 #copyButton {
-    -fx-background-color: dimgray;
+    -fx-background-color: -ic-muted;
 }
 
 #copyButton:hover {
-    -fx-background-color: gray;
+    -fx-background-color: -ic-button-hover;
 }
 
 #copyButton:armed {
-    -fx-background-color: darkgray;
+    -fx-background-color: -ic-selection;
 }
 
-#helpMessageContainer {
-    -fx-background-color: derive(#1d1d1d, 20%);
+.help-content {
+    -fx-background-color: -ic-background;
+}
+
+.help-heading {
+    -fx-font-size: 18pt;
+    -fx-text-fill: -ic-text;
+}
+
+#commandFormats {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12pt;
+    -fx-text-fill: -ic-text;
+    -fx-control-inner-background: -ic-base;
 }

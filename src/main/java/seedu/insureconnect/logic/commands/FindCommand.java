@@ -1,6 +1,7 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.insureconnect.logic.commands.CommandFormats.FIND_COMMAND_FORMAT;
 
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -18,13 +19,12 @@ import seedu.insureconnect.model.person.Person;
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds customers by name, phone-number prefix, or exact policy number.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]... OR p/DIGITS OR t/POLICY_NUMBER\n"
-            + "Examples: " + COMMAND_WORD + " alice; "
-            + COMMAND_WORD + " p/9876; "
-            + COMMAND_WORD + " t/LIFE20001";
+            + ": Finds all customers with a name word starting with any of the specified keywords (case-insensitive) "
+            + "and displays them as a list with index numbers, with exact name words before prefix-only matches.\n"
+            + "Alternatively, searches for phone numbers starting with the digits after p/.\n"
+            + "Format: " + FIND_COMMAND_FORMAT + "\n"
+            + "Examples: " + COMMAND_WORD + " alice bob charlie; " + COMMAND_WORD + " p/9876";
 
     private final Predicate<Person> predicate;
 

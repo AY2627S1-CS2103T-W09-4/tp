@@ -1,8 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.ListView?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <ListView fx:id="personListView" VBox.vgrow="ALWAYS" />
+<VBox id="personListPanel" styleClass="person-list-panel"
+      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <ScrollPane fx:id="personScrollPane" fitToWidth="true" hbarPolicy="NEVER"
+              styleClass="person-list-scroll" VBox.vgrow="ALWAYS">
+    <content>
+      <GridPane fx:id="personCards" hgap="14" minWidth="0" styleClass="person-card-grid" vgap="14">
+        <columnConstraints>
+          <ColumnConstraints hgrow="ALWAYS" percentWidth="100" minWidth="0" />
+        </columnConstraints>
+        <padding>
+          <Insets top="12" right="12" bottom="12" left="12" />
+        </padding>
+      </GridPane>
+    </content>
+  </ScrollPane>
 </VBox>
