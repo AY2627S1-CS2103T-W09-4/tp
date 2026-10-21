@@ -18,6 +18,7 @@ public class CommandBox extends UiPart<Region> {
     private static final String FXML = "CommandBox.fxml";
 
     private final CommandExecutor commandExecutor;
+    private boolean awaitingConfirmation;
 
     @FXML
     private TextField commandTextField;
@@ -38,14 +39,16 @@ public class CommandBox extends UiPart<Region> {
     @FXML
     private void handleCommandEntered() {
         String commandText = commandTextField.getText();
-        if (commandText.equals("")) {
+        if (commandText.isEmpty() && !awaitingConfirmation) {
             return;
         }
 
         try {
-            commandExecutor.execute(commandText);
+            CommandResult result = commandExecutor.execute(commandText);
+            awaitingConfirmation = result.isConfirmationRequired();
             commandTextField.setText("");
         } catch (CommandException | ParseException e) {
+            awaitingConfirmation = false;
             setStyleToIndicateCommandFailure();
         }
     }
