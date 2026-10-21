@@ -1,6 +1,5 @@
 package seedu.insureconnect.logic.parser;
 
-import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
@@ -13,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import seedu.insureconnect.logic.Messages;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.Address;
@@ -38,27 +38,7 @@ public class AddCommandParser implements Parser<AddCommand> {
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
                         PREFIX_TAG, PREFIX_REMARK);
 
-        List<String> missingFields = new ArrayList<>();
-        addMissingFieldIfAbsent(missingFields, argMultimap, PREFIX_NAME, "name");
-        addMissingFieldIfAbsent(missingFields, argMultimap, PREFIX_PHONE, "phone");
-        addMissingFieldIfAbsent(missingFields, argMultimap, PREFIX_EMAIL, "email");
-        addMissingFieldIfAbsent(missingFields, argMultimap, PREFIX_ADDRESS, "address");
-        addMissingFieldIfAbsent(missingFields, argMultimap, PREFIX_TAG, "policy number");
-
-        String preamble = argMultimap.getPreamble();
-        if (!missingFields.isEmpty() || !preamble.isEmpty()) {
-            List<String> errors = new ArrayList<>();
-            if (!missingFields.isEmpty()) {
-                errors.add("Missing required field" + (missingFields.size() == 1 ? "" : "s") + ": "
-                        + String.join(", ", missingFields) + ".");
-            }
-            if (!preamble.isEmpty()) {
-                errors.add("Unexpected text before the first field: \"" + preamble + "\".");
-            }
-            String details = String.join(" ", errors);
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                    details + "\n" + AddCommand.MESSAGE_USAGE));
-        }
+        validateRequiredFieldsAndPreamble(argMultimap);
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
                 PREFIX_ADDRESS, PREFIX_REMARK);
@@ -78,6 +58,21 @@ public class AddCommandParser implements Parser<AddCommand> {
         return new AddCommand(person);
     }
 
+    private static void validateRequiredFieldsAndPreamble(ArgumentMultimap argumentMultimap) throws ParseException {
+        List<String> missingFields = new ArrayList<>();
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_NAME, "name");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_PHONE, "phone");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_EMAIL, "email");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_ADDRESS, "address");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_TAG, "policy number");
+
+        String preamble = argumentMultimap.getPreamble();
+        if (!missingFields.isEmpty() || !preamble.isEmpty()) {
+            throw new ParseException(Messages.getErrorMessageForMissingFieldsAndPreamble(
+                    missingFields, preamble, AddCommand.MESSAGE_USAGE));
+        }
+    }
+
     private static void addMissingFieldIfAbsent(List<String> missingFields, ArgumentMultimap argumentMultimap,
                                                 Prefix prefix, String fieldName) {
         if (argumentMultimap.getValue(prefix).isEmpty()) {
@@ -89,7 +84,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         try {
             return parser.parse();
         } catch (ParseException e) {
-            throw new ParseException("Invalid " + fieldName + ": " + e.getMessage());
+            throw new ParseException("Invalid " + fieldName + ": " + e.getMessage(), e);
         }
     }
 

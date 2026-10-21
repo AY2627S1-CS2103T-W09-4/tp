@@ -1,5 +1,7 @@
 package seedu.insureconnect.logic;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -18,6 +20,23 @@ public class Messages {
     public static final String MESSAGE_PERSONS_LISTED_OVERVIEW = "%1$d person(s) listed!";
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
+
+    /**
+     * Returns an invalid command format message describing missing fields and/or unexpected preamble text.
+     */
+    public static String getErrorMessageForMissingFieldsAndPreamble(List<String> missingFields, String preamble,
+                                                                    String commandUsage) {
+        List<String> errors = new ArrayList<>();
+        if (!missingFields.isEmpty()) {
+            errors.add("Missing required field" + (missingFields.size() == 1 ? "" : "s") + ": "
+                    + String.join(", ", missingFields) + ".");
+        }
+        if (!preamble.isEmpty()) {
+            errors.add("Unexpected text before the first field: \"" + preamble + "\".");
+        }
+        return String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                String.join(" ", errors) + "\n" + commandUsage);
+    }
 
     /**
      * Returns an error message indicating the duplicate prefixes.
