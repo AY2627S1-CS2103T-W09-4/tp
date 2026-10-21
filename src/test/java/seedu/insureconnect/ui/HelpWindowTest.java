@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.stage.Stage;
@@ -25,6 +26,11 @@ public class HelpWindowTest extends GuiTest {
             assertFalse(help.isShowing());
             Label message = (Label) stage.getScene().lookup("#helpMessage");
             assertEquals(HelpWindow.HELP_MESSAGE, message.getText());
+            TextArea formats = (TextArea) stage.getScene().lookup("#commandFormats");
+            String[] commands = {"add ", "edit ", "delete ", "find ", "list ", "clear", "help", "exit"};
+            for (String command : commands) {
+                assertTrue(formats.getText().contains(command));
+            }
             help.show();
             assertTrue(help.isShowing());
             help.focus();
