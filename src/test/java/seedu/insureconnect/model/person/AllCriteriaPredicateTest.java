@@ -1,0 +1,52 @@
+package seedu.insureconnect.model.person;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+
+import org.junit.jupiter.api.Test;
+
+import seedu.insureconnect.testutil.PersonBuilder;
+
+/**
+ * Tests conjunction, immutable criteria and name-ranking discovery.
+ */
+public class AllCriteriaPredicateTest {
+    private final NameContainsKeywordsPredicate name = new NameContainsKeywordsPredicate(List.of("Alice", "Bob"));
+    private final PhoneStartsWithPredicate phone = new PhoneStartsWithPredicate("912");
+
+    @Test
+    public void test_allCriteriaRequired_nameKeywordsRemainAlternatives() {
+        AllCriteriaPredicate predicate = new AllCriteriaPredicate(List.of(name, phone));
+        assertTrue(predicate.test(new PersonBuilder().withName("Alice").withPhone("91234567").build()));
+        assertTrue(predicate.test(new PersonBuilder().withName("Bob").withPhone("91234567").build()));
+        assertFalse(predicate.test(new PersonBuilder().withName("Alice").withPhone("81234567").build()));
+        assertFalse(predicate.test(new PersonBuilder().withName("Carol").withPhone("91234567").build()));
+        assertEquals(name, predicate.getNamePredicate().orElseThrow());
+        assertTrue(new AllCriteriaPredicate(List.of(phone)).getNamePredicate().isEmpty());
+    }
+
+    @Test
+    public void constructor_mutatedSource_doesNotChangeCriteria() {
+        List<Predicate<Person>> source = new ArrayList<>(List.of(name, phone));
+        AllCriteriaPredicate predicate = new AllCriteriaPredicate(source);
+        source.clear();
+        assertFalse(predicate.test(new PersonBuilder().withName("Carol").build()));
+    }
+
+    @Test
+    public void equalsAndToString_describeCriteria() {
+        AllCriteriaPredicate predicate = new AllCriteriaPredicate(List.of(name, phone));
+        assertTrue(predicate.equals(predicate));
+        assertEquals(predicate, new AllCriteriaPredicate(List.of(name, phone)));
+        assertFalse(predicate.equals(new AllCriteriaPredicate(List.of(phone))));
+        assertFalse(predicate.equals(null));
+        assertFalse(predicate.equals(name));
+        assertEquals(AllCriteriaPredicate.class.getCanonicalName() + "{criteria=" + List.of(name, phone) + "}",
+                predicate.toString());
+    }
+}
