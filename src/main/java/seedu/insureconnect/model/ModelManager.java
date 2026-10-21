@@ -88,6 +88,7 @@ public class ModelManager implements Model {
     public void addPerson(Person person) {
         insureConnect.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        updatePersonListComparator(null);
     }
 
     @Override
@@ -114,8 +115,13 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public void updatePersonListComparator(Comparator<Person> comparator) {
+    public void updatePersonListComparator(Comparator<? super Person> comparator) {
         displayedPersons.setComparator(comparator);
+    }
+
+    @Override
+    public Comparator<? super Person> getPersonListComparator() {
+        return displayedPersons.getComparator();
     }
 
     @Override
