@@ -3,12 +3,14 @@ package seedu.insureconnect.logic;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.util.Comparator;
+import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
+import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.Command;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
@@ -34,6 +36,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final InsureConnectParser insureConnectParser;
+    private boolean awaitingClearConfirmation;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -58,8 +61,26 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
+        if (awaitingClearConfirmation) {
+            awaitingClearConfirmation = false;
+            if (!"y".equals(commandText.trim().toLowerCase(Locale.ROOT))) {
+                return new CommandResult(ClearCommand.MESSAGE_CANCELLED);
+            }
+            return executeCommand(new ClearCommand());
+        }
+
         Command command = insureConnectParser.parseCommand(commandText);
+        if (command instanceof ClearCommand) {
+            awaitingClearConfirmation = true;
+            return new CommandResult(ClearCommand.MESSAGE_CONFIRMATION, false, false, true);
+        }
+
+        return executeCommand(command);
+    }
+
+    /** Executes a parsed command and saves any resulting data changes. */
+    private CommandResult executeCommand(Command command) throws CommandException {
+        CommandResult commandResult;
         ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
         Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
         Comparator<? super Person> previousComparator = model.getPersonListComparator();

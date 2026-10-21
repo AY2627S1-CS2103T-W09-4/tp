@@ -25,6 +25,8 @@ public class CommandBox extends UiPart<Region> {
     private static final KeyCombination HISTORY_NEXT = new KeyCodeCombination(KeyCode.DOWN);
 
     private final CommandExecutor commandExecutor;
+    private boolean awaitingConfirmation;
+
     private final CommandHistory history = new CommandHistory();
     private int draftAnchor;
     private int draftCaret;
@@ -49,15 +51,17 @@ public class CommandBox extends UiPart<Region> {
     @FXML
     private void handleCommandEntered() {
         String commandText = commandTextField.getText();
-        if (commandText.equals("")) {
+        if (commandText.isEmpty() && !awaitingConfirmation) {
             return;
         }
 
         history.record(commandText);
         try {
-            commandExecutor.execute(commandText);
+            CommandResult result = commandExecutor.execute(commandText);
+            awaitingConfirmation = result.isConfirmationRequired();
             commandTextField.setText("");
         } catch (CommandException | ParseException e) {
+            awaitingConfirmation = false;
             setStyleToIndicateCommandFailure();
         }
     }
