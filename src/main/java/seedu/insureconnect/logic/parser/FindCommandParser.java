@@ -2,6 +2,7 @@ package seedu.insureconnect.logic.parser;
 
 import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.List;
 
@@ -9,6 +10,8 @@ import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
+import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
+import seedu.insureconnect.model.tag.Tag;
 
 /**
  * Parses input arguments and creates a new FindCommand object
@@ -22,9 +25,15 @@ public class FindCommandParser implements Parser<FindCommand> {
      */
     public FindCommand parse(String args) throws ParseException {
         String query = requireSearchQuery(args);
+
         if (isPhoneSearch(query)) {
             return parsePhoneSearch(query);
         }
+
+        if (isPolicyNumberSearch(query)) {
+            return parsePolicyNumberSearch(query);
+        }
+
         return parseNameSearch(query);
     }
 
@@ -45,6 +54,23 @@ public class FindCommandParser implements Parser<FindCommand> {
      */
     private boolean isPhoneSearch(String query) {
         return query.startsWith(PREFIX_PHONE.getPrefix());
+    }
+
+    /**
+     * Identifies the explicit policy-number search mode.
+     */
+    private boolean isPolicyNumberSearch(String query) {
+        return query.startsWith(PREFIX_TAG.getPrefix());
+    }
+
+    /**
+     * Parses one exact policy number without accepting additional criteria.
+     */
+    private FindCommand parsePolicyNumberSearch(String query) throws ParseException {
+        String policyNumber = query.substring(PREFIX_TAG.getPrefix().length());
+        Tag policy = ParserUtil.parseTag(policyNumber);
+
+        return new FindCommand(new PolicyNumberMatchesPredicate(policy.tagName));
     }
 
     /**
@@ -79,7 +105,8 @@ public class FindCommandParser implements Parser<FindCommand> {
      */
     private List<String> parseNameKeywords(String query) throws ParseException {
         List<String> keywords = List.of(query.split("\\s+"));
-        if (keywords.stream().anyMatch(this::isPhoneSearch)) {
+        if (keywords.stream().anyMatch(keyword ->
+                isPhoneSearch(keyword) || isPolicyNumberSearch(keyword))) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
         return keywords;

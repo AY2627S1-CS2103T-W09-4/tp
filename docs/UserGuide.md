@@ -176,7 +176,7 @@ Examples:
 *  `edit 1 r/Prefers WhatsApp after 6pm` Replaces the 1st person's remark.
 *  `edit 1 r/` Clears the 1st person's remark.
 
-### Locating customers by name or phone number: `find`
+### Locating persons by name, phone number, or policy number: `find`
 
 Finds customers with a word in their name starting with any of the given keywords.
 
@@ -210,7 +210,18 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
   A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
 
-### Deleting a customer: `delete`
+To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
+
+* Policy-number searches use an exact match and are case-insensitive. For example,
+  `find t/life20001` finds a customer with policy number `LIFE20001`.
+* Supply exactly one policy number containing 1 to 30 letters or digits. Spaces, punctuation,
+  and multiple policy numbers are rejected.
+* Each command searches either names, phone numbers, or a policy number. Combining `t/` with
+  name keywords or `p/` is not supported and produces an error.
+* A policy-number search replaces the previous search and display sort. Use the displayed
+  indexes for `edit` and `delete`.
+
+### Deleting a person: `delete`
 
 Deletes the specified customer from InsureConnect.
 

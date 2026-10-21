@@ -13,7 +13,7 @@ import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Finds customers by case-insensitive name prefixes or by a phone number prefix.
+ * Finds customers by case-insensitive name prefixes, phone-number prefixes, or an exact policy number.
  * Exact name-word matches appear before prefix-only name matches.
  */
 public class FindCommand extends Command {
@@ -44,7 +44,7 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Ranks name matches by relevance and leaves phone matches in stored order.
+     * Ranks name matches by relevance and leaves phone and policy-number matches in stored order.
      */
     private Comparator<Person> getResultComparator() {
         if (predicate instanceof NameContainsKeywordsPredicate namePredicate) {
