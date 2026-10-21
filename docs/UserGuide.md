@@ -53,6 +53,15 @@ and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on m
 The output is read-only. Press F6 twice from the output box to return to command entry.
 On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F6.
 
+### Command history
+
+In the command box, press **Up** to recall older commands and **Down** to move toward newer commands.
+After the newest command, Down restores your unfinished draft, including its caret and selection.
+Recalled commands are editable; press Enter to run them. Navigating again discards edits to a recalled command.
+History includes successful and failed submissions, skips blank commands and consecutive identical submissions,
+and lasts until you close the application. Navigation stops at the oldest command without wrapping.
+Modified arrow shortcuts and arrow keys in other areas retain their usual behavior.
+
 ## Changing the colour scheme
 
 Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
