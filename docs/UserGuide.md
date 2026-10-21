@@ -43,7 +43,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 ## Keyboard navigation
 
 Press **F6** to move focus between the **command box → output box → contacts list → command box**.
-Press **Shift+F6** to move in the reverse direction. A blue outline marks the focused area.
+Press **Shift+F6** to move in the reverse direction. A thin outline marks the focused area.
 These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
 If focus is outside these areas, F6 enters the command box and Shift+F6 enters the contacts list.
 

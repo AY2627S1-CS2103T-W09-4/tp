@@ -19,7 +19,19 @@
     -fx-text-fill: white;
 }
 
-/* Outline the working area without changing its size or hiding command errors. */
-.navigation-target:focused {
-    -fx-effect: dropshadow(gaussian, #80c8ff, 5, 0.8, 0, 0);
+/* Reserve the outline's space so focus changes do not move the contents. */
+.navigation-target, #commandTextField.navigation-target {
+    -fx-border-color: transparent;
+    -fx-border-width: 2;
+    -fx-border-insets: 0;
+    -fx-border-radius: 2;
+}
+
+#commandTextField.navigation-target {
+    -fx-border-color: transparent transparent #767676 transparent;
+}
+
+/* Use the theme's focus color and preserve the command error text color. */
+.navigation-target:focused, #commandTextField.navigation-target:focused {
+    -fx-border-color: -fx-focus-color;
 }
