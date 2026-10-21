@@ -4,13 +4,10 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.function.Predicate;
 
-import seedu.insureconnect.model.tag.Tag;
-
 /**
  * Tests whether a customer owns the specified policy number.
  */
 public class PolicyNumberMatchesPredicate implements Predicate<Person> {
-    public static final String MESSAGE_CONSTRAINTS = Tag.MESSAGE_CONSTRAINTS;
 
     private final String policyNumber;
 
@@ -27,9 +24,6 @@ public class PolicyNumberMatchesPredicate implements Predicate<Person> {
     /**
      * Returns true if the policy number contains one or more letters or digits.
      */
-    public static boolean isValidPolicyNumber(String policyNumber) {
-        return Tag.isValidTagName(policyNumber);
-    }
 
     @Override
     public boolean test(Person person) {
