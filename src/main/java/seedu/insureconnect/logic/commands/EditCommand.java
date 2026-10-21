@@ -1,11 +1,9 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.insureconnect.logic.commands.CommandFormats.EDIT_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.time.Instant;
@@ -36,16 +34,10 @@ import seedu.insureconnect.model.tag.Tag;
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
             + "by the index number used in the displayed person list. "
             + "Existing values will be overwritten by the input values.\n"
-            + "Parameters: INDEX (must be a positive integer) "
-            + "[" + PREFIX_NAME + "NAME] "
-            + "[" + PREFIX_PHONE + "PHONE] "
-            + "[" + PREFIX_EMAIL + "EMAIL] "
-            + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "POLICY_NUMBER]...\n"
+            + "Format: " + EDIT_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";

@@ -10,6 +10,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.LogsCenter;
+import seedu.insureconnect.logic.commands.CommandFormats;
 
 /**
  * Controller for a help page
@@ -20,14 +21,14 @@ public class HelpWindow extends UiPart<Stage> {
     public static final String HELP_MESSAGE = "Refer to the user guide: " + USERGUIDE_URL;
 
     private static final String COMMAND_FORMATS = String.join("\n\n",
-            "add n/NAME p/PHONE e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]... [r/REMARK]",
-            "edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]...",
-            "delete INDEX",
-            "find KEYWORD [MORE_KEYWORDS]...  or  find p/DIGITS",
-            "list [n/|c/]",
-            "clear",
-            "help",
-            "exit");
+            CommandFormats.ADD_COMMAND_FORMAT,
+            CommandFormats.EDIT_COMMAND_FORMAT,
+            CommandFormats.DELETE_COMMAND_FORMAT,
+            CommandFormats.FIND_COMMAND_FORMAT,
+            CommandFormats.LIST_COMMAND_FORMAT,
+            CommandFormats.CLEAR_COMMAND_FORMAT,
+            CommandFormats.HELP_COMMAND_FORMAT,
+            CommandFormats.EXIT_COMMAND_FORMAT);
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);
     private static final String FXML = "HelpWindow.fxml";
