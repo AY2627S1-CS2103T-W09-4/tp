@@ -52,7 +52,18 @@ public class LogicManager implements Logic {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         CommandResult commandResult;
-        Command command = insureConnectParser.parseCommand(commandText);
+        Command command;
+        try {
+            command = insureConnectParser.parseCommand(commandText);
+        } catch (ParseException pe) {
+            String attemptedCommand = commandText.trim().split("\\s+", 2)[0];
+            if (pendingDeleteCommand != null
+                    && attemptedCommand.equalsIgnoreCase(ConfirmDeleteCommand.COMMAND_WORD)) {
+                throw new ParseException(String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER,
+                        pendingDeleteCommand.getTargetIndexOneBased()));
+            }
+            throw pe;
+        }
 
         if (command instanceof ConfirmDeleteCommand) {
             if (pendingDeleteCommand == null) {

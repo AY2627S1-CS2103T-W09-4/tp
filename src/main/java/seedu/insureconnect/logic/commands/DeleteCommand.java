@@ -27,6 +27,8 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
 
     public static final String MESSAGE_CONFIRM_DELETE = "Confirm deletion of %s by entering: confirm";
+    public static final String MESSAGE_CONFIRM_REMINDER =
+            "Type \"confirm\" to delete the record at index %d.";
     private final Index targetIndex;
     private final boolean isConfirmed;
 
@@ -45,6 +47,10 @@ public class DeleteCommand extends Command {
 
     public boolean isConfirmed() {
         return isConfirmed;
+    }
+
+    public int getTargetIndexOneBased() {
+        return targetIndex.getOneBased();
     }
 
     @Override

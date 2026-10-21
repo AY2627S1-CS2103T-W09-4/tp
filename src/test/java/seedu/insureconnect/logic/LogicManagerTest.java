@@ -248,4 +248,18 @@ public class LogicManagerTest {
         assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
                 ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
     }
+
+    @Test
+    public void execute_pendingDeletionInvalidCommand_showsConfirmationReminder() throws Exception {
+        model.addPerson(AMY);
+
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+        assertCommandSuccess("delete 1", confirmationMessage, model);
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER, 1);
+        assertParseException("Confirm", expectedMessage);
+        assertParseException("confirm now", expectedMessage);
+        assertParseException("unknown", MESSAGE_UNKNOWN_COMMAND);
+    }
 }
