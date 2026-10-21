@@ -108,7 +108,7 @@ public class FindPhoneCommandTest {
     @Test
     public void execute_deletePhoneResult_deletesDisplayedCustomer() throws ParseException, CommandException {
         assertSearch("find p/9876", List.of(johnny, john));
-        new DeleteCommand(Index.fromOneBased(1)).execute(model);
+        new DeleteCommand(Index.fromOneBased(1)).confirmed().execute(model);
         assertFalse(model.hasPerson(johnny));
         assertTrue(model.hasPerson(alice));
         assertEquals(List.of(john), model.getFilteredPersonList());

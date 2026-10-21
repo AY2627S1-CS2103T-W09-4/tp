@@ -99,7 +99,7 @@ public class FindRankingTest {
     @Test
     public void execute_deleteRankedResult_deletesDisplayedCustomer() throws ParseException, CommandException {
         assertSearch("john", List.of(mary, john, johnny, johnson));
-        new DeleteCommand(Index.fromOneBased(1)).execute(model);
+        new DeleteCommand(Index.fromOneBased(1)).confirmed().execute(model);
         assertFalse(model.hasPerson(mary));
         assertTrue(model.hasPerson(johnny));
         assertEquals(List.of(john, johnny, johnson), model.getFilteredPersonList());

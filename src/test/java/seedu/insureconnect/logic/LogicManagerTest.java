@@ -22,6 +22,8 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
+import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -206,5 +208,44 @@ public class LogicManagerTest {
                 "The existing data file at " + filePath + " is unreadable and cannot be overwritten."),
                 expectedModel);
         assertFalse(model.hasPerson(expectedPerson));
+    }
+
+    @Test
+    public void execute_deleteRequiresConfirmation() throws Exception {
+        model.addPerson(AMY);
+
+        ModelManager unchangedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+
+        assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
+
+        ModelManager deletedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        deletedModel.deletePerson(AMY);
+
+        assertCommandSuccess("confirm",
+                String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY)),
+                deletedModel);
+    }
+
+    @Test
+    public void execute_confirmWithoutPendingDeletion_throwsCommandException() {
+        assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+    }
+
+    @Test
+    public void execute_otherCommandAfterDeleteRequest_cancelsPendingDeletion() throws Exception {
+        model.addPerson(AMY);
+        ModelManager unchangedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+
+        assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
+        assertCommandSuccess(ListCommand.COMMAND_WORD,
+                String.format(ListCommand.MESSAGE_SUCCESS, unchangedModel.getFilteredPersonList().size()),
+                unchangedModel);
+        assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
     }
 }

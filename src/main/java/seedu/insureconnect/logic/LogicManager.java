@@ -10,6 +10,8 @@ import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.commands.Command;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
+import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.InsureConnectParser;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -34,6 +36,8 @@ public class LogicManager implements Logic {
     private final Storage storage;
     private final InsureConnectParser insureConnectParser;
 
+    private DeleteCommand pendingDeleteCommand;
+
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
      */
@@ -49,6 +53,17 @@ public class LogicManager implements Logic {
 
         CommandResult commandResult;
         Command command = insureConnectParser.parseCommand(commandText);
+
+        if (command instanceof ConfirmDeleteCommand) {
+            if (pendingDeleteCommand == null) {
+                throw new CommandException(ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+            }
+            command = pendingDeleteCommand.confirmed();
+            pendingDeleteCommand = null;
+        } else {
+            pendingDeleteCommand = null;
+        }
+
         ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
         Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
 
@@ -60,9 +75,14 @@ public class LogicManager implements Logic {
             throw ce;
         }
 
+        if (command instanceof DeleteCommand deleteCommand && !deleteCommand.isConfirmed()) {
+            pendingDeleteCommand = deleteCommand;
+        }
+
         if (!previousData.equals(model.getInsureConnect())) {
             try {
                 storage.saveInsureConnect(model.getInsureConnect());
+                logger.info("Successfully saved data after " + command.getClass().getSimpleName());
             } catch (AccessDeniedException e) {
                 model.setInsureConnect(previousData);
                 model.updateFilteredPersonList(previousFilter);

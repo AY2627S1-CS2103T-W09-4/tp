@@ -172,17 +172,21 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
 
 ### Deleting a person: `delete`
 
-Deletes the specified person from InsureConnect.
+Requests deletion of the specified person from InsureConnect. The person is deleted only after confirmation.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
+Confirmation format: `confirm`
+
+* `delete INDEX` shows the person at the specified `INDEX` and requests confirmation.
+* Enter `confirm` immediately after a delete request to permanently delete that person.
+* Any other command cancels the pending deletion.
 * The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in InsureConnect.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete 2`, then `confirm`, deletes the 2nd person in InsureConnect.
+* `find Betsy` followed by `delete 1`, then `confirm`, deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
