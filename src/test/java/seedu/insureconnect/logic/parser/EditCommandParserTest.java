@@ -13,6 +13,7 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.INVALID_TAG_DES
 import static seedu.insureconnect.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.REMARK_DESC;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_ADDRESS_AMY;
@@ -20,11 +21,13 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_EMAIL_AMY
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_NAME_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.insureconnect.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.insureconnect.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -42,6 +45,7 @@ import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.model.person.Email;
 import seedu.insureconnect.model.person.Name;
 import seedu.insureconnect.model.person.Phone;
+import seedu.insureconnect.model.person.Remark;
 import seedu.insureconnect.model.tag.Tag;
 import seedu.insureconnect.testutil.EditPersonDescriptorBuilder;
 
@@ -87,6 +91,7 @@ public class EditCommandParserTest {
         assertParseFailure(parser, "1" + INVALID_PHONE_DESC, Phone.MESSAGE_CONSTRAINTS); // invalid phone
         assertParseFailure(parser, "1" + INVALID_EMAIL_DESC, Email.MESSAGE_CONSTRAINTS); // invalid email
         assertParseFailure(parser, "1" + INVALID_ADDRESS_DESC, Address.MESSAGE_CONSTRAINTS); // invalid address
+        assertParseFailure(parser, "1 " + PREFIX_REMARK + "a".repeat(501), Remark.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "1" + INVALID_TAG_DESC, Tag.MESSAGE_CONSTRAINTS); // invalid tag
 
         // invalid phone followed by valid email
@@ -107,11 +112,11 @@ public class EditCommandParserTest {
     public void parse_allFieldsSpecified_success() {
         Index targetIndex = INDEX_SECOND_PERSON;
         String userInput = targetIndex.getOneBased() + PHONE_DESC_BOB + TAG_DESC_HUSBAND
-                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + NAME_DESC_AMY + TAG_DESC_FRIEND;
+                + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + NAME_DESC_AMY + TAG_DESC_FRIEND + REMARK_DESC;
 
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_AMY).withAddress(VALID_ADDRESS_AMY)
-                .withTags(VALID_TAG_HUSBAND, VALID_TAG_FRIEND).build();
+                .withTags(VALID_TAG_HUSBAND, VALID_TAG_FRIEND).withRemark(VALID_REMARK).build();
         EditCommand expectedCommand = new EditCommand(targetIndex, descriptor);
 
         assertParseSuccess(parser, userInput, expectedCommand);
@@ -167,6 +172,26 @@ public class EditCommandParserTest {
         descriptor = new EditPersonDescriptorBuilder().withTags(VALID_TAG_FRIEND).build();
         expectedCommand = new EditCommand(targetIndex, descriptor);
         assertParseSuccess(parser, userInput, expectedCommand);
+
+        // remark
+        userInput = targetIndex.getOneBased() + REMARK_DESC;
+        descriptor = new EditPersonDescriptorBuilder().withRemark(VALID_REMARK).build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, userInput, expectedCommand);
+
+        // empty remark clears the existing remark
+        userInput = targetIndex.getOneBased() + " " + PREFIX_REMARK;
+        descriptor = new EditPersonDescriptorBuilder().withRemark("").build();
+        expectedCommand = new EditCommand(targetIndex, descriptor);
+        assertParseSuccess(parser, userInput, expectedCommand);
+    }
+
+    @Test
+    public void parse_remarkWhitespaceNormalized_success() {
+        String userInput = INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_REMARK + "  Follow  up  tomorrow  ";
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark("Follow up tomorrow").build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(INDEX_FIRST_PERSON, descriptor));
     }
 
     @Test
@@ -179,6 +204,10 @@ public class EditCommandParserTest {
         String userInput = targetIndex.getOneBased() + INVALID_PHONE_DESC + PHONE_DESC_BOB;
 
         assertParseFailure(parser, userInput, Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE));
+
+        // repeated remark
+        userInput = targetIndex.getOneBased() + REMARK_DESC + REMARK_DESC;
+        assertParseFailure(parser, userInput, Messages.getErrorMessageForDuplicatePrefixes(PREFIX_REMARK));
 
         // invalid followed by valid
         userInput = targetIndex.getOneBased() + PHONE_DESC_BOB + INVALID_PHONE_DESC;

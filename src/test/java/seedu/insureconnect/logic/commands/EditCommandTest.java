@@ -7,6 +7,7 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.DESC_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.DESC_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
+import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandSuccess;
@@ -68,6 +69,54 @@ public class EditCommandTest {
         expectedModel.setPerson(lastPerson, editedPerson);
 
         assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+    }
+
+    @Test
+    public void execute_remarkOnly_success() {
+        Person personToEdit = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person editedPerson = new PersonBuilder(personToEdit).withRemark(VALID_REMARK).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark(VALID_REMARK).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        Model expectedModel = new ModelManager(new InsureConnect(model.getInsureConnect()), new UserPrefs());
+        expectedModel.setPerson(personToEdit, editedPerson);
+
+        assertCommandSuccess(editCommand, model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_emptyRemark_clearsExistingRemark() {
+        Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithRemark = new PersonBuilder(originalPerson).withRemark(VALID_REMARK).build();
+        model.setPerson(originalPerson, personWithRemark);
+
+        Person editedPerson = new PersonBuilder(personWithRemark).withRemark("").build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withRemark("").build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        Model expectedModel = new ModelManager(new InsureConnect(model.getInsureConnect()), new UserPrefs());
+        expectedModel.setPerson(personWithRemark, editedPerson);
+
+        assertCommandSuccess(editCommand, model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+    }
+
+    @Test
+    public void execute_remarkOmitted_preservesExistingRemark() {
+        Person originalPerson = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
+        Person personWithRemark = new PersonBuilder(originalPerson).withRemark(VALID_REMARK).build();
+        model.setPerson(originalPerson, personWithRemark);
+
+        Person editedPerson = new PersonBuilder(personWithRemark).withPhone(VALID_PHONE_BOB).build();
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_BOB).build();
+        EditCommand editCommand = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+
+        Model expectedModel = new ModelManager(new InsureConnect(model.getInsureConnect()), new UserPrefs());
+        expectedModel.setPerson(personWithRemark, editedPerson);
+
+        assertCommandSuccess(editCommand, model,
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
     }
 
     @Test
@@ -238,6 +287,11 @@ public class EditCommandTest {
 
         // different descriptor -> returns false
         assertFalse(standardCommand.equals(new EditCommand(INDEX_FIRST_PERSON, DESC_BOB)));
+
+        // different remark -> returns false
+        EditPersonDescriptor descriptorWithRemark = new EditPersonDescriptorBuilder(DESC_AMY)
+                .withRemark(VALID_REMARK).build();
+        assertFalse(standardCommand.equals(new EditCommand(INDEX_FIRST_PERSON, descriptorWithRemark)));
     }
 
     @Test
