@@ -274,7 +274,7 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_pendingDeletionInvalidCommand_showsConfirmationReminder() throws Exception {
+    public void execute_pendingDeletionMalformedConfirmation_showsConfirmationReminder() throws Exception {
         model.addPerson(AMY);
 
         String confirmationMessage = String.format(
@@ -284,7 +284,20 @@ public class LogicManagerTest {
         String expectedMessage = String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER, 1);
         assertParseException("Confirm", expectedMessage);
         assertParseException("confirm now", expectedMessage);
-        assertParseException("unknown", expectedMessage);
+    }
+
+    @Test
+    public void execute_pendingDeletionUnrelatedInvalidCommand_cancelsDeletion() throws Exception {
+        model.addPerson(AMY);
+
+        logic.execute("delete 1");
+
+        assertParseException("unknown", MESSAGE_UNKNOWN_COMMAND);
+
+        assertCommandException("confirm",
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+
+        assertTrue(model.hasPerson(AMY));
     }
 
     @Test
