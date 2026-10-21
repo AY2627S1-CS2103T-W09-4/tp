@@ -56,9 +56,7 @@ public class LogicManager implements Logic {
         try {
             command = insureConnectParser.parseCommand(commandText);
         } catch (ParseException pe) {
-            String attemptedCommand = commandText.trim().split("\\s+", 2)[0];
-            if (pendingDeleteCommand != null
-                    && attemptedCommand.equalsIgnoreCase(ConfirmDeleteCommand.COMMAND_WORD)) {
+            if (pendingDeleteCommand != null) {
                 throw new ParseException(String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER,
                         pendingDeleteCommand.getTargetIndexOneBased()));
             }

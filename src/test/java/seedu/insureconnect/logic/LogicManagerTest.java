@@ -260,6 +260,6 @@ public class LogicManagerTest {
         String expectedMessage = String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER, 1);
         assertParseException("Confirm", expectedMessage);
         assertParseException("confirm now", expectedMessage);
-        assertParseException("unknown", MESSAGE_UNKNOWN_COMMAND);
+        assertParseException("unknown", expectedMessage);
     }
 }
