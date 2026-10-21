@@ -11,8 +11,9 @@ import seedu.insureconnect.commons.core.ColourScheme;
  */
 public final class ColourSchemeStyles {
 
-    private static final String LIGHT_STYLESHEET = ColourSchemeStyles.class
-            .getResource("/view/LightTheme.css").toExternalForm();
+    private static final String LIGHT_STYLESHEET = requireNonNull(
+            ColourSchemeStyles.class.getResource("/view/LightTheme.css"),
+            "Missing stylesheet resource: /view/LightTheme.css").toExternalForm();
 
     private ColourSchemeStyles() {
     }
@@ -23,7 +24,7 @@ public final class ColourSchemeStyles {
     public static void apply(List<String> stylesheets, ColourScheme colourScheme) {
         requireNonNull(stylesheets);
         requireNonNull(colourScheme);
-        stylesheets.remove(LIGHT_STYLESHEET);
+        stylesheets.removeIf(LIGHT_STYLESHEET::equals);
         if (colourScheme == ColourScheme.LIGHT) {
             stylesheets.add(LIGHT_STYLESHEET);
         }
