@@ -1,0 +1,36 @@
+/* Palette overrides preserve the shared layout and component styles. */
+.root {
+    -ic-surface: #ffffff;
+    -ic-background: #f4f6f8;
+    -ic-border: #c8d0da;
+    -ic-raised: #e8edf2;
+    -ic-raised-border: #c8d0da;
+    -ic-menu-background: #e8edf2;
+    -ic-muted: #64748b;
+    -ic-text: #172b4d;
+    -ic-base: #ffffff;
+    -ic-row-even: #ffffff;
+    -ic-row-odd: #edf2f7;
+    -ic-selection: #d5e8fa;
+    -ic-accent: #226078;
+    -ic-subtle-text: #526176;
+    -ic-button-text: #172b4d;
+    -ic-button-hover: #e2e8f0;
+    -ic-shadow: #9aa8b5;
+    -ic-error: #a32116;
+    -fx-accent: #226078;
+    -fx-focus-color: #226078;
+    -fx-faint-focus-color: #22607833;
+}
+
+#copyButton {
+    -fx-background-color: -ic-raised;
+}
+
+#copyButton:hover {
+    -fx-background-color: -ic-button-hover;
+}
+
+#copyButton:armed {
+    -fx-background-color: -ic-selection;
+}
