@@ -76,6 +76,9 @@ The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDi
 
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/ui/MainWindow.java).
 
+`MainWindow` opens the `HelpWindow` when the user enters `help`, selects the Help menu item, or presses F1.
+The window shows the available command formats and a link to the User Guide with a **Copy URL** button.
+
 The `UI` component,
 
 * executes user commands using the `Logic` component.
@@ -113,6 +116,9 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 How the parsing works:
 * When called upon to parse a user command, the `InsureConnectParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `InsureConnectParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+
+`CommandFormats` defines one format string per command, such as `ADD_COMMAND_FORMAT`.
+Commands with usage messages include their format strings; `HelpWindow` combines all the strings into the list shown to the user.
 
 ### Model component
 **API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/model/Model.java)
@@ -426,6 +432,19 @@ testers are expected to do more *exploratory* testing.
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
+
+### Viewing help
+
+1. Opening the Help window
+
+   1. Test case: Enter `help`.<br>
+      Expected: The Help window opens with formats for all eight commands and a link to the User Guide.
+
+   1. Test case: Click **Copy URL**.<br>
+      Expected: The User Guide URL is copied to the clipboard.
+
+   1. Test case: Close the Help window, then open it using the Help menu or F1.<br>
+      Expected: The same Help window content appears.
 
 ### Deleting a person
 

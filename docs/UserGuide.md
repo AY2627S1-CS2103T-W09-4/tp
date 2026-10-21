@@ -110,9 +110,11 @@ preserves your command text, output, and selected contact.
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
+The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
+You can open the same window from the **Help** menu or by pressing **F1**.
 
-![help message](images/helpMessage.png)
+![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
 
 Format: `help`
 
