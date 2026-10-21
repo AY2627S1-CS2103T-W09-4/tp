@@ -17,9 +17,9 @@
     -ic-button-hover: #3a3a3a;
     -ic-shadow: black;
     -ic-error: #d06651;
-    -ic-card: #111a24;
-    -ic-card-border: #27394b;
-    -ic-card-index: #0b1520;
+    -ic-card: derive(-ic-background, -20%);
+    -ic-card-border: derive(-ic-background, -30%);
+    -ic-card-index: derive(-ic-card, -50%);
     -ic-card-muted: #71859a;
     -ic-card-accent: #58a6ff;
     -ic-card-pill: #172a40;
