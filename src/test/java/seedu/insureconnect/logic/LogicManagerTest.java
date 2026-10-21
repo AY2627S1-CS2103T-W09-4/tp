@@ -2,6 +2,7 @@ package seedu.insureconnect.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
 import static seedu.insureconnect.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
@@ -13,7 +14,9 @@ import static seedu.insureconnect.testutil.TypicalPersons.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -211,6 +214,27 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_deleteRequestDoesNotSave_confirmationSavesDeletion() throws Exception {
+        model.addPerson(AMY);
+        Path dataFile = temporaryFolder.resolve("insureConnect.json");
+
+        logic.execute("delete 1");
+
+        // A request only prepares deletion; it must not write data to disk.
+        assertFalse(Files.exists(dataFile));
+        assertTrue(model.hasPerson(AMY));
+
+        logic.execute("confirm");
+
+        // Confirmation deletes the customer and persists the changed book.
+        assertTrue(Files.exists(dataFile));
+        assertFalse(model.hasPerson(AMY));
+
+        JsonInsureConnectStorage storage = new JsonInsureConnectStorage(dataFile);
+        ReadOnlyInsureConnect savedData = storage.readInsureConnect().orElseThrow();
+        assertFalse(savedData.getPersonList().contains(AMY));
+    }
+    @Test
     public void execute_deleteRequiresConfirmation() throws Exception {
         model.addPerson(AMY);
 
@@ -261,5 +285,56 @@ public class LogicManagerTest {
         assertParseException("Confirm", expectedMessage);
         assertParseException("confirm now", expectedMessage);
         assertParseException("unknown", expectedMessage);
+    }
+
+    @Test
+    public void execute_confirmSaveFailure_restoresDataAndConsumesConfirmation() throws Exception {
+        Person bob = new PersonBuilder().withName("Bob Tan").withTags("POLICY90002").build();
+        model.addPerson(AMY);
+        model.addPerson(bob);
+
+        List<Person> originalPersons = List.copyOf(model.getInsureConnect().getPersonList());
+        model.updateFilteredPersonList(person -> person.equals(AMY));
+        List<Person> originalDisplayedPersons = List.copyOf(model.getFilteredPersonList());
+
+        useStorageThatFailsOnSave(DUMMY_IO_EXCEPTION);
+
+        logic.execute("delete 1");
+
+        assertThrows(CommandException.class,
+                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
+                () -> logic.execute("confirm"));
+
+        // Both stored data and the displayed filtered list are restored.
+        assertEquals(originalPersons, model.getInsureConnect().getPersonList());
+        assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
+
+        // The failed confirmation must not remain reusable.
+        assertThrows(CommandException.class,
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION,
+                () -> logic.execute("confirm"));
+
+// A second confirmation must not change the restored data or displayed list.
+        assertEquals(originalPersons, model.getInsureConnect().getPersonList());
+        assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
+    }
+
+    /**
+     * Replaces storage with one that fails whenever customer data is saved.
+     */
+    private void useStorageThatFailsOnSave(IOException exception) {
+        Path dataFile = temporaryFolder.resolve("failingInsureConnect.json");
+
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(dataFile) {
+            @Override
+            public void saveInsureConnect(ReadOnlyInsureConnect insureConnect) throws IOException {
+                throw exception;
+            }
+        };
+
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("failingUserPrefs.json"));
+
+        logic = new LogicManager(model, new StorageManager(insureConnectStorage, userPrefsStorage));
     }
 }
