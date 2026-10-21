@@ -6,11 +6,14 @@ import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.Logic;
@@ -45,6 +48,12 @@ public class MainWindow extends UiPart<Stage> {
     private MenuItem helpMenuItem;
 
     @FXML
+    private RadioMenuItem darkSchemeMenuItem;
+
+    @FXML
+    private RadioMenuItem lightSchemeMenuItem;
+
+    @FXML
     private StackPane personListPanelPlaceholder;
 
     @FXML
@@ -74,12 +83,61 @@ public class MainWindow extends UiPart<Stage> {
         this.dataFilePath = dataFilePath;
         this.initialFeedback = initialFeedback;
 
-        // Configure the UI
-        setWindowDefaultSize(logic.getGuiSettings());
-
-        setAccelerators();
-
         helpWindow = new HelpWindow();
+        configureWindow();
+    }
+
+    /**
+     * Restores window preferences and connects menu actions.
+     */
+    private void configureWindow() {
+        setWindowDefaultSize(logic.getGuiSettings());
+        setAccelerators();
+        configureColourSchemeMenu();
+        applyColourScheme(logic.getGuiSettings().getColourScheme());
+    }
+
+    /**
+     * Connects mutually exclusive menu choices to the application color scheme.
+     */
+    private void configureColourSchemeMenu() {
+        ToggleGroup schemes = new ToggleGroup();
+        darkSchemeMenuItem.setToggleGroup(schemes);
+        lightSchemeMenuItem.setToggleGroup(schemes);
+        darkSchemeMenuItem.setOnAction(event -> applyColourScheme(ColourScheme.DARK));
+        lightSchemeMenuItem.setOnAction(event -> applyColourScheme(ColourScheme.LIGHT));
+    }
+
+    /**
+     * Updates all application windows and remembers the selected scheme.
+     */
+    private void applyColourScheme(ColourScheme colourScheme) {
+        updateWindowColours(colourScheme);
+        updateColourSchemeSelection(colourScheme);
+        saveColourSchemePreference(colourScheme);
+    }
+
+    /**
+     * Applies the palette to both windows, including a hidden Help window.
+     */
+    private void updateWindowColours(ColourScheme colourScheme) {
+        ColourSchemeStyles.apply(primaryStage.getScene().getStylesheets(), colourScheme);
+        ColourSchemeStyles.apply(helpWindow.getRoot().getScene().getStylesheets(), colourScheme);
+    }
+
+    /**
+     * Marks the active palette in the menu.
+     */
+    private void updateColourSchemeSelection(ColourScheme colourScheme) {
+        darkSchemeMenuItem.setSelected(colourScheme == ColourScheme.DARK);
+        lightSchemeMenuItem.setSelected(colourScheme == ColourScheme.LIGHT);
+    }
+
+    /**
+     * Retains window geometry when updating the saved palette choice.
+     */
+    private void saveColourSchemePreference(ColourScheme colourScheme) {
+        logic.setGuiSettings(logic.getGuiSettings().withColourScheme(colourScheme));
     }
 
     public Stage getPrimaryStage() {
@@ -176,7 +234,7 @@ public class MainWindow extends UiPart<Stage> {
     private void handleExit() {
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
                 (int) primaryStage.getX(), (int) primaryStage.getY());
-        logic.setGuiSettings(guiSettings);
+        logic.setGuiSettings(guiSettings.withColourScheme(logic.getGuiSettings().getColourScheme()));
         helpWindow.hide();
         primaryStage.hide();
     }

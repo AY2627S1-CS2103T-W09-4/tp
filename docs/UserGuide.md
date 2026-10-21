@@ -40,6 +40,16 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 --------------------------------------------------------------------------------------------------------------------
 
+## Changing the colour scheme
+
+Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
+selected option is marked in the menu and takes effect immediately in the main
+window and Help window. Command errors remain highlighted in both schemes.
+
+Dark is the default. Your choice is saved with your preferences when you exit
+normally, and restored the next time you launch InsureConnect. Switching schemes
+preserves your command text, output, and selected contact.
+
 ## Features
 
 <div markdown="block" class="alert alert-info">
@@ -214,6 +224,18 @@ Furthermore, certain edits can cause InsureConnect to behave in unexpected ways 
 _Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
+
+### Loading contact files from older versions
+
+Contact files without `createdAt` timestamps load automatically. Their existing
+contact details are preserved, and unknown creation dates use
+`1970-01-01T00:00:00Z` as a stable fallback for creation-date sorting. This is a
+migration value, not the actual creation date. The timestamp is written on the
+next successful save; loading alone does not rewrite the file. Existing valid
+timestamps are retained. Malformed timestamps and other invalid contact data
+still produce a loading warning. Old labels are not converted into policy
+numbers: policy numbers must still be valid and unique across contacts.
+
 
 ## FAQ
 

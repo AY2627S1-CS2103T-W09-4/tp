@@ -5,13 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
+import static seedu.insureconnect.testutil.TypicalPersons.BENSON;
 import static seedu.insureconnect.testutil.TypicalPersons.HOON;
 import static seedu.insureconnect.testutil.TypicalPersons.IDA;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -87,6 +91,28 @@ public class JsonInsureConnectStorageTest {
         readBack = jsonInsureConnectStorage.readInsureConnect().get(); // file path not specified
         assertEquals(original, new InsureConnect(readBack));
 
+    }
+
+    @Test
+    public void readAndSaveInsureConnect_legacyFile_preservesContactsAndMigratesTimestamp() throws Exception {
+        Path filePath = testFolder.resolve("legacy.json");
+        Files.copy(TEST_DATA_FOLDER.resolve("legacyInsureConnect.json"), filePath);
+        String originalJson = Files.readString(filePath);
+        JsonInsureConnectStorage storage = new JsonInsureConnectStorage(filePath);
+
+        ReadOnlyInsureConnect restored = storage.readInsureConnect().orElseThrow();
+        assertEquals(List.of(ALICE, BENSON), restored.getPersonList());
+        assertEquals(Instant.EPOCH, restored.getPersonList().get(0).getCreatedAt());
+        assertEquals(BENSON.getCreatedAt(), restored.getPersonList().get(1).getCreatedAt());
+        assertEquals(originalJson, Files.readString(filePath));
+        assertFalse(storage.isUnreadableFile(filePath));
+
+        storage.saveInsureConnect(restored);
+        ReadOnlyInsureConnect reloaded = storage.readInsureConnect().orElseThrow();
+        assertEquals(restored.getPersonList(), reloaded.getPersonList());
+        assertEquals(Instant.EPOCH, reloaded.getPersonList().get(0).getCreatedAt());
+        assertEquals(BENSON.getCreatedAt(), reloaded.getPersonList().get(1).getCreatedAt());
+        assertTrue(Files.readString(filePath).contains("1970-01-01T00:00:00Z"));
     }
 
     @Test

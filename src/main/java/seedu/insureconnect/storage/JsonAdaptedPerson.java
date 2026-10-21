@@ -75,68 +75,104 @@ class JsonAdaptedPerson {
      * @throws IllegalValueException if there were any data constraints violated in the adapted person.
      */
     public Person toModelType() throws IllegalValueException {
-        final List<Tag> personTags = new ArrayList<>();
-        for (JsonAdaptedTag tag : tags) {
-            personTags.add(tag.toModelType());
-        }
+        return new Person(readName(), readPhone(), readEmail(), readAddress(),
+                readTags(), readRemark(), readCreatedAt());
+    }
 
+    /**
+     * Validates and restores the customer's name.
+     */
+    private Name readName() throws IllegalValueException {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Name.class.getSimpleName()));
         }
         if (!Name.isValidName(name)) {
             throw new IllegalValueException(Name.MESSAGE_CONSTRAINTS);
         }
-        final Name modelName = new Name(name);
+        return new Name(name);
+    }
 
+    /**
+     * Validates and restores the customer's phone number.
+     */
+    private Phone readPhone() throws IllegalValueException {
         if (phone == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName()));
         }
         if (!Phone.isValidPhone(phone)) {
             throw new IllegalValueException(Phone.MESSAGE_CONSTRAINTS);
         }
-        final Phone modelPhone = new Phone(phone);
+        return new Phone(phone);
+    }
 
+    /**
+     * Validates and restores the customer's email address.
+     */
+    private Email readEmail() throws IllegalValueException {
         if (email == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Email.class.getSimpleName()));
         }
         if (!Email.isValidEmail(email)) {
             throw new IllegalValueException(Email.MESSAGE_CONSTRAINTS);
         }
-        final Email modelEmail = new Email(email);
+        return new Email(email);
+    }
 
+    /**
+     * Validates and restores the customer's address.
+     */
+    private Address readAddress() throws IllegalValueException {
         if (address == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, Address.class.getSimpleName()));
         }
         if (!Address.isValidAddress(address)) {
             throw new IllegalValueException(Address.MESSAGE_CONSTRAINTS);
         }
-        final Address modelAddress = new Address(address);
+        return new Address(address);
+    }
 
-        final Set<Tag> modelTags = new HashSet<>(personTags);
+    /**
+     * Restores policy numbers and requires at least one policy.
+     */
+    private Set<Tag> readTags() throws IllegalValueException {
+        final Set<Tag> modelTags = new HashSet<>();
+        for (JsonAdaptedTag tag : tags) {
+            modelTags.add(tag.toModelType());
+        }
+
         if (modelTags.isEmpty()) {
             throw new IllegalValueException(Person.MESSAGE_MISSING_POLICY_NUMBER);
         }
 
-        if (createdAt == null) {
-            throw new IllegalValueException(
-                String.format(MISSING_FIELD_MESSAGE_FORMAT, "createdAt"));
-        }
+        return modelTags;
+    }
 
-        final Instant modelCreatedAt;
+    /**
+     * Restores the creation time, using the epoch for legacy records with an unknown date.
+     * A fixed fallback keeps repeated reads and creation-date sorting deterministic.
+     * Explicit but malformed timestamps remain invalid.
+     */
+    private Instant readCreatedAt() throws IllegalValueException {
+        if (createdAt == null) {
+            return Instant.EPOCH;
+        }
         try {
-            modelCreatedAt = Instant.parse(createdAt);
+            return Instant.parse(createdAt);
         } catch (DateTimeParseException e) {
             throw new IllegalValueException("Invalid createdAt timestamp: " + createdAt);
         }
+    }
 
+    /**
+     * Restores an optional remark, defaulting older records to an empty remark.
+     */
+    private Remark readRemark() throws IllegalValueException {
         String remarkValue = remark == null ? "" : remark;
 
         if (!Remark.isValidRemark(remarkValue)) {
             throw new IllegalValueException(Remark.MESSAGE_CONSTRAINTS);
         }
 
-        Remark modelRemark = new Remark(remarkValue);
-
-        return new Person(modelName, modelPhone, modelEmail, modelAddress, modelTags, modelRemark, modelCreatedAt);
+        return new Remark(remarkValue);
     }
 }
