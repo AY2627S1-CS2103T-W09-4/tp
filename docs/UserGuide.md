@@ -136,7 +136,7 @@ Examples:
 *  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
 *  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
 
-### Locating persons by name or phone number: `find`
+### Locating persons by name, phone number, or policy number: `find`
 
 Finds persons with a word in their name starting with any of the given keywords.
 
@@ -169,6 +169,17 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
   phone prefixes, is not supported and produces an error.
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
   A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
+
+To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
+
+* Policy-number searches use an exact match and are case-insensitive. For example,
+  `find t/life20001` finds a customer with policy number `LIFE20001`.
+* Supply exactly one policy number containing 1 to 30 letters or digits. Spaces, punctuation,
+  and multiple policy numbers are rejected.
+* Each command searches either names, phone numbers, or a policy number. Combining `t/` with
+  name keywords or `p/` is not supported and produces an error.
+* A policy-number search replaces the previous search and display sort. Use the displayed
+  indexes for `edit` and `delete`.
 
 ### Deleting a person: `delete`
 
@@ -237,6 +248,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find p/DIGITS`<br> e.g., `find James Jake`, `find p/9876`
+**Find** | `find KEYWORD [MORE_KEYWORDS]`, `find p/DIGITS`, or `find t/POLICY_NUMBER`<br> e.g., `find James Jake`, `find p/9876`, `find t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
