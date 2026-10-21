@@ -12,7 +12,7 @@ import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Finds customers by case-insensitive name prefixes or by a phone number prefix.
+ * Finds customers by case-insensitive name prefixes, phone-number prefixes, or an exact policy number.
  * Exact name-word matches appear before prefix-only name matches.
  */
 public class FindCommand extends Command {
@@ -20,11 +20,11 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds all persons with a name word starting with any of the specified keywords (case-insensitive) "
-            + "and displays them as a list with index numbers, with exact name words before prefix-only matches.\n"
-            + "Alternatively, searches for phone numbers starting with the digits after p/.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]... OR p/DIGITS\n"
-            + "Examples: " + COMMAND_WORD + " alice bob charlie; " + COMMAND_WORD + " p/9876";
+            + ": Finds customers by name, phone-number prefix, or exact policy number.\n"
+            + "Parameters: KEYWORD [MORE_KEYWORDS]... OR p/DIGITS OR t/POLICY_NUMBER\n"
+            + "Examples: " + COMMAND_WORD + " alice; "
+            + COMMAND_WORD + " p/9876; "
+            + COMMAND_WORD + " t/LIFE20001";
 
     private final Predicate<Person> predicate;
 
@@ -44,7 +44,7 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Ranks name matches by relevance and leaves phone matches in stored order.
+     * Ranks name matches by relevance and leaves phone and policy-number matches in stored order.
      */
     private Comparator<Person> getResultComparator() {
         if (predicate instanceof NameContainsKeywordsPredicate namePredicate) {
