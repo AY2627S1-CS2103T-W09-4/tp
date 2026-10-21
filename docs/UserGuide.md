@@ -209,7 +209,7 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from InsureConnect.
+Clears all entries from InsureConnect after confirmation. When prompted, enter `y` to clear the records. Enter `n`, press Enter without a response, or enter anything else to cancel. The default response is `n`.
 
 Format: `clear`
 
