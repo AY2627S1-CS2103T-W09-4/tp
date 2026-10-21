@@ -314,20 +314,20 @@ public class LogicManagerTest {
 
         logic.execute("delete 1");
 
-        assertThrows(CommandException.class,
-                String.format(LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()),
-                () -> logic.execute("confirm"));
+        String expectedSaveFailureMessage = String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedSaveFailureMessage, () -> logic.execute("confirm"));
 
         // Both stored data and the displayed filtered list are restored.
         assertEquals(originalPersons, model.getInsureConnect().getPersonList());
         assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
 
         // The failed confirmation must not remain reusable.
-        assertThrows(CommandException.class,
-                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION,
-                () -> logic.execute("confirm"));
+        String expectedNoPendingDeletionMessage =
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION;
+        assertThrows(CommandException.class, expectedNoPendingDeletionMessage, () -> logic.execute("confirm"));
 
-// A second confirmation must not change the restored data or displayed list.
+        // A second confirmation must not change the restored data or displayed list.
         assertEquals(originalPersons, model.getInsureConnect().getPersonList());
         assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
     }
