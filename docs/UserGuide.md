@@ -121,11 +121,13 @@ If an added person is a duplicate, InsureConnect explains that the name and phon
 the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
 so the index refers to the full displayed list.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A customer must have at least one policy number. An existing customer's policy number cannot be reused.
 </div>
+
+* `r/REMARK` is optional. If omitted, the customer's remark is empty. Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
@@ -145,11 +147,13 @@ Use either `n/` or `c/`, without a value. Other arguments are invalid.
 
 Edits an existing person in InsureConnect.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
+* Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
 * At least one policy number must remain. `t/` without a value is rejected.
@@ -158,6 +162,8 @@ Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
 *  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
+*  `edit 1 r/Prefers WhatsApp after 6pm` Replaces the 1st person's remark.
+*  `edit 1 r/` Clears the 1st person's remark.
 
 ### Locating persons by name or phone number: `find`
 
@@ -268,10 +274,10 @@ numbers: policy numbers must still be valid and unique across contacts.
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
+**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find p/DIGITS`<br> e.g., `find James Jake`, `find p/9876`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
