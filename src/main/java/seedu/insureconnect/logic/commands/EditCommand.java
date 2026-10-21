@@ -48,6 +48,7 @@ public class EditCommand extends Command {
             + "[" + PREFIX_ADDRESS + "ADDRESS] "
             + "[" + PREFIX_REMARK + "REMARK] "
             + "[" + PREFIX_TAG + "POLICY_NUMBER]...\n"
+            + "Use " + PREFIX_REMARK + " with an empty value to clear the remark.\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -150,7 +151,7 @@ public class EditCommand extends Command {
     }
 
     /**
-     * Stores the details to edit the person with. Each non-empty field value will replace the
+     * Stores the details to edit the person with. Each supplied field value will replace the
      * corresponding field value of the person.
      */
     public static class EditPersonDescriptor {
