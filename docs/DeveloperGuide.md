@@ -159,6 +159,14 @@ Classes used by multiple components are in the `seedu.insureconnect.commons` pac
 
 ## **Implementation**
 
+This section describes some noteworthy details on how certain features are implemented.
+
+### Editing a customer's remark
+
+`InsureConnectParser` sends an `edit` command to `EditCommandParser`. The parser reads the displayed-list index and the supplied prefixes, including `r/`, then creates an `EditPersonDescriptor`. A missing `r/` leaves the descriptor's remark as `null`, meaning that the existing remark should be kept. If `r/` is present without text, `ParserUtil.parseRemark` creates an empty `Remark`, meaning that the existing remark should be cleared. Remark input is trimmed, repeated whitespace is collapsed, and values longer than 500 characters after normalization are rejected. Duplicate `r/` prefixes are rejected.
+
+`EditCommand` selects the customer by index from the current filtered list. It creates a replacement `Person` using the supplied descriptor values and retaining existing values for omitted fields, including the remark. The original creation time is retained. After checking for duplicate customers and policy numbers, the command replaces the person in the model and shows the full list. `LogicManager` saves the data when it has changed.
+
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, dev-ops**
@@ -318,7 +326,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 **MSS**
 
 1.  Agent <u>finds the customer (UC02)</u>.
-2.  Agent requests to edit a specific customer in the displayed list, providing the new details.
+2.  Agent requests to edit a specific customer in the displayed list, providing the new details. The agent may provide `r/REMARK` to replace the remark or `r/` to clear it.
 3.  InsureConnect updates the customer and shows the updated details.
 
     Use case ends.
@@ -335,7 +343,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
       Use case resumes at step 2.
 
-* 2b. No new details are given, or a new detail is in an invalid format.
+* 2b. No new details are given, or a new detail is in an invalid format, such as a remark longer than 500 characters after normalization.
 
     * 2b1. InsureConnect shows an error message stating which detail is missing or invalid.
 
@@ -395,7 +403,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Customer**: A person whose details are recorded in InsureConnect, who holds at least one insurance policy sold by the agent
 * **Policy**: An insurance contract held by a customer, such as a life, health, motor or travel insurance plan
 * **Policy number**: The unique code that identifies a policy, made up of 1 to 30 letters and digits (e.g. `LIFE20481`). Every customer has at least one, and no two customers can share the same policy number. Entered with the `t/` prefix
-* **Remark**: A free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`)
+* **Remark**: An optional free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`). The `r/` prefix sets it, and `edit INDEX r/` clears it. An omitted remark is stored as an empty string when adding a customer
 * **Duplicate customer**: A customer whose name (ignoring case and extra spaces) and phone number are both identical to those of an existing customer. Two customers with the same name but different phone numbers are not duplicates
 * **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
 * **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
@@ -462,6 +470,24 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Editing a remark
+
+1. Set, preserve, and clear a remark
+
+   1. Prerequisites: List all persons using `list`, with at least one person in the list.
+
+   1. Test case: `edit 1 r/Follow up next week`<br>
+      Expected: The first person's remark becomes `Follow up next week`.
+
+   1. Test case: `edit 1 e/updated@example.com`<br>
+      Expected: The email changes and the remark remains `Follow up next week`.
+
+   1. Test case: `edit 1 r/`<br>
+      Expected: The first person's remark becomes empty.
+
+   1. Test case: `edit 1 r/` followed by 501 characters<br>
+      Expected: The edit is rejected because the remark exceeds 500 characters.
 
 ### Saving data
 
