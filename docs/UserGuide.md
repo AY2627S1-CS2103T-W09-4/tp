@@ -20,7 +20,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 1. Copy the file to the folder you want to use as the _home folder_ for your InsureConnect.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar insureconnect.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
+   A GUI similar to the one below should appear in a few seconds. <br>
    ![Ui](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
