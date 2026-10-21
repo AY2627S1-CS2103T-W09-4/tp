@@ -1,5 +1,7 @@
 package seedu.insureconnect.logic.commands;
 
+import static seedu.insureconnect.logic.commands.CommandFormats.HELP_COMMAND_FORMAT;
+
 import seedu.insureconnect.model.Model;
 
 /**
@@ -8,9 +10,8 @@ import seedu.insureconnect.model.Model;
 public class HelpCommand extends Command {
 
     public static final String COMMAND_WORD = "help";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Shows program usage instructions.\n"
-            + "Example: " + COMMAND_WORD;
+            + "Format: " + HELP_COMMAND_FORMAT;
 
     public static final String SHOWING_HELP_MESSAGE = "Opened help window.";
 
