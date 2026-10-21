@@ -20,6 +20,9 @@
               prefWrapLength="210" vgap="6" />
   </HBox>
   <GridPane fx:id="details" hgap="18" vgap="12" VBox.vgrow="ALWAYS">
+    <padding>
+      <Insets left="60" />
+    </padding>
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" percentWidth="50" minWidth="0" />
       <ColumnConstraints hgrow="ALWAYS" percentWidth="50" minWidth="0" />
