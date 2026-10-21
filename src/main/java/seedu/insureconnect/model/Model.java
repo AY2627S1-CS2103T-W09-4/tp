@@ -70,6 +70,8 @@ public interface Model {
      */
     void updateFilteredPersonList(Predicate<Person> predicate);
 
+    Comparator<Person> getPersonListComparator();
+
     /** Updates the display order. A null comparator restores the stored order. */
     void updatePersonListComparator(Comparator<Person> comparator);
 

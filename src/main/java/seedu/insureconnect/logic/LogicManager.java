@@ -2,6 +2,7 @@ package seedu.insureconnect.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -51,12 +52,14 @@ public class LogicManager implements Logic {
         Command command = insureConnectParser.parseCommand(commandText);
         ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
         Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
+        Comparator<Person> previousComparator = model.getPersonListComparator();
 
         try {
             commandResult = command.execute(model);
         } catch (CommandException ce) {
             model.setInsureConnect(previousData);
             model.updateFilteredPersonList(previousFilter);
+            model.updatePersonListComparator(previousComparator);
             throw ce;
         }
 
@@ -66,10 +69,12 @@ public class LogicManager implements Logic {
             } catch (AccessDeniedException e) {
                 model.setInsureConnect(previousData);
                 model.updateFilteredPersonList(previousFilter);
+                model.updatePersonListComparator(previousComparator);
                 throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
             } catch (IOException ioe) {
                 model.setInsureConnect(previousData);
                 model.updateFilteredPersonList(previousFilter);
+                model.updatePersonListComparator(previousComparator);
                 throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
             }
         }

@@ -25,6 +25,8 @@ public class ModelManager implements Model {
     private final FilteredList<Person> filteredPersons;
     private final SortedList<Person> displayedPersons;
 
+    private Comparator<Person> personListComparator;
+
     /**
      * Initializes a ModelManager with the given insureConnect and userPrefs.
      */
@@ -88,6 +90,7 @@ public class ModelManager implements Model {
     public void addPerson(Person person) {
         insureConnect.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        updatePersonListComparator(null);
     }
 
     @Override
@@ -115,7 +118,13 @@ public class ModelManager implements Model {
 
     @Override
     public void updatePersonListComparator(Comparator<Person> comparator) {
+        personListComparator = comparator;
         displayedPersons.setComparator(comparator);
+    }
+
+    @Override
+    public Comparator<Person> getPersonListComparator() {
+        return personListComparator;
     }
 
     @Override
