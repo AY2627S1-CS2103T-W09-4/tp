@@ -1,6 +1,9 @@
 package seedu.insureconnect.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.BENSON;
 
@@ -11,87 +14,79 @@ import org.junit.jupiter.api.Test;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.GridPane;
-import javafx.stage.Stage;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.Region;
 import seedu.insureconnect.model.person.Person;
 
 public class PersonListPanelTest extends GuiTest {
 
+    private static final double CARD_WIDTH_MARGIN = 28;
+
     @Test
-    public void list_modelChanges_rebuildsDisplayedCardsAndIndices() throws Exception {
+    public void constructor_nonEmptyList_displaysItemsSelectsFirstAndExposesFocusTarget() throws Exception {
         runOnFxThread(() -> {
-            ObservableList<Person> persons = FXCollections.observableArrayList(ALICE);
+            ObservableList<Person> persons = FXCollections.observableArrayList(ALICE, BENSON);
             PersonListPanel panel = new PersonListPanel(persons);
-            show(panel.getRoot());
-            GridPane cards = cardsOf(panel);
+            ListView<Person> listView = listViewOf(panel);
 
-            assertEquals(List.of(ALICE.getName().fullName), namesOf(cards));
-            assertEquals(List.of("01"), idsOf(cards));
+            assertSame(persons, listView.getItems());
+            assertEquals(ALICE, panel.getSelectedPerson());
+            assertEquals(ALICE, panel.selectedPersonProperty().get());
+            assertSame(listView, panel.getFocusTarget());
+        });
+    }
 
-            persons.setAll(BENSON, ALICE);
-            assertEquals(List.of(BENSON.getName().fullName, ALICE.getName().fullName), namesOf(cards));
-            assertEquals(List.of("01", "02"), idsOf(cards));
+    @Test
+    public void list_modelChanges_updatesItemsAndMaintainsSensibleSelection() throws Exception {
+        runOnFxThread(() -> {
+            ObservableList<Person> persons = FXCollections.observableArrayList(ALICE, BENSON);
+            PersonListPanel panel = new PersonListPanel(persons);
+            ListView<Person> listView = listViewOf(panel);
+
+            listView.getSelectionModel().select(BENSON);
+            persons.remove(BENSON);
+
+            assertEquals(List.of(ALICE), listView.getItems());
+            assertEquals(ALICE, panel.getSelectedPerson());
 
             persons.clear();
-            assertEquals(List.of(), cards.getChildren());
+            assertTrue(listView.getItems().isEmpty());
+            assertNull(panel.getSelectedPerson());
+
+            persons.addAll(BENSON, ALICE);
+            assertEquals(List.of(BENSON, ALICE), listView.getItems());
+            assertEquals(BENSON, panel.getSelectedPerson());
         });
     }
 
     @Test
-    public void layout_viewportResizes_reflowsCardsBetweenOneAndTwoColumns() throws Exception {
+    public void layout_listWidthChanges_cardWidthTracksAvailableSpace() throws Exception {
         runOnFxThread(() -> {
-            PersonListPanel panel = new PersonListPanel(FXCollections.observableArrayList(ALICE, BENSON));
-            Stage stage = show(panel.getRoot());
-            GridPane cards = cardsOf(panel);
-            ScrollPane scroll = (ScrollPane) panel.getRoot().lookup("#personScrollPane");
+            PersonListPanel panel = new PersonListPanel(FXCollections.observableArrayList(ALICE));
+            show(panel.getRoot());
+            ListView<Person> listView = listViewOf(panel);
+            Region card = visibleCardFor(listView, ALICE);
 
-            stage.setWidth(700);
-            resizeAndLayout(panel, scroll, 700);
-            assertEquals(0, columnOf(cards.getChildren().get(0)));
-            assertEquals(0, columnOf(cards.getChildren().get(1)));
+            assertTrue(card.prefWidthProperty().isBound());
+            assertEquals(listView.getWidth() - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
 
-            stage.setWidth(1200);
-            resizeAndLayout(panel, scroll, 1200);
-            assertEquals(0, columnOf(cards.getChildren().get(0)));
-            assertEquals(1, columnOf(cards.getChildren().get(1)), () -> "viewport="
-                    + scroll.getViewportBounds().getWidth() + ", root=" + panel.getRoot().getWidth()
-                    + ", scroll=" + scroll.getWidth());
-
-            stage.setWidth(700);
-            resizeAndLayout(panel, scroll, 700);
-            assertEquals(0, columnOf(cards.getChildren().get(0)));
-            assertEquals(0, columnOf(cards.getChildren().get(1)));
+            listView.resize(500, listView.getHeight());
+            assertEquals(500 - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
         });
     }
 
-    private GridPane cardsOf(PersonListPanel panel) {
-        return (GridPane) panel.getRoot().lookup("#personCards");
+    @SuppressWarnings("unchecked")
+    private ListView<Person> listViewOf(PersonListPanel panel) {
+        return (ListView<Person>) panel.getRoot().lookup("#personListView");
     }
 
-    private List<String> namesOf(GridPane cards) {
-        return cards.getChildren().stream().map(card -> labelOf(card, "name").getText()).toList();
-    }
-
-    private List<String> idsOf(GridPane cards) {
-        return cards.getChildren().stream().map(card -> labelOf(card, "id").getText()).toList();
-    }
-
-    private Label labelOf(Node card, String id) {
-        return (Label) card.lookup("#" + id);
-    }
-
-    private int columnOf(Node card) {
-        Integer column = GridPane.getColumnIndex(card);
-        return column == null ? 0 : column;
-    }
-
-    private void resizeAndLayout(PersonListPanel panel, ScrollPane scroll, double width) {
-        panel.getRoot().resize(width, panel.getRoot().getHeight());
-        panel.getRoot().applyCss();
-        panel.getRoot().layout();
-        scroll.applyCss();
-        scroll.layout();
+    private Region visibleCardFor(ListView<Person> listView, Person person) {
+        for (Node node : listView.lookupAll(".list-cell")) {
+            if (node instanceof ListCell<?> cell && person.equals(cell.getItem())) {
+                return (Region) cell.getGraphic();
+            }
+        }
+        throw new AssertionError("No visible card found for " + person.getName().fullName);
     }
 }
