@@ -3,6 +3,7 @@ package seedu.insureconnect.ui;
 import static java.util.Objects.requireNonNull;
 
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Region;
 
@@ -20,9 +21,18 @@ public class ResultDisplay extends UiPart<Region> {
         super(FXML);
     }
 
+    /**
+     * Displays the supplied feedback to the user.
+     */
     public void setFeedbackToUser(String feedbackToUser) {
         requireNonNull(feedbackToUser);
         resultDisplay.setText(feedbackToUser);
     }
 
+    /**
+     * Returns the control that receives keyboard focus for this area.
+     */
+    Node getFocusTarget() {
+        return resultDisplay;
+    }
 }

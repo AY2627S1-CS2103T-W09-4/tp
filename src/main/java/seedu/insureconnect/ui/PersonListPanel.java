@@ -4,6 +4,7 @@ import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
@@ -30,6 +31,13 @@ public class PersonListPanel extends UiPart<Region> {
     }
 
     /**
+     * Returns the control that receives keyboard focus for this area.
+     */
+    Node getFocusTarget() {
+        return personListView;
+    }
+
+    /**
      * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
      */
     class PersonListViewCell extends ListCell<Person> {
@@ -45,5 +53,4 @@ public class PersonListPanel extends UiPart<Region> {
             }
         }
     }
-
 }

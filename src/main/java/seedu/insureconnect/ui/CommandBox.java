@@ -2,6 +2,7 @@ package seedu.insureconnect.ui;
 
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 import seedu.insureconnect.logic.commands.CommandResult;
@@ -70,6 +71,13 @@ public class CommandBox extends UiPart<Region> {
     }
 
     /**
+     * Returns the control that receives keyboard focus for this area.
+     */
+    Node getFocusTarget() {
+        return commandTextField;
+    }
+
+    /**
      * Represents a function that can execute commands.
      */
     @FunctionalInterface
@@ -81,5 +89,4 @@ public class CommandBox extends UiPart<Region> {
          */
         CommandResult execute(String commandText) throws CommandException, ParseException;
     }
-
 }
