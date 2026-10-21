@@ -19,10 +19,6 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.PREAMBLE_WHITES
 import static seedu.insureconnect.logic.commands.CommandTestUtil.REMARK_DESC;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.TAG_DESC_HUSBAND;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_NAME_BOB;
-import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_REMARK;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_FRIEND;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.VALID_TAG_HUSBAND;
@@ -144,65 +140,80 @@ public class AddCommandParserTest {
     @Test
     public void parse_policyNumberMissing_failure() {
         assertParseFailure(parser, NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+                expectedFormatError("Missing required field: policy number (t/)."));
     }
 
     @Test
     public void parse_compulsoryFieldMissing_failure() {
-        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
-
         // missing name prefix
-        assertParseFailure(parser, VALID_NAME_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
+        assertParseFailure(parser, PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required field: name (n/)."));
 
         // missing phone prefix
-        assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
+        assertParseFailure(parser, NAME_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required field: phone (p/)."));
 
         // missing email prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required field: email (e/)."));
 
         // missing address prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + VALID_ADDRESS_BOB,
-                expectedMessage);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required field: address (a/)."));
 
-        // all prefixes missing
-        assertParseFailure(parser, VALID_NAME_BOB + VALID_PHONE_BOB + VALID_EMAIL_BOB + VALID_ADDRESS_BOB,
-                expectedMessage);
+        // multiple fields missing
+        assertParseFailure(parser, EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required fields: name (n/), phone (p/)."));
+
+        // all required prefixes missing
+        assertParseFailure(parser, "", expectedFormatError(
+                "Missing required fields: name (n/), phone (p/), email (e/), address (a/), policy number (t/)."));
+
+        // missing fields and unprefixed text are both reported
+        assertParseFailure(parser, PREAMBLE_NON_EMPTY + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                expectedFormatError("Missing required fields: name (n/), phone (p/)."
+                        + " Unexpected text before the first field: \""
+                        + PREAMBLE_NON_EMPTY.trim() + "\"."));
     }
 
     @Test
     public void parse_invalidValue_failure() {
         // invalid name
         assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Name.MESSAGE_CONSTRAINTS);
+                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, "Invalid name: " + Name.MESSAGE_CONSTRAINTS);
 
         // invalid phone
         assertParseFailure(parser, NAME_DESC_BOB + INVALID_PHONE_DESC + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Phone.MESSAGE_CONSTRAINTS);
+                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, "Invalid phone: " + Phone.MESSAGE_CONSTRAINTS);
 
         // invalid email
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + INVALID_EMAIL_DESC + ADDRESS_DESC_BOB
-                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Email.MESSAGE_CONSTRAINTS);
+                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, "Invalid email: " + Email.MESSAGE_CONSTRAINTS);
 
         // invalid address
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC
-                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, Address.MESSAGE_CONSTRAINTS);
+                + TAG_DESC_HUSBAND + TAG_DESC_FRIEND, "Invalid address: " + Address.MESSAGE_CONSTRAINTS);
 
         // invalid tag
         assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
-                + INVALID_TAG_DESC + VALID_TAG_FRIEND, Tag.MESSAGE_CONSTRAINTS);
+                + INVALID_TAG_DESC + VALID_TAG_FRIEND, "Invalid policy number: " + Tag.MESSAGE_CONSTRAINTS);
 
         // two invalid values, only first invalid value reported
         assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC
                         + TAG_DESC_FRIEND,
-                Name.MESSAGE_CONSTRAINTS);
+                "Invalid name: " + Name.MESSAGE_CONSTRAINTS);
 
         // non-empty preamble
         assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_HUSBAND + TAG_DESC_FRIEND,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+                expectedFormatError("Unexpected text before the first field: \"" + PREAMBLE_NON_EMPTY.trim()
+                        + "\"."));
+    }
+
+    @Test
+    public void parse_emptyRequiredField_failure() {
+        assertParseFailure(parser, " n/" + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                "Invalid name: " + Name.MESSAGE_CONSTRAINTS);
     }
 
     @Test
@@ -258,7 +269,7 @@ public class AddCommandParserTest {
         assertParseFailure(parser,
                 NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                         + ADDRESS_DESC_BOB + TAG_DESC_FRIEND + invalidRemarkDescription,
-                Remark.MESSAGE_CONSTRAINTS);
+                "Invalid remark: " + Remark.MESSAGE_CONSTRAINTS);
     }
 
     @Test
@@ -276,5 +287,9 @@ public class AddCommandParserTest {
                 new AddCommand(expectedPerson));
     }
 
+
+    private static String expectedFormatError(String details) {
+        return String.format(MESSAGE_INVALID_COMMAND_FORMAT, details + "\n" + AddCommand.MESSAGE_USAGE);
+    }
 
 }
