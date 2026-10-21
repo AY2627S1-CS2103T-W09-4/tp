@@ -13,12 +13,14 @@ import org.junit.jupiter.api.Test;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -40,10 +42,16 @@ public class MainWindowTest extends GuiTest {
             assertEquals(700, window.getRoot().getHeight());
             assertEquals(30, window.getRoot().getX());
             assertEquals(40, window.getRoot().getY());
+            window.show();
             window.fillInnerParts();
+            window.getRoot().getScene().getRoot().applyCss();
+            window.getRoot().getScene().getRoot().layout();
             assertEquals("Load warning", outputOf(window).getText());
-            ListView<?> list = (ListView<?>) window.getPersonListPanel().getRoot().lookup("#personListView");
-            assertEquals(List.of(ALICE), list.getItems());
+            GridPane cards = (GridPane) window.getPersonListPanel().getRoot().lookup("#personCards");
+            assertEquals(1, cards.getChildren().size());
+            Node card = cards.getChildren().get(0);
+            assertEquals(ALICE.getName().fullName, ((Label) card.lookup("#name")).getText());
+            assertEquals("01", ((Label) card.lookup("#id")).getText());
         });
     }
 
