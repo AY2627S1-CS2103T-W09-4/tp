@@ -12,6 +12,7 @@ import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
 import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
+import seedu.insureconnect.model.tag.Tag;
 
 public class FindCommandParserTest {
 
@@ -84,7 +85,7 @@ public class FindCommandParserTest {
     public void parse_invalidPolicyNumber_throwsParseException() {
         for (String query : List.of("t/", "t/  ", "t/LIFE-20001", "t/LIFE 20001",
                 "t/LIFE20001 Alice", "t/LIFE20001 t/HEALTH20002")) {
-            assertParseFailure(parser, query, PolicyNumberMatchesPredicate.MESSAGE_CONSTRAINTS);
+            assertParseFailure(parser, query, Tag.MESSAGE_CONSTRAINTS);
         }
     }
 
