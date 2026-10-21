@@ -12,11 +12,12 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 public class FocusNavigationGuiTest extends GuiTest {
@@ -27,7 +28,7 @@ public class FocusNavigationGuiTest extends GuiTest {
             Scene scene = createScene(new UiLogicStub());
             TextField input = (TextField) scene.lookup("#commandTextField");
             Node output = scene.lookup("#resultDisplay");
-            Node contacts = scene.lookup("#personListView");
+            Node contacts = scene.lookup("#personScrollPane");
             input.setText("add n/Unfinished customer");
             input.requestFocus();
             assertCycle(scene, List.of(output, contacts, input), false);
@@ -37,17 +38,18 @@ public class FocusNavigationGuiTest extends GuiTest {
     }
 
     @Test
-    public void f6_populatedList_preservesSelectedCustomerAndReadOnlyOutput() throws Exception {
+    public void f6_populatedCards_preservesCustomerAndReadOnlyOutput() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
             logic.getFilteredPersonList().add(ALICE);
             Scene scene = createScene(logic);
             TextArea output = (TextArea) scene.lookup("#resultDisplay");
-            ListView<?> contacts = (ListView<?>) scene.lookup("#personListView");
-            contacts.getSelectionModel().select(0);
+            GridPane cards = (GridPane) scene.lookup("#personCards");
+            Node contacts = scene.lookup("#personScrollPane");
             contacts.requestFocus();
             assertCycle(scene, List.of(scene.lookup("#commandTextField"), output, contacts), false);
-            assertEquals(ALICE, contacts.getSelectionModel().getSelectedItem());
+            assertEquals(1, cards.getChildren().size());
+            assertEquals(ALICE.getName().fullName, ((Label) cards.getChildren().get(0).lookup("#name")).getText());
             assertFalse(output.isEditable());
         });
     }
