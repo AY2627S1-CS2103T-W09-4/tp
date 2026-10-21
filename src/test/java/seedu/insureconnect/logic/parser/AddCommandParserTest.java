@@ -214,6 +214,35 @@ public class AddCommandParserTest {
     public void parse_emptyRequiredField_failure() {
         assertParseFailure(parser, " n/" + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
                 "Invalid name: " + Name.MESSAGE_CONSTRAINTS);
+
+        // Empty and whitespace-only single-valued prefixes are present, but their values are invalid.
+        assertParseFailure(parser, NAME_DESC_BOB + " p/ " + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                "Invalid phone: " + Phone.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + " p/   " + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                "Invalid phone: " + Phone.MESSAGE_CONSTRAINTS);
+
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + " e/ " + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                "Invalid email: " + Email.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + " e/   " + ADDRESS_DESC_BOB + TAG_DESC_FRIEND,
+                "Invalid email: " + Email.MESSAGE_CONSTRAINTS);
+
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + " a/ " + TAG_DESC_FRIEND,
+                "Invalid address: " + Address.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + " a/   " + TAG_DESC_FRIEND,
+                "Invalid address: " + Address.MESSAGE_CONSTRAINTS);
+
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + " t/",
+                "Invalid policy number: " + Tag.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB + " t/   ",
+                "Invalid policy number: " + Tag.MESSAGE_CONSTRAINTS);
+
+        // An empty repeated tag is invalid whether it comes before or after a valid tag.
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                        + " t/" + TAG_DESC_FRIEND,
+                "Invalid policy number: " + Tag.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB
+                        + TAG_DESC_FRIEND + " t/",
+                "Invalid policy number: " + Tag.MESSAGE_CONSTRAINTS);
     }
 
     @Test
