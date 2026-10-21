@@ -3,6 +3,7 @@ package seedu.insureconnect.ui;
 import java.util.List;
 
 import javafx.scene.Node;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -50,8 +51,27 @@ class FocusNavigation {
      * Moves focus relative to the event target and prevents control-level handling of the shortcut.
      */
     private void moveFocus(KeyEvent event, boolean isReverse) {
-        getNextTarget(event, isReverse).requestFocus();
+        focusTarget(getNextTarget(event, isReverse));
         event.consume();
+    }
+
+    /**
+     * Focuses an area while retaining the editing state of text controls.
+     */
+    private void focusTarget(Node target) {
+        List<TextSelection> selections = captureTextSelections();
+        target.requestFocus();
+        selections.forEach(TextSelection::restore);
+    }
+
+    /**
+     * Captures editing state before either focus loss or focus gain changes a selection.
+     */
+    private List<TextSelection> captureTextSelections() {
+        return focusTargets.stream().filter(TextInputControl.class::isInstance)
+                .map(TextInputControl.class::cast)
+                .map(input -> new TextSelection(input, input.getAnchor(), input.getCaretPosition()))
+                .toList();
     }
 
     /**
@@ -82,5 +102,17 @@ class FocusNavigation {
         }
         int index = focusTargets.indexOf(node);
         return index == -1 ? getAreaIndex(node.getParent()) : index;
+    }
+
+    /**
+     * Retains selection direction as well as the insertion point for a text control.
+     */
+    private record TextSelection(TextInputControl input, int anchor, int caret) {
+        /**
+         * Restores the selection after native focus handling has completed.
+         */
+        private void restore() {
+            input.selectRange(anchor, caret);
+        }
     }
 }
