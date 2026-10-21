@@ -126,7 +126,7 @@ Adds a person to InsureConnect.
 A person is a duplicate only when both their name and phone number match an existing person.
 Name matching ignores case, leading or trailing spaces, and repeated spaces between words.
 For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
-People with the same name but different phone numbers, or different names with the same phone number, are allowed.
+Customers with the same name but different phone numbers, or different names with the same phone number, are allowed.
 Names are displayed as entered after surrounding spaces are trimmed by the command parser.
 If an added person is a duplicate, InsureConnect explains that the name and phone number already exist and identifies
 the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
@@ -152,27 +152,27 @@ Format: `list [n/|c/]`
 
 Use either `n/` or `c/`, without a value. Other arguments are invalid.
 
-### Editing a person: `edit`
+### Editing a customer: `edit`
 
-Edits an existing person in InsureConnect.
+Edits an existing customer in InsureConnect.
 
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the customer at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
+* An edit is rejected if the resulting name and phone number match another customer, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
 * At least one policy number must remain. `t/` without a value is rejected.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
-*  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
+*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st customer to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd customer.
+*  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st customer to be `Mohd a/l Kassim`.
 
-### Locating persons by name or phone number: `find`
+### Locating customers by name or phone number: `find`
 
-Finds persons with a word in their name starting with any of the given keywords.
+Finds customers with a word in their name starting with any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
@@ -185,7 +185,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Customers tied in match quality retain their stored order. Searching only changes the displayed order;
   `list` restores the full list in stored order, while `list n/` and `list c/` apply their respective sorts.
 * Full words also match, but middle-of-word and suffix matches do not; for example, `ans` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Customers matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -204,19 +204,19 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
   A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
 
-### Deleting a person: `delete`
+### Deleting a customer: `delete`
 
-Deletes the specified person from InsureConnect.
+Deletes the specified customer from InsureConnect.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Deletes the customer at the specified `INDEX`.
+* The index refers to the index number shown in the displayed customer list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in InsureConnect.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete 2` deletes the 2nd customer in InsureConnect.
+* `find Betsy` followed by `delete 1` deletes the 1st customer in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
@@ -242,10 +242,6 @@ InsureConnect data is saved automatically as a JSON file `[JAR file location]/da
 If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause InsureConnect to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
-
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
 
 --------------------------------------------------------------------------------------------------------------------
 

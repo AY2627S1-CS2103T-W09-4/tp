@@ -34,15 +34,21 @@ import seedu.insureconnect.model.tag.Tag;
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
+<<<<<<< HEAD
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
             + "by the index number used in the displayed person list. "
+=======
+
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the customer identified "
+            + "by the index number used in the displayed customer list. "
+>>>>>>> 9d0c072108b57dd9b3940464634bde82c96754d1
             + "Existing values will be overwritten by the input values.\n"
             + "Format: " + EDIT_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
 
-    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
+    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited customer: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PERSON = "This customer already exists in InsureConnect.";
 
