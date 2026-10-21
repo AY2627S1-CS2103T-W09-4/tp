@@ -70,6 +70,8 @@ public class LogicManager implements Logic {
 
         if (command instanceof DeleteCommand deleteCommand && !deleteCommand.isConfirmed()) {
             pendingDeleteCommand = deleteCommand;
+            logger.info("Deletion awaiting confirmation for displayed index "
+                    + deleteCommand.getTargetIndexOneBased());
         }
 
         if (!previousData.equals(model.getInsureConnect())) {
@@ -102,7 +104,10 @@ public class LogicManager implements Logic {
                         pendingDeleteCommand.getTargetIndexOneBased()));
             }
 
-            pendingDeleteCommand = null;
+            if (pendingDeleteCommand != null) {
+                logger.info("Pending deletion cancelled after an unrelated invalid command.");
+                pendingDeleteCommand = null;
+            }
             throw pe;
         }
     }
@@ -116,12 +121,17 @@ public class LogicManager implements Logic {
                 throw new CommandException(ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
             }
 
+            logger.info("Deletion confirmation received for displayed index "
+                    + pendingDeleteCommand.getTargetIndexOneBased());
             Command confirmedDelete = pendingDeleteCommand.confirmed();
             pendingDeleteCommand = null;
             return confirmedDelete;
         }
 
-        pendingDeleteCommand = null;
+        if (pendingDeleteCommand != null) {
+            logger.info("Pending deletion cancelled by " + command.getClass().getSimpleName());
+            pendingDeleteCommand = null;
+        }
         return command;
     }
 
