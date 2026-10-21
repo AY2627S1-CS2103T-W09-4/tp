@@ -20,7 +20,7 @@ public class FindCommand extends Command {
     public static final String COMMAND_WORD = "find";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds all persons with a name word starting with any of the specified keywords (case-insensitive) "
+            + ": Finds all customers with a name word starting with any of the specified keywords (case-insensitive) "
             + "and displays them as a list with index numbers, with exact name words before prefix-only matches.\n"
             + "Alternatively, searches for phone numbers starting with the digits after p/.\n"
             + "Parameters: KEYWORD [MORE_KEYWORDS]... OR p/DIGITS\n"

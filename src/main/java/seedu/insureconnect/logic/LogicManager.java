@@ -2,7 +2,9 @@ package seedu.insureconnect.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+
 import java.util.Locale;
+import java.util.Comparator;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -46,6 +48,16 @@ public class LogicManager implements Logic {
         insureConnectParser = new InsureConnectParser();
     }
 
+    /**
+     * Restores customer data and the displayed view after an unsuccessful command.
+     */
+    private void restoreModelState(ReadOnlyInsureConnect previousData,
+            Predicate<Person> previousFilter, Comparator<? super Person> previousComparator) {
+        model.setInsureConnect(previousData);
+        model.updateFilteredPersonList(previousFilter);
+        model.updatePersonListComparator(previousComparator);
+    }
+
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
@@ -72,12 +84,12 @@ public class LogicManager implements Logic {
         CommandResult commandResult;
         ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
         Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
+        Comparator<? super Person> previousComparator = model.getPersonListComparator();
 
         try {
             commandResult = command.execute(model);
         } catch (CommandException ce) {
-            model.setInsureConnect(previousData);
-            model.updateFilteredPersonList(previousFilter);
+            restoreModelState(previousData, previousFilter, previousComparator);
             throw ce;
         }
 
@@ -85,16 +97,13 @@ public class LogicManager implements Logic {
             try {
                 storage.saveInsureConnect(model.getInsureConnect());
             } catch (AccessDeniedException e) {
-                model.setInsureConnect(previousData);
-                model.updateFilteredPersonList(previousFilter);
+                restoreModelState(previousData, previousFilter, previousComparator);
                 throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
             } catch (IOException ioe) {
-                model.setInsureConnect(previousData);
-                model.updateFilteredPersonList(previousFilter);
+                restoreModelState(previousData, previousFilter, previousComparator);
                 throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
             }
         }
-
         return commandResult;
     }
 
