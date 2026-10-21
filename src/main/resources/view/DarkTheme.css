@@ -17,6 +17,12 @@
     -ic-button-hover: #3a3a3a;
     -ic-shadow: black;
     -ic-error: #d06651;
+    -ic-card: #111a24;
+    -ic-card-border: #27394b;
+    -ic-card-index: #0b1520;
+    -ic-card-muted: #71859a;
+    -ic-card-accent: #58a6ff;
+    -ic-card-pill: #172a40;
 }
 
 .background {
@@ -151,6 +157,71 @@
     -fx-font-family: "Segoe UI";
     -fx-font-size: 13px;
     -fx-text-fill: -ic-text;
+}
+
+.person-list-panel, .person-card-grid {
+    -fx-background-color: -ic-background;
+}
+
+.person-list-scroll, .person-list-scroll > .viewport {
+    -fx-background-color: -ic-background;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+.person-card {
+    -fx-background-color: -ic-card;
+    -fx-border-color: -ic-card-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+}
+
+.card-number {
+    -fx-alignment: center;
+    -fx-background-color: -ic-card-index;
+    -fx-background-radius: 7;
+    -fx-border-color: -ic-card-border;
+    -fx-border-radius: 7;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 20px;
+    -fx-text-fill: -ic-text;
+}
+
+.card-name {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 19px;
+    -fx-text-fill: -ic-text;
+}
+
+.field-caption {
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 12px;
+    -fx-text-fill: -ic-card-muted;
+}
+
+.field-icon {
+    -fx-font-family: "Segoe UI Symbol";
+    -fx-font-size: 15px;
+    -fx-text-fill: -ic-card-muted;
+}
+
+.field-value {
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+    -fx-text-fill: -ic-text;
+}
+
+.person-card-grid #tags .label {
+    -fx-text-fill: -ic-card-accent;
+    -fx-background-color: -ic-card-pill;
+    -fx-border-color: -ic-card-accent;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-padding: 3 9 3 9;
+    -fx-font-family: "Segoe UI Semibold";
+    -fx-font-size: 11px;
 }
 
 .stack-pane {
@@ -329,8 +400,11 @@
 }
 
 #cardPane {
-    -fx-background-color: transparent;
-    -fx-border-width: 0;
+    -fx-background-color: -ic-card;
+    -fx-border-color: -ic-card-border;
+    -fx-border-width: 1;
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
 }
 
 #commandTypeLabel {

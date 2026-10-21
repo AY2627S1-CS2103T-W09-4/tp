@@ -18,6 +18,12 @@
     -ic-button-hover: #e2e8f0;
     -ic-shadow: #9aa8b5;
     -ic-error: #a32116;
+    -ic-card: #ffffff;
+    -ic-card-border: #c8d5e2;
+    -ic-card-index: #f4f7fa;
+    -ic-card-muted: #64748b;
+    -ic-card-accent: #2878c7;
+    -ic-card-pill: #edf5ff;
     -fx-accent: #226078;
     -fx-focus-color: #226078;
     -fx-faint-focus-color: #22607833;
