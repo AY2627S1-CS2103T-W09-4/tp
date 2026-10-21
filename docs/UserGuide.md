@@ -53,6 +53,16 @@ and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on m
 The output is read-only. Press F6 twice from the output box to return to command entry.
 On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F6.
 
+## Changing the colour scheme
+
+Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
+selected option is marked in the menu and takes effect immediately in the main
+window and Help window. Command errors remain highlighted in both schemes.
+
+Dark is the default. Your choice is saved with your preferences when you exit
+normally, and restored the next time you launch InsureConnect. Switching schemes
+preserves your command text, output, and selected contact.
+
 ## Features
 
 <div markdown="block" class="alert alert-info">

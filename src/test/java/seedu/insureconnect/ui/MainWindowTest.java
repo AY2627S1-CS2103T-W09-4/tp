@@ -111,7 +111,8 @@ public class MainWindowTest extends GuiTest {
         runOnFxThread(() -> {
             MainWindow window = createWindow(new UiLogicStub());
             MenuBar menus = (MenuBar) window.getRoot().getScene().lookup("#menuBar");
-            menus.getMenus().get(1).getItems().getFirst().fire();
+            menus.getMenus().stream().flatMap(menu -> menu.getItems().stream())
+                    .filter(item -> "helpMenuItem".equals(item.getId())).findFirst().orElseThrow().fire();
             Stage help = helpStage();
             help.hide();
             inputOf(window).fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.F1,
