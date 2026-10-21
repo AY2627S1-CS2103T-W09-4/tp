@@ -216,9 +216,9 @@ public class MainWindow extends UiPart<Stage> {
 
         bindCustomerCount(displayedCustomers);
 
-        personListPanel.selectedPersonProperty().addListener((observable, oldCustomer, 
+        personListPanel.selectedPersonProperty().addListener((observable, oldCustomer,
             selectedCustomer) ->
-                        updateDisplayedCustomer(selectedCustomer));
+                updateDisplayedCustomer(selectedCustomer));
 
         updateDisplayedCustomer(personListPanel.getSelectedPerson());
     }
@@ -229,9 +229,8 @@ public class MainWindow extends UiPart<Stage> {
     private void bindCustomerCount(
             ObservableList<Person> displayedCustomers) {
         customerCountLabel.textProperty().bind(
-                Bindings.createStringBinding(
-                        () -> formatCustomerCount(displayedCustomers.size()),
-                        displayedCustomers));
+                Bindings.createStringBinding(() -> formatCustomerCount(displayedCustomers.size()),
+                    displayedCustomers));
     }
 
     /**

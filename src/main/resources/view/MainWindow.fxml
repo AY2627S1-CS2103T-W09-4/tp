@@ -39,7 +39,7 @@
         <HBox alignment="CENTER_LEFT"
               spacing="10"
               styleClass="app-header">
-              
+
           <ImageView fitWidth="24"
                     fitHeight="24"
                     preserveRatio="true"

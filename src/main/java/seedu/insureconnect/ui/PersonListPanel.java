@@ -19,12 +19,11 @@ import seedu.insureconnect.model.person.Person;
 public class PersonListPanel extends UiPart<Region> {
 
     private static final String FXML = "PersonListPanel.fxml";
+    private static final double CARD_WIDTH_MARGIN = 28;
 
     @FXML
     private ListView<Person> personListView;
-
     private int lastSelectedIndex;
-    private static final double CARD_WIDTH_MARGIN = 28;
 
     /**
      * Creates a {@code PersonListPanel} using the given list of customers.
