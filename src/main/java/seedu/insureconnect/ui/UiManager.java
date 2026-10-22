@@ -9,6 +9,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import seedu.insureconnect.MainApp;
+import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.commons.util.StringUtil;
 import seedu.insureconnect.logic.Logic;
@@ -101,7 +102,8 @@ public class UiManager implements Ui {
                 type,
                 title,
                 headerText,
-                contentText);
+                contentText,
+                logic.getGuiSettings().getColourScheme());
     }
 
     /**
@@ -111,7 +113,8 @@ public class UiManager implements Ui {
                                         AlertType type,
                                         String title,
                                         String headerText,
-                                        String contentText) {
+                                        String contentText,
+                                        ColourScheme colourScheme) {
         Alert alert = new Alert(type);
 
         alert.getDialogPane()
@@ -120,7 +123,7 @@ public class UiManager implements Ui {
 
         ColourSchemeStyles.apply(
                 alert.getDialogPane().getStylesheets(),
-                logic.getGuiSettings().getColourScheme());
+                colourScheme);
 
         alert.initOwner(owner);
         alert.setTitle(title);
@@ -133,7 +136,7 @@ public class UiManager implements Ui {
     }
 
     /**
-     * Shows a fatal-error dialog and exits the application.
+     * Shows a fatal-error dialog using a safe default theme and exits the application.
      */
     private void showFatalErrorDialogAndShutdown(
             Stage owner, String title, Throwable exception) {
@@ -148,7 +151,8 @@ public class UiManager implements Ui {
                 AlertType.ERROR,
                 title,
                 exception.getMessage(),
-                exception.toString());
+                exception.toString(),
+                ColourScheme.DARK);
 
         Platform.exit();
         System.exit(1);
