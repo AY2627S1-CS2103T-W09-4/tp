@@ -43,6 +43,9 @@ test {
         delete processCoverage
     }
     useJUnitPlatform()
+    testLogging {
+        exceptionFormat = 'full'
+    }
     finalizedBy jacocoTestReport
 }
 
