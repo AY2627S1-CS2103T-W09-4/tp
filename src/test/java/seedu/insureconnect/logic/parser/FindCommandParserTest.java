@@ -89,4 +89,9 @@ public class FindCommandParserTest {
         }
     }
 
+    @Test
+    public void parse_nameFollowedByPolicy_rejectsMixedSearchModes() {
+        assertParseFailure(parser, "Alice t/LIFE123",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
+    }
 }
