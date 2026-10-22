@@ -1,0 +1,53 @@
+@startuml
+!include style.puml
+skinparam ArrowFontStyle plain
+
+actor User as user USER_COLOR
+
+box UI UI_COLOR_T1
+participant "p:PersonListPanel" as PersonListPanel UI_COLOR
+participant "m:MainWindow" as MainWindow UI_COLOR
+participant "d:CustomerDetailsPanel" as CustomerDetailsPanel UI_COLOR
+end box
+
+box Model MODEL_COLOR_T1
+participant "selectedCustomer:Person" as Person MODEL_COLOR
+end box
+
+user -[USER_COLOR]> PersonListPanel : select customer
+activate PersonListPanel
+
+PersonListPanel -[UI_COLOR]> MainWindow : selectedPersonProperty changed\n(selectedCustomer)
+activate MainWindow
+
+MainWindow -> MainWindow : updateDisplayedCustomer(selectedCustomer)
+
+alt selectedCustomer != null
+    MainWindow -[UI_COLOR]> CustomerDetailsPanel : displayCustomer(selectedCustomer)
+    activate CustomerDetailsPanel
+
+    CustomerDetailsPanel -[UI_COLOR]> Person : getName(), getPhone(), getEmail(),\ngetAddress(), getTags(), getRemark()
+    activate Person
+    Person --[MODEL_COLOR]> CustomerDetailsPanel : customer details
+    deactivate Person
+
+    CustomerDetailsPanel --[UI_COLOR]> MainWindow
+    deactivate CustomerDetailsPanel
+else selectedCustomer == null
+    MainWindow -[UI_COLOR]> CustomerDetailsPanel : clear()
+    activate CustomerDetailsPanel
+    CustomerDetailsPanel --[UI_COLOR]> MainWindow
+    deactivate CustomerDetailsPanel
+end
+
+MainWindow --[UI_COLOR]> PersonListPanel
+deactivate MainWindow
+PersonListPanel --[UI_COLOR]> user
+deactivate PersonListPanel
+
+note over PersonListPanel, MainWindow
+The same notification occurs when a displayed-list change
+selects a replacement customer or clears the selection.
+end note
+
+@enduml
