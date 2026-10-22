@@ -61,6 +61,14 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void constructor_nullDependencies_rejectedImmediately() {
+        StorageManager storage = new StorageManager(new JsonInsureConnectStorage(insureConnectFile),
+                new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json")));
+        assertThrows(NullPointerException.class, () -> new LogicManager(null, storage));
+        assertThrows(NullPointerException.class, () -> new LogicManager(model, null));
+    }
+
+    @Test
     public void execute_invalidCommandFormat_throwsParseException() {
         String invalidCommand = "uicfhmowqewca";
         assertParseException(invalidCommand, MESSAGE_UNKNOWN_COMMAND);

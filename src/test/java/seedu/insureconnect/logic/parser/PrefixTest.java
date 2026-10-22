@@ -3,6 +3,7 @@ package seedu.insureconnect.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class PrefixTest {
     }
 
     @Test
-    public void nullPrefix_hashCodeIsZero() {
-        assertEquals(0, new Prefix(null).hashCode());
+    public void constructor_nullPrefix_rejectedImmediately() {
+        assertThrows(NullPointerException.class, () -> new Prefix(null));
     }
 }
