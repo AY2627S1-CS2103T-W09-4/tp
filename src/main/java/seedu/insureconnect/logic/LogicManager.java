@@ -2,6 +2,7 @@ package seedu.insureconnect.logic;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -9,6 +10,7 @@ import java.util.logging.Logger;
 import javafx.collections.ObservableList;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
+import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.Command;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
@@ -36,6 +38,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final InsureConnectParser insureConnectParser;
+    private boolean awaitingClearConfirmation;
 
     private DeleteCommand pendingDeleteCommand;
 
@@ -48,23 +51,50 @@ public class LogicManager implements Logic {
         insureConnectParser = new InsureConnectParser();
     }
 
+    /**
+     * Restores customer data and the displayed view after an unsuccessful command.
+     */
+    private void restoreModelState(ReadOnlyInsureConnect previousData,
+            Predicate<Person> previousFilter, Comparator<? super Person> previousComparator) {
+        model.setInsureConnect(previousData);
+        model.updateFilteredPersonList(previousFilter);
+        model.updatePersonListComparator(previousComparator);
+    }
+
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
+if (awaitingClearConfirmation) {
+    awaitingClearConfirmation = false;
+    if (!"y".equals(commandText.trim().toLowerCase(Locale.ROOT))) {
+        return new CommandResult(ClearCommand.MESSAGE_CANCELLED);
+    }
+    return executeCommand(new ClearCommand());
+}
 
-        Command command = parseCommandWithPendingDeletionHandling(commandText);
-        command = resolvePendingConfirmation(command);
+Command command = parseCommandWithPendingDeletionHandling(commandText);
+command = resolvePendingConfirmation(command);
 
+if (command instanceof ClearCommand) {
+    awaitingClearConfirmation = true;
+    return new CommandResult(ClearCommand.MESSAGE_CONFIRMATION, false, false, true);
+}
+
+return executeCommand(command);
+}
+
+/** Executes a parsed command and saves any resulting data changes. */
+private CommandResult executeCommand(Command command) throws CommandException {
+    CommandResult commandResult;
         ReadOnlyInsureConnect previousData = new InsureConnect(model.getInsureConnect());
         Predicate<Person> previousFilter = model.getFilteredPersonListPredicate();
+        Comparator<? super Person> previousComparator = model.getPersonListComparator();
 
         try {
             commandResult = command.execute(model);
         } catch (CommandException ce) {
-            model.setInsureConnect(previousData);
-            model.updateFilteredPersonList(previousFilter);
+            restoreModelState(previousData, previousFilter, previousComparator);
             throw ce;
         }
 
@@ -79,16 +109,13 @@ public class LogicManager implements Logic {
                 storage.saveInsureConnect(model.getInsureConnect());
                 logger.info("Successfully saved data after " + command.getClass().getSimpleName());
             } catch (AccessDeniedException e) {
-                model.setInsureConnect(previousData);
-                model.updateFilteredPersonList(previousFilter);
+                restoreModelState(previousData, previousFilter, previousComparator);
                 throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
             } catch (IOException ioe) {
-                model.setInsureConnect(previousData);
-                model.updateFilteredPersonList(previousFilter);
+                restoreModelState(previousData, previousFilter, previousComparator);
                 throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
             }
         }
-
         return commandResult;
     }
 

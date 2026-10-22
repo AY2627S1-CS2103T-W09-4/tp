@@ -5,6 +5,7 @@ import static seedu.insureconnect.storage.JsonAdaptedPerson.MISSING_FIELD_MESSAG
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.BENSON;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -130,23 +131,19 @@ public class JsonAdaptedPersonTest {
     }
 
     @Test
-    public void toModelType_nullCreatedAt_throwsIllegalValueException() {
-        JsonAdaptedPerson person = new JsonAdaptedPerson(
-                VALID_NAME,
-                VALID_PHONE,
-                VALID_EMAIL,
-                VALID_ADDRESS,
-                VALID_TAGS,
-                null,
-                null);
+    public void toModelType_nullCreatedAt_usesStableLegacyDate() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, null, null);
 
-        String expectedMessage =
-                String.format(MISSING_FIELD_MESSAGE_FORMAT, "createdAt");
+        assertEquals(Instant.EPOCH, person.toModelType().getCreatedAt());
+        assertEquals(Instant.EPOCH, person.toModelType().getCreatedAt());
+    }
 
-        assertThrows(
-                IllegalValueException.class,
-                expectedMessage,
-                person::toModelType);
+    @Test
+    public void toModelType_blankCreatedAt_throwsIllegalValueException() {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(VALID_NAME, VALID_PHONE, VALID_EMAIL,
+                VALID_ADDRESS, VALID_TAGS, null, "");
+        assertThrows(IllegalValueException.class, person::toModelType);
     }
 
     @Test

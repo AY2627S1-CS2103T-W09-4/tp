@@ -11,6 +11,7 @@ import static seedu.insureconnect.logic.commands.CommandTestUtil.NAME_DESC_AMY;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.AMY;
+import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -24,12 +25,14 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.logic.commands.AddCommand;
+import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
 import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
+import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.Model;
 import seedu.insureconnect.model.ModelManager;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
@@ -49,11 +52,12 @@ public class LogicManagerTest {
 
     private Model model = new ModelManager();
     private Logic logic;
+    private Path insureConnectFile;
 
     @BeforeEach
     public void setUp() {
-        JsonInsureConnectStorage insureConnectStorage =
-                new JsonInsureConnectStorage(temporaryFolder.resolve("insureConnect.json"));
+        insureConnectFile = temporaryFolder.resolve("insureConnect.json");
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(insureConnectFile);
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         StorageManager storage = new StorageManager(insureConnectStorage, userPrefsStorage);
         logic = new LogicManager(model, storage);
@@ -77,6 +81,62 @@ public class LogicManagerTest {
         assertCommandSuccess(listCommand,
                 String.format(ListCommand.MESSAGE_SUCCESS, model.getFilteredPersonList().size()),
                 model);
+    }
+
+    @Test
+    public void execute_clearThenConfirm_clearsAndPersistsRecords() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
+
+        CommandResult prompt = logic.execute(ClearCommand.COMMAND_WORD);
+        assertEquals(ClearCommand.MESSAGE_CONFIRMATION, prompt.getFeedbackToUser());
+        assertTrue(prompt.isConfirmationRequired());
+        assertEquals(recordsBeforePrompt, model.getInsureConnect());
+        assertFalse(Files.exists(insureConnectFile));
+
+        CommandResult result = logic.execute("Y");
+        assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(new InsureConnect(), model.getInsureConnect());
+        assertTrue(Files.exists(insureConnectFile));
+    }
+
+    @Test
+    public void execute_clearThenAnyOtherInput_cancelsWithoutSaving() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
+
+        logic.execute(ClearCommand.COMMAND_WORD);
+        CommandResult result = logic.execute("n");
+
+        assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
+        assertEquals(recordsBeforePrompt, model.getInsureConnect());
+        assertFalse(Files.exists(insureConnectFile));
+    }
+
+    @Test
+    public void execute_clearThenBlankInput_usesDefaultNo() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
+
+        logic.execute(ClearCommand.COMMAND_WORD);
+        CommandResult result = logic.execute("");
+
+        assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
+        assertEquals(recordsBeforePrompt, model.getInsureConnect());
+        assertFalse(Files.exists(insureConnectFile));
+    }
+
+    @Test
+    public void execute_clearThenAnotherCommand_discardsThatInputAndCancels() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
+
+        logic.execute(ClearCommand.COMMAND_WORD);
+        CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
+
+        assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
+        assertEquals(recordsBeforePrompt, model.getInsureConnect());
+        assertFalse(Files.exists(insureConnectFile));
     }
 
     @Test

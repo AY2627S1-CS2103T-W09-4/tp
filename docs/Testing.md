@@ -24,6 +24,36 @@ You can run tests in two ways.
 
 --------------------------------------------------------------------------------------------------------------------
 
+## JavaFX UI tests
+
+UI tests load the real FXML and run assertions on the JavaFX Application Thread.
+Run them with `./gradlew test --tests 'seedu.insureconnect.ui.*'` (Windows:
+`gradlew.bat test --tests "seedu.insureconnect.ui.*"`). They briefly open windows,
+so run them in a desktop session. On Linux without a display, install Xvfb and
+use `xvfb-run -a ./gradlew test`. Linux CI uses the same virtual-display approach;
+GUI tests fail rather than silently skipping when no display is available.
+
+New GUI test classes should extend `GuiTest` and use `runOnFxThread` for control
+creation, events, and assertions. The helper starts JavaFX once, propagates
+assertion failures with bounded waits, serializes GUI tests with a shared resource
+lock, and closes their windows after each test. Use `UiLogicStub` and the existing
+person builders to supply deterministic data without accessing saved contacts.
+The clipboard test restores the previous clipboard contents after checking Copy URL.
+
+`FocusNavigationGuiTest` verifies Stage event routing and real focus owners;
+`FocusNavigationTest` covers the navigation algorithm independently of a display.
+The GUI tests preserve draft text but do not assert caret/selection restoration:
+returning to command input currently selects the entire draft, a known behavior
+that should be addressed separately with a regression test.
+
+Generate coverage with `./gradlew clean test coverage`. Open
+`build/reports/jacoco/coverage/html/index.html` and select the UI package.
+The fatal startup-error path in `UiManager` is not exercised by these in-process
+tests because it terminates the JVM. Theme-switching tests belong with the separate
+colour-scheme feature, which is not included in this branch.
+
+--------------------------------------------------------------------------------------------------------------------
+
 ## Types of tests
 
 This project has three types of tests:

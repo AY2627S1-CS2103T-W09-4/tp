@@ -3,24 +3,30 @@ package seedu.insureconnect.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.beans.binding.Bindings;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.Logic;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
+import seedu.insureconnect.model.person.Person;
 
 /**
- * The Main Window. Provides the basic application layout containing
- * a menu bar and space where other JavaFX elements can be placed.
+ * The main application window.
  */
 public class MainWindow extends UiPart<Stage> {
 
@@ -30,11 +36,10 @@ public class MainWindow extends UiPart<Stage> {
 
     private Stage primaryStage;
     private Logic logic;
-    private Path dataFilePath;
     private String initialFeedback;
 
-    // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private CustomerDetailsPanel customerDetailsPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -42,78 +47,142 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane commandBoxPlaceholder;
 
     @FXML
-    private MenuItem helpMenuItem;
+    private StackPane resultDisplayPlaceholder;
 
     @FXML
     private StackPane personListPanelPlaceholder;
 
     @FXML
-    private StackPane resultDisplayPlaceholder;
+    private StackPane customerDetailsPlaceholder;
 
     @FXML
-    private StackPane statusbarPlaceholder;
+    private Label customerCountLabel;
+
+    @FXML
+    private MenuItem helpMenuItem;
+
+    @FXML
+    private RadioMenuItem darkSchemeMenuItem;
+
+    @FXML
+    private RadioMenuItem lightSchemeMenuItem;
 
     /**
-     * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
-     * and the data file path to show in the status bar.
+     * Creates a {@code MainWindow}.
+     *
+     * <p>The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.</p>
      */
-    public MainWindow(Stage primaryStage, Logic logic, Path dataFilePath) {
-        this(primaryStage, logic, dataFilePath, null);
+    public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath) {
+        this(primaryStage, logic, ignoredDataFilePath, null);
     }
 
     /**
-     * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
-     * data file path to show in the status bar, and initial feedback message.
+     * Creates a {@code MainWindow} with optional startup feedback.
+     *
+     * <p>The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.</p>
      */
-    public MainWindow(Stage primaryStage, Logic logic, Path dataFilePath, String initialFeedback) {
+    public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath,
+                      String initialFeedback) {
         super(FXML, primaryStage);
 
-        // Set dependencies
         this.primaryStage = primaryStage;
         this.logic = logic;
-        this.dataFilePath = dataFilePath;
         this.initialFeedback = initialFeedback;
 
-        // Configure the UI
-        setWindowDefaultSize(logic.getGuiSettings());
-
-        setAccelerators();
-
         helpWindow = new HelpWindow();
+        configureWindow();
+    }
+
+    /**
+     * Restores window preferences and connects menu actions.
+     */
+    private void configureWindow() {
+        setWindowDefaultSize(logic.getGuiSettings());
+        setAccelerators();
+        configureColourSchemeMenu();
+        applyColourScheme(logic.getGuiSettings().getColourScheme());
+    }
+
+    /**
+     * Connects the mutually exclusive colour-scheme menu choices.
+     */
+    private void configureColourSchemeMenu() {
+        ToggleGroup schemes = new ToggleGroup();
+
+        darkSchemeMenuItem.setToggleGroup(schemes);
+        lightSchemeMenuItem.setToggleGroup(schemes);
+
+        darkSchemeMenuItem.setOnAction(
+                event -> applyColourScheme(ColourScheme.DARK));
+        lightSchemeMenuItem.setOnAction(
+                event -> applyColourScheme(ColourScheme.LIGHT));
+    }
+
+    /**
+     * Applies and saves the selected colour scheme.
+     */
+    private void applyColourScheme(ColourScheme colourScheme) {
+        updateWindowColours(colourScheme);
+        updateColourSchemeSelection(colourScheme);
+        saveColourSchemePreference(colourScheme);
+    }
+
+    /**
+     * Applies the colour scheme to the main and help windows.
+     */
+    private void updateWindowColours(ColourScheme colourScheme) {
+        ColourSchemeStyles.apply(
+                primaryStage.getScene().getStylesheets(), colourScheme);
+
+        ColourSchemeStyles.apply(
+                helpWindow.getRoot().getScene().getStylesheets(), colourScheme);
+    }
+
+    /**
+     * Marks the active colour scheme in the menu.
+     */
+    private void updateColourSchemeSelection(ColourScheme colourScheme) {
+        darkSchemeMenuItem.setSelected(colourScheme == ColourScheme.DARK);
+        lightSchemeMenuItem.setSelected(colourScheme == ColourScheme.LIGHT);
+    }
+
+    /**
+     * Saves the selected colour scheme.
+     */
+    private void saveColourSchemePreference(ColourScheme colourScheme) {
+        logic.setGuiSettings(
+                logic.getGuiSettings().withColourScheme(colourScheme));
     }
 
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    /**
+     * Configures the application keyboard accelerators.
+     */
     private void setAccelerators() {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
     }
 
     /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
+     * Sets the accelerator for a menu item.
      */
-    private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
+    private void setAccelerator(MenuItem menuItem,
+                                KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
 
         /*
-         * TODO: the code below can be removed once the bug reported here
-         * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in a later version of the SDK.
-         *
-         * According to the bug report, TextInputControl (TextField, TextArea) will
-         * consume function-key events. Because CommandBox contains a TextField and
-         * ResultDisplay contains a TextArea, some accelerators (e.g., F1) will
-         * not work when the focus is in them because the key event is consumed by
-         * the TextInputControl(s).
-         *
-         * For now, we add the following event filter to capture such key events and open
-         * the help window purposely so as to support accelerators even when focus is
-         * in CommandBox or ResultDisplay.
+         * TextInputControl can consume function-key events. Capture them here
+         * so F1 continues to open the Help window when a text control is focused.
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
+            boolean isTextControl =
+                    event.getTarget() instanceof TextInputControl;
+
+            if (isTextControl && keyCombination.match(event)) {
                 menuItem.getOnAction().handle(new ActionEvent());
                 event.consume();
             }
@@ -121,40 +190,129 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Fills up all the placeholders of this window.
+     * Fills all placeholders in the main window.
      */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList());
-        personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+        fillCustomerWorkspace();
+        fillResultDisplay();
+        configureFocusNavigation(fillCommandBox());
+    }
 
+    /**
+     * Creates the customer list and details panels and connects their selection.
+     */
+    private void fillCustomerWorkspace() {
+        ObservableList<Person> displayedCustomers =
+                logic.getFilteredPersonList();
+
+        personListPanel = new PersonListPanel(displayedCustomers);
+        customerDetailsPanel = new CustomerDetailsPanel();
+
+        personListPanelPlaceholder.getChildren()
+                .setAll(personListPanel.getRoot());
+
+        customerDetailsPlaceholder.getChildren()
+                .setAll(customerDetailsPanel.getRoot());
+
+        bindCustomerCount(displayedCustomers);
+
+        personListPanel.selectedPersonProperty().addListener((observable, oldCustomer,
+            selectedCustomer) ->
+                updateDisplayedCustomer(selectedCustomer));
+
+        updateDisplayedCustomer(personListPanel.getSelectedPerson());
+    }
+
+    /**
+     * Keeps the displayed customer count synchronized with the filtered list.
+     */
+    private void bindCustomerCount(
+            ObservableList<Person> displayedCustomers) {
+        customerCountLabel.textProperty().bind(
+                Bindings.createStringBinding(() -> formatCustomerCount(displayedCustomers.size()),
+                    displayedCustomers));
+    }
+
+    /**
+     * Formats the customer count with the correct singular or plural wording.
+     */
+    private String formatCustomerCount(int customerCount) {
+        if (customerCount == 1) {
+            return "1 customer";
+        }
+
+        return customerCount + " customers";
+    }
+
+    /**
+     * Displays the selected customer or the empty details state.
+     */
+    private void updateDisplayedCustomer(Person selectedCustomer) {
+        if (selectedCustomer == null) {
+            customerDetailsPanel.clear();
+            return;
+        }
+
+        customerDetailsPanel.displayCustomer(selectedCustomer);
+    }
+
+    /**
+     * Creates the result display and shows any startup feedback.
+     */
+    private void fillResultDisplay() {
         resultDisplay = new ResultDisplay();
-        resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
+
+        resultDisplayPlaceholder.getChildren()
+                .setAll(resultDisplay.getRoot());
 
         if (initialFeedback != null) {
             resultDisplay.setFeedbackToUser(initialFeedback);
         }
-
-        StatusBarFooter statusBarFooter = new StatusBarFooter(dataFilePath);
-        statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
-
-        CommandBox commandBox = new CommandBox(this::executeCommand);
-        commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
     }
 
     /**
-     * Sets the default size based on {@code guiSettings}.
+     * Creates the command input.
+     */
+    private CommandBox fillCommandBox() {
+        CommandBox commandBox =
+                new CommandBox(this::executeCommand);
+
+        commandBoxPlaceholder.getChildren()
+                .setAll(commandBox.getRoot());
+
+        return commandBox;
+    }
+
+    /**
+     * Configures F6 keyboard navigation between the main interface areas.
+     */
+    private void configureFocusNavigation(CommandBox commandBox) {
+        FocusNavigation navigation = new FocusNavigation(
+                commandBox.getFocusTarget(),
+                resultDisplay.getFocusTarget(),
+                personListPanel.getFocusTarget());
+
+        getRoot().addEventFilter(
+                KeyEvent.KEY_PRESSED, navigation::handleKeyPressed);
+    }
+
+    /**
+     * Sets the default window size and position.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
         primaryStage.setHeight(guiSettings.getWindowHeight());
         primaryStage.setWidth(guiSettings.getWindowWidth());
+
         if (guiSettings.getWindowCoordinates() != null) {
-            primaryStage.setX(guiSettings.getWindowCoordinates().getX());
-            primaryStage.setY(guiSettings.getWindowCoordinates().getY());
+            primaryStage.setX(
+                    guiSettings.getWindowCoordinates().getX());
+            primaryStage.setY(
+                    guiSettings.getWindowCoordinates().getY());
         }
     }
 
     /**
-     * Opens the help window or focuses on it if it's already opened.
+     * Opens the Help window or focuses it if it is already open.
      */
     @FXML
     public void handleHelp() {
@@ -165,6 +323,9 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 
+    /**
+     * Shows the main window.
+     */
     void show() {
         primaryStage.show();
     }
@@ -174,9 +335,16 @@ public class MainWindow extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
-        GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
-                (int) primaryStage.getX(), (int) primaryStage.getY());
-        logic.setGuiSettings(guiSettings);
+        GuiSettings guiSettings = new GuiSettings(
+                primaryStage.getWidth(),
+                primaryStage.getHeight(),
+                (int) primaryStage.getX(),
+                (int) primaryStage.getY());
+
+        logic.setGuiSettings(
+                guiSettings.withColourScheme(
+                        logic.getGuiSettings().getColourScheme()));
+
         helpWindow.hide();
         primaryStage.hide();
     }
@@ -186,15 +354,18 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Executes the command and returns the result.
-     *
-     * @see seedu.insureconnect.logic.Logic#execute(String)
+     * Executes a command and displays its result.
      */
-    private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
+    private CommandResult executeCommand(String commandText)
+            throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
-            logger.info("Result: " + commandResult.getFeedbackToUser());
-            resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
+
+            logger.info(
+                    "Result: " + commandResult.getFeedbackToUser());
+
+            resultDisplay.setFeedbackToUser(
+                    commandResult.getFeedbackToUser());
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
@@ -206,7 +377,10 @@ public class MainWindow extends UiPart<Stage> {
 
             return commandResult;
         } catch (CommandException | ParseException e) {
-            logger.info("An error occurred while executing command: " + commandText);
+            logger.info(
+                    "An error occurred while executing command: "
+                            + commandText);
+
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }

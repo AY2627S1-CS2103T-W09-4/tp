@@ -20,7 +20,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 1. Copy the file to the folder you want to use as the _home folder_ for your InsureConnect.
 
 1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar insureconnect.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
+   A GUI similar to the one below should appear in a few seconds. <br>
    ![Ui](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
@@ -39,6 +39,38 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 1. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
+
+## Keyboard navigation
+
+Press **F6** to move focus between the **command box → output box → contacts list → command box**.
+Press **Shift+F6** to move in the reverse direction. A thin outline marks the focused area.
+These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
+If focus is outside these areas, F6 enters the command box and Shift+F6 enters the contacts list.
+
+In the contacts list, use **Up/Down** to move between contacts and **Page Up/Page Down** to browse longer lists.
+In the output box, use the arrow keys to move through feedback, **Shift+arrow keys** to select text,
+and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on macOS) to copy it.
+The output is read-only. Press F6 twice from the output box to return to command entry.
+On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F6.
+
+### Command history
+
+In the command box, press **Up** to recall older commands and **Down** to move toward newer commands.
+After the newest command, Down restores your unfinished draft, including its caret and selection.
+Recalled commands are editable; press Enter to run them. Navigating again discards edits to a recalled command.
+History includes successful and failed submissions, skips blank commands and consecutive identical submissions,
+and lasts until you close the application. Navigation stops at the oldest command without wrapping.
+Modified arrow shortcuts and arrow keys in other areas retain their usual behavior.
+
+## Changing the colour scheme
+
+Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
+selected option is marked in the menu and takes effect immediately in the main
+window and Help window. Command errors remain highlighted in both schemes.
+
+Dark is the default. Your choice is saved with your preferences when you exit
+normally, and restored the next time you launch InsureConnect. Switching schemes
+preserves your command text, output, and selected contact.
 
 ## Features
 
@@ -78,9 +110,11 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
+The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
+You can open the same window from the **Help** menu or by pressing **F1**.
 
-![help message](images/helpMessage.png)
+![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
 
 Format: `help`
 
@@ -92,17 +126,19 @@ Adds a person to InsureConnect.
 A person is a duplicate only when both their name and phone number match an existing person.
 Name matching ignores case, leading or trailing spaces, and repeated spaces between words.
 For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
-People with the same name but different phone numbers, or different names with the same phone number, are allowed.
+Customers with the same name but different phone numbers, or different names with the same phone number, are allowed.
 Names are displayed as entered after surrounding spaces are trimmed by the command parser.
 If an added person is a duplicate, InsureConnect explains that the name and phone number already exist and identifies
 the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
 so the index refers to the full displayed list.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​`
+Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]`
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A customer must have at least one policy number. An existing customer's policy number cannot be reused.
 </div>
+
+* `r/REMARK` is optional. If omitted, the customer's remark is empty. Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
@@ -118,15 +154,17 @@ Format: `list [n/|c/]`
 
 Use either `n/` or `c/`, without a value. Other arguments are invalid.
 
-### Editing a person: `edit`
+### Editing a customer: `edit`
 
-Edits an existing person in InsureConnect.
+Edits an existing customer in InsureConnect.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the customer at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
+* Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
+* Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
 * At least one policy number must remain. `t/` without a value is rejected.
@@ -135,10 +173,12 @@ Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
 *  `edit 2 n/Betsy Crower t/LIFE20486` Edits the name and replaces the policy numbers of the 2nd person.
 *  `edit 1 n/Mohd !a/l Kassim` Edits the name of the 1st person to be `Mohd a/l Kassim`.
+*  `edit 1 r/Prefers WhatsApp after 6pm` Replaces the 1st person's remark.
+*  `edit 1 r/` Clears the 1st person's remark.
 
-### Locating persons by name or phone number: `find`
+### Locating persons by name, phone number, or policy number: `find`
 
-Finds persons with a word in their name starting with any of the given keywords.
+Finds customers with a word in their name starting with any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
@@ -151,7 +191,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Customers tied in match quality retain their stored order. Searching only changes the displayed order;
   `list` restores the full list in stored order, while `list n/` and `list c/` apply their respective sorts.
 * Full words also match, but middle-of-word and suffix matches do not; for example, `ans` does not match `Hans`.
-* Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* Customers matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -169,6 +209,17 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
   phone prefixes, is not supported and produces an error.
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
   A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
+
+To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
+
+* Policy-number searches use an exact match and are case-insensitive. For example,
+  `find t/life20001` finds a customer with policy number `LIFE20001`.
+* Supply exactly one policy number containing 1 to 30 letters or digits. Spaces, punctuation,
+  and multiple policy numbers are rejected.
+* Each command searches either names, phone numbers, or a policy number. Combining `t/` with
+  name keywords or `p/` is not supported and produces an error.
+* A policy-number search replaces the previous search and display sort. Use the displayed
+  indexes for `edit` and `delete`.
 
 ### Deleting a person: `delete`
 
@@ -190,7 +241,7 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from InsureConnect.
+Clears all entries from InsureConnect after confirmation. When prompted, enter `y` to clear the records. The response is case-insensitive (i.e. `y` and `Y` are equivalent). Enter `n`, press Enter without a response, or enter anything else to cancel. The default response is `n`.
 
 Format: `clear`
 
@@ -213,11 +264,19 @@ If your changes make the data file invalid, InsureConnect starts with an empty c
 Furthermore, certain edits can cause InsureConnect to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
-
 --------------------------------------------------------------------------------------------------------------------
+
+### Loading contact files from older versions
+
+Contact files without `createdAt` timestamps load automatically. Their existing
+contact details are preserved, and unknown creation dates use
+`1970-01-01T00:00:00Z` as a stable fallback for creation-date sorting. This is a
+migration value, not the actual creation date. The timestamp is written on the
+next successful save; loading alone does not rewrite the file. Existing valid
+timestamps are retained. Malformed timestamps and other invalid contact data
+still produce a loading warning. Old labels are not converted into policy
+numbers: policy numbers must still be valid and unique across contacts.
+
 
 ## FAQ
 
@@ -237,10 +296,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
+**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find p/DIGITS`<br> e.g., `find James Jake`, `find p/9876`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`

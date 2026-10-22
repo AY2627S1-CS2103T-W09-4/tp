@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.Scene?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<fx:root type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-         title="InsureConnect" minWidth="450" minHeight="600" onCloseRequest="#handleExit">
+<fx:root type="javafx.stage.Stage"
+         xmlns="http://javafx.com/javafx/17"
+         xmlns:fx="http://javafx.com/fxml/1"
+         title="InsureConnect"
+         minWidth="880"
+         minHeight="600"
+         onCloseRequest="#handleExit">
+
   <icons>
     <Image url="@/images/insureconnect_32.png" />
   </icons>
+
   <scene>
     <Scene>
       <stylesheets>
@@ -23,37 +34,121 @@
         <URL value="@Extensions.css" />
       </stylesheets>
 
-      <VBox>
-        <MenuBar fx:id="menuBar" VBox.vgrow="NEVER">
-          <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Exit" />
-          </Menu>
-          <Menu mnemonicParsing="false" text="Help">
-            <MenuItem fx:id="helpMenuItem" mnemonicParsing="false" onAction="#handleHelp" text="Help" />
-          </Menu>
-        </MenuBar>
+      <VBox styleClass="app-root">
 
-        <StackPane VBox.vgrow="NEVER" fx:id="commandBoxPlaceholder" styleClass="pane-with-border">
-          <padding>
-            <Insets top="5" right="10" bottom="5" left="10" />
-          </padding>
-        </StackPane>
+        <HBox alignment="CENTER_LEFT"
+              spacing="10"
+              styleClass="app-header">
 
-        <StackPane VBox.vgrow="NEVER" fx:id="resultDisplayPlaceholder" styleClass="pane-with-border"
-                   minHeight="100" prefHeight="100" maxHeight="100">
-          <padding>
-            <Insets top="5" right="10" bottom="5" left="10" />
-          </padding>
-        </StackPane>
+          <ImageView fitWidth="24"
+                    fitHeight="24"
+                    preserveRatio="true"
+                    smooth="true">
+              <image>
+              <Image url="@/images/insureconnect_32.png" />
+            </image>
+          </ImageView>
 
-        <VBox fx:id="personList" styleClass="pane-with-border" minWidth="340" prefWidth="340" VBox.vgrow="ALWAYS">
-          <padding>
-            <Insets top="10" right="10" bottom="10" left="10" />
-          </padding>
-          <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS"/>
+          <Label text="InsureConnect"
+                 styleClass="app-title" />
+
+          <MenuBar fx:id="menuBar"
+                   styleClass="app-menu-bar"
+                   HBox.hgrow="ALWAYS">
+
+            <Menu mnemonicParsing="false"
+                  text="File">
+              <MenuItem mnemonicParsing="false"
+                        onAction="#handleExit"
+                        text="Exit" />
+            </Menu>
+
+            <Menu mnemonicParsing="false"
+                  text="View">
+              <Menu mnemonicParsing="false"
+                    text="Colour scheme">
+                <RadioMenuItem fx:id="darkSchemeMenuItem"
+                               text="Dark" />
+
+                <RadioMenuItem fx:id="lightSchemeMenuItem"
+                               text="Light" />
+              </Menu>
+            </Menu>
+
+            <Menu mnemonicParsing="false"
+                  text="Help">
+              <MenuItem fx:id="helpMenuItem"
+                        mnemonicParsing="false"
+                        onAction="#handleHelp"
+                        text="Help" />
+            </Menu>
+          </MenuBar>
+        </HBox>
+
+        <VBox spacing="12"
+              styleClass="main-content"
+              VBox.vgrow="ALWAYS">
+
+          <StackPane fx:id="commandBoxPlaceholder"
+                     styleClass="command-shell" />
+
+          <StackPane fx:id="resultDisplayPlaceholder"
+                     minHeight="58"
+                     prefHeight="58"
+                     maxHeight="58"
+                     styleClass="feedback-shell" />
+
+          <GridPane hgap="12"
+                    minHeight="0"
+                    styleClass="customer-workspace"
+                    VBox.vgrow="ALWAYS">
+
+            <columnConstraints>
+              <ColumnConstraints minWidth="0"
+                                 percentWidth="50"
+                                 hgrow="ALWAYS" />
+
+              <ColumnConstraints minWidth="0"
+                                 percentWidth="50"
+                                 hgrow="ALWAYS" />
+            </columnConstraints>
+
+            <VBox minWidth="0"
+                  minHeight="0"
+                  maxWidth="Infinity"
+                  maxHeight="Infinity"
+                  styleClass="workspace-card"
+                  GridPane.columnIndex="0"
+                  GridPane.hgrow="ALWAYS"
+                  GridPane.vgrow="ALWAYS">
+
+              <HBox alignment="CENTER_LEFT"
+                    spacing="8">
+
+                <Label text="Customers"
+                       styleClass="section-title" />
+
+                <Label fx:id="customerCountLabel"
+                       styleClass="customer-count" />
+              </HBox>
+
+              <StackPane fx:id="personListPanelPlaceholder"
+                         minWidth="0"
+                         minHeight="0"
+                         VBox.vgrow="ALWAYS" />
+            </VBox>
+
+            <StackPane fx:id="customerDetailsPlaceholder"
+                       minWidth="0"
+                       minHeight="0"
+                       maxWidth="Infinity"
+                       maxHeight="Infinity"
+                       styleClass="workspace-card"
+                       GridPane.columnIndex="1"
+                       GridPane.hgrow="ALWAYS"
+                       GridPane.vgrow="ALWAYS" />
+          </GridPane>
         </VBox>
-
-        <StackPane fx:id="statusbarPlaceholder" VBox.vgrow="NEVER" />
       </VBox>
     </Scene>
   </scene>
