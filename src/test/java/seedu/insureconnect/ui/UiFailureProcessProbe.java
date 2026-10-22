@@ -2,6 +2,7 @@ package seedu.insureconnect.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
 
@@ -51,6 +52,9 @@ public final class UiFailureProcessProbe {
 
             @Override
             public GuiSettings getGuiSettings() {
+                if ("settings".equals(phase)) {
+                    throw new IllegalStateException(FAILURE_MESSAGE);
+                }
                 if ("constructor".equals(phase) && !hasFailed) {
                     hasFailed = true;
                     throw new IllegalStateException(FAILURE_MESSAGE);
@@ -75,6 +79,7 @@ public final class UiFailureProcessProbe {
                     .findFirst().orElseThrow();
             assertSame(owner, dialog.getOwner());
             DialogPane pane = (DialogPane) dialog.getScene().lookup("#" + UiManager.ALERT_DIALOG_PANE_FIELD_ID);
+            assertTrue(pane.getStylesheets().contains("view/DarkTheme.css"));
             assertEquals(FAILURE_MESSAGE, pane.getHeaderText());
             assertEquals("java.lang.IllegalStateException: " + FAILURE_MESSAGE, pane.getContentText());
             System.out.println("FATAL_DIALOG_VERIFIED");

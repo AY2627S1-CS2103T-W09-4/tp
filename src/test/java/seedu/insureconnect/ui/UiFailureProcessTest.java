@@ -27,6 +27,11 @@ public class UiFailureProcessTest {
         assertFatalShutdown("content");
     }
 
+    @Test
+    public void start_settingsAlwaysFail_usesDefaultThemeAndExits() throws Exception {
+        assertFatalShutdown("settings");
+    }
+
     /**
      * Confirms both the user-visible error and the operating-system exit status.
      */
