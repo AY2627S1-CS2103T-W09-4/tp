@@ -28,7 +28,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to InsureConnect.
+   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01, t/life123` : Adds a contact named `John Doe` to InsureConnect with policy number life123.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -100,7 +100,7 @@ preserves your command text, output, and selected contact.
   * `n/Mohd !a/l Kassim` or `n/Mohd a!/l Kassim` will be saved as `Mohd a/l Kassim`.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
   * If you need a literal exclamation mark in a name, type `!!`.
-  * **Note:** `!` is treated as an escape character **only for the name field (`n/`)**. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character, ensuring that characters like `!` in email addresses (e.g. `user!name@example.com`) are preserved as-is.
+  * **Note:** `!` is treated as an escape character **only for the name field (`n/`)**. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
