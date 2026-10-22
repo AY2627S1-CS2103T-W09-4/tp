@@ -19,16 +19,38 @@ public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Deletes the person identified by the index number used in the displayed person list.\n"
+            + ": Requests deletion of the person identified by the index number used in the displayed person list.\n"
             + "Format: " + DELETE_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
+            + "Enter confirm immediately afterwards to delete the person.\n"
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
 
+    public static final String MESSAGE_CONFIRM_DELETE = "Confirm deletion of %s by entering: confirm";
+    public static final String MESSAGE_CONFIRM_REMINDER =
+            "Type \"confirm\" to delete the record at index %d.";
     private final Index targetIndex;
+    private final boolean isConfirmed;
 
     public DeleteCommand(Index targetIndex) {
-        this.targetIndex = targetIndex;
+        this(targetIndex, false);
+    }
+
+    private DeleteCommand(Index targetIndex, boolean isConfirmed) {
+        this.targetIndex = requireNonNull(targetIndex);
+        this.isConfirmed = isConfirmed;
+    }
+
+    public DeleteCommand confirmed() {
+        return new DeleteCommand(targetIndex, true);
+    }
+
+    public boolean isConfirmed() {
+        return isConfirmed;
+    }
+
+    public int getTargetIndexOneBased() {
+        return targetIndex.getOneBased();
     }
 
     @Override
@@ -41,6 +63,11 @@ public class DeleteCommand extends Command {
         }
 
         Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
+
+        if (!isConfirmed) {
+            return new CommandResult(String.format(MESSAGE_CONFIRM_DELETE, Messages.format(personToDelete)));
+        }
+
         model.deletePerson(personToDelete);
         return new CommandResult(String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)));
     }
@@ -56,13 +83,15 @@ public class DeleteCommand extends Command {
             return false;
         }
 
-        return targetIndex.equals(otherDeleteCommand.targetIndex);
+        return targetIndex.equals(otherDeleteCommand.targetIndex)
+                && isConfirmed == otherDeleteCommand.isConfirmed;
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetIndex", targetIndex)
+                .add("isConfirmed", isConfirmed)
                 .toString();
     }
 }

@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,6 +27,8 @@ import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
+import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -268,5 +271,143 @@ public class LogicManagerTest {
                 "The existing data file at " + filePath + " is unreadable and cannot be overwritten."),
                 expectedModel);
         assertFalse(model.hasPerson(expectedPerson));
+    }
+
+    @Test
+    public void execute_deleteRequestDoesNotSave_confirmationSavesDeletion() throws Exception {
+        model.addPerson(AMY);
+        Path dataFile = temporaryFolder.resolve("insureConnect.json");
+
+        logic.execute("delete 1");
+
+        // A request only prepares deletion; it must not write data to disk.
+        assertFalse(Files.exists(dataFile));
+        assertTrue(model.hasPerson(AMY));
+
+        logic.execute("confirm");
+
+        // Confirmation deletes the customer and persists the changed book.
+        assertTrue(Files.exists(dataFile));
+        assertFalse(model.hasPerson(AMY));
+
+        JsonInsureConnectStorage storage = new JsonInsureConnectStorage(dataFile);
+        ReadOnlyInsureConnect savedData = storage.readInsureConnect().orElseThrow();
+        assertFalse(savedData.getPersonList().contains(AMY));
+    }
+    @Test
+    public void execute_deleteRequiresConfirmation() throws Exception {
+        model.addPerson(AMY);
+
+        ModelManager unchangedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+
+        assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
+
+        ModelManager deletedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        deletedModel.deletePerson(AMY);
+
+        assertCommandSuccess("confirm",
+                String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY)),
+                deletedModel);
+    }
+
+    @Test
+    public void execute_confirmWithoutPendingDeletion_throwsCommandException() {
+        assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+    }
+
+    @Test
+    public void execute_otherCommandAfterDeleteRequest_cancelsPendingDeletion() throws Exception {
+        model.addPerson(AMY);
+        ModelManager unchangedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+
+        assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
+        assertCommandSuccess(ListCommand.COMMAND_WORD,
+                String.format(ListCommand.MESSAGE_SUCCESS, unchangedModel.getFilteredPersonList().size()),
+                unchangedModel);
+        assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+    }
+
+    @Test
+    public void execute_pendingDeletionMalformedConfirmation_showsConfirmationReminder() throws Exception {
+        model.addPerson(AMY);
+
+        String confirmationMessage = String.format(
+                DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
+        assertCommandSuccess("delete 1", confirmationMessage, model);
+
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER, 1);
+        assertParseException("Confirm", expectedMessage);
+        assertParseException("confirm now", expectedMessage);
+    }
+
+    @Test
+    public void execute_pendingDeletionUnrelatedInvalidCommand_cancelsDeletion() throws Exception {
+        model.addPerson(AMY);
+
+        logic.execute("delete 1");
+
+        assertParseException("unknown", MESSAGE_UNKNOWN_COMMAND);
+
+        assertCommandException("confirm",
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
+
+        assertTrue(model.hasPerson(AMY));
+    }
+
+    @Test
+    public void execute_confirmSaveFailure_restoresDataAndConsumesConfirmation() throws Exception {
+        Person bob = new PersonBuilder().withName("Bob Tan").withTags("POLICY90002").build();
+        model.addPerson(AMY);
+        model.addPerson(bob);
+
+        List<Person> originalPersons = List.copyOf(model.getInsureConnect().getPersonList());
+        model.updateFilteredPersonList(person -> person.equals(AMY));
+        List<Person> originalDisplayedPersons = List.copyOf(model.getFilteredPersonList());
+
+        useStorageThatFailsOnSave(DUMMY_IO_EXCEPTION);
+
+        logic.execute("delete 1");
+
+        String expectedSaveFailureMessage = String.format(
+                LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        assertThrows(CommandException.class, expectedSaveFailureMessage, () -> logic.execute("confirm"));
+
+        // Both stored data and the displayed filtered list are restored.
+        assertEquals(originalPersons, model.getInsureConnect().getPersonList());
+        assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
+
+        // The failed confirmation must not remain reusable.
+        String expectedNoPendingDeletionMessage =
+                ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION;
+        assertThrows(CommandException.class, expectedNoPendingDeletionMessage, () -> logic.execute("confirm"));
+
+        // A second confirmation must not change the restored data or displayed list.
+        assertEquals(originalPersons, model.getInsureConnect().getPersonList());
+        assertEquals(originalDisplayedPersons, model.getFilteredPersonList());
+    }
+
+    /**
+     * Replaces storage with one that fails whenever customer data is saved.
+     */
+    private void useStorageThatFailsOnSave(IOException exception) {
+        Path dataFile = temporaryFolder.resolve("failingInsureConnect.json");
+
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(dataFile) {
+            @Override
+            public void saveInsureConnect(ReadOnlyInsureConnect insureConnect) throws IOException {
+                throw exception;
+            }
+        };
+
+        JsonUserPrefsStorage userPrefsStorage =
+                new JsonUserPrefsStorage(temporaryFolder.resolve("failingUserPrefs.json"));
+
+        logic = new LogicManager(model, new StorageManager(insureConnectStorage, userPrefsStorage));
     }
 }

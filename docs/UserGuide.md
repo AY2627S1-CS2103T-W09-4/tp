@@ -241,17 +241,21 @@ To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE
 
 ### Deleting a person: `delete`
 
-Deletes the specified customer from InsureConnect.
+Requests deletion of the specified person from InsureConnect. The person is deleted only after confirmation.
 
 Format: `delete INDEX`
 
-* Deletes the customer at the specified `INDEX`.
-* The index refers to the index number shown in the displayed customer list.
+Confirmation format: `confirm`
+
+* `delete INDEX` shows the person at the specified `INDEX` and requests confirmation.
+* Enter `confirm` immediately after a delete request to permanently delete that person.
+* Any other command cancels the pending deletion.
+* The index refers to the index number shown in the displayed person list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd customer in InsureConnect.
-* `find Betsy` followed by `delete 1` deletes the 1st customer in the results of the `find` command.
+* `list` followed by `delete 2`, then `confirm`, deletes the 2nd person in InsureConnect.
+* `find Betsy` followed by `delete 1`, then `confirm`, deletes the 1st person in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 

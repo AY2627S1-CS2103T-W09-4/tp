@@ -305,7 +305,9 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 1.  Agent <u>finds the customer (UC02)</u>.
 2.  Agent requests to delete a specific customer in the displayed list.
-3.  InsureConnect deletes the customer and shows the details of the deleted customer.
+3.  InsureConnect displays the selected customer and requests confirmation.
+4.  Agent confirms the deletion.
+5.  InsureConnect deletes the customer and shows the details of the deleted customer.
 
     Use case ends.
 
@@ -461,6 +463,9 @@ testers are expected to do more *exploratory* testing.
    1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
 
    1. Test case: `delete 1`<br>
+      Expected: No contact is deleted. The status message requests confirmation by entering `confirm`.
+
+   1. Test case: `confirm`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
    1. Test case: `delete 0`<br>
