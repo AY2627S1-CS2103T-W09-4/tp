@@ -1,5 +1,6 @@
 package seedu.insureconnect.model.tag;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
@@ -30,6 +31,16 @@ public class TagTest {
         assertFalse(Tag.isValidTagName("A".repeat(31)));
         assertFalse(Tag.isValidTagName("POLICY-123"));
         assertFalse(Tag.isValidTagName("POLICY 123"));
+    }
+
+    @Test
+    public void constructor_mixedCasePolicyNumber_normalizesToUpperCase() {
+        Tag lowercaseTag = new Tag("life20481");
+        Tag uppercaseTag = new Tag("LIFE20481");
+
+        assertEquals("LIFE20481", lowercaseTag.tagName);
+        assertEquals(uppercaseTag, lowercaseTag);
+        assertEquals(uppercaseTag.hashCode(), lowercaseTag.hashCode());
     }
 
 }

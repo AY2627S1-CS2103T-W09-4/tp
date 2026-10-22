@@ -92,7 +92,7 @@ preserves your command text, output, and selected contact.
 
 * **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, and `/`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
 
-* **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer.
+* **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
 
 * **Escape character (`!`) for name prefix collisions**:
   Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names that contain patterns such as ` a/` (common in Malaysian and Singaporean names with `a/l` or `a/p`, e.g. `Mohd a/l Kassim`) will conflict with these command prefixes if typed directly.<br>

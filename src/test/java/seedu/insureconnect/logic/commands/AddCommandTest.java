@@ -46,6 +46,34 @@ public class AddCommandTest {
     }
 
     @Test
+    public void execute_policyNumberDiffersOnlyByCase_throwsCommandException() {
+        Person policyOwner = new PersonBuilder()
+                .withName("Alice")
+                .withPhone("11111111")
+                .withTags("LIFE123")
+                .build();
+
+        Person personToAdd = new PersonBuilder()
+                .withName("Bob")
+                .withPhone("22222222")
+                .withTags("life123")
+                .build();
+
+        AddCommand addCommand = new AddCommand(personToAdd);
+        ModelStub modelStub = new ModelStubWithPerson(policyOwner);
+
+        String expectedMessage = String.format(
+                AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                "LIFE123",
+                policyOwner.getName().fullName,
+                policyOwner.getPhone().value);
+
+        assertThrows(
+                CommandException.class,
+                expectedMessage, () -> addCommand.execute(modelStub));
+    }
+
+    @Test
     public void execute_duplicatePerson_throwsCommandException() {
         Person validPerson = new PersonBuilder().build();
         AddCommand addCommand = new AddCommand(validPerson);
