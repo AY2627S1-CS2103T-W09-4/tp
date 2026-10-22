@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Path;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -31,10 +32,11 @@ public final class UiFailureProcessProbe {
     /**
      * Starts the real UI manager with a deterministic initialization failure.
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ScheduledExecutorService inspection = Executors.newSingleThreadScheduledExecutor(
                 Thread.ofPlatform().daemon(true).factory());
         Platform.startup(() -> {
+            Platform.setImplicitExit(false);
             Stage owner = new Stage();
             inspection.scheduleAtFixedRate(() -> Platform.runLater(() -> inspectAndDismissAlert(owner)),
                     0, 25, TimeUnit.MILLISECONDS);
@@ -45,6 +47,8 @@ public final class UiFailureProcessProbe {
                 startManager(owner, args[0]);
             }
         });
+        // Keep the JVM alive until the production fatal handler explicitly exits it.
+        new CountDownLatch(1).await();
     }
 
     /**
