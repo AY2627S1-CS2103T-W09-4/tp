@@ -1,6 +1,7 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.insureconnect.logic.commands.CommandFormats.FIND_COMMAND_FORMAT;
 
 import java.util.Comparator;
 import java.util.function.Predicate;
@@ -13,19 +14,18 @@ import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Finds customers by name, phone and policy prefixes, optionally combined with AND.
+ * Finds customers by name keywords, phone prefixes and exact policy numbers, combined with AND.
  * Exact name-word matches appear before prefix-only name matches.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds customers by name keywords, phone prefix or policy prefix.\n"
+            + ": Finds customers by name keywords, phone prefix or exact policy number.\n"
             + "Combine fields with AND; name keywords match with OR. Exact name words rank first.\n"
-            + "Parameters: KEYWORD [MORE_KEYWORDS]... OR [n/KEYWORDS] [p/DIGITS] [t/POLICY_PREFIX]\n"
-            + "Supply at least one field, once each. Policy prefixes are case-sensitive.\n"
-            + "Examples: " + COMMAND_WORD + " alice bob; " + COMMAND_WORD + " n/Alice p/912 t/LIFE";
+            + "Format: " + FIND_COMMAND_FORMAT + "\n"
+            + "Supply at least one field, once each. Policy numbers match exactly, ignoring case.\n"
+            + "Examples: " + COMMAND_WORD + " alice bob; " + COMMAND_WORD + " n/Alice p/912 t/LIFE20001";
 
     private final Predicate<Person> predicate;
 

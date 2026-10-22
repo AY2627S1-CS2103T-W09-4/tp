@@ -45,6 +45,24 @@ public class CommandBoxTest extends GuiTest {
     }
 
     @Test
+    public void submit_emptyInputWhileAwaitingConfirmation_executesDefaultResponse() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = new CommandBox(command -> {
+                commands.add(command);
+                return commands.size() == 1
+                        ? new CommandResult("Confirm?", false, false, true)
+                        : new CommandResult("Cancelled");
+            });
+            TextField input = inputOf(box);
+            submit(input, "clear");
+            submit(input, "");
+            assertEquals(List.of("clear", ""), commands);
+            assertEquals("", input.getText());
+        });
+    }
+
+    @Test
     public void submit_parseFailure_preservesDraftUntilUserEdits() throws Exception {
         runOnFxThread(() -> assertFailurePreservesDraft(command -> {
             throw new ParseException("Invalid command");

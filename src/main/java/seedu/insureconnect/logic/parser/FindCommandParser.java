@@ -18,7 +18,7 @@ import seedu.insureconnect.model.person.AllCriteriaPredicate;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
-import seedu.insureconnect.model.person.PolicyStartsWithPredicate;
+import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
 
 /**
  * Parses legacy name searches and explicit, conjunctive name, phone and policy criteria.
@@ -125,10 +125,10 @@ public class FindCommandParser implements Parser<FindCommand> {
     }
 
     /**
-     * Validates policy prefixes using the existing policy-number parser.
+     * Validates policy numbers using the existing policy-number parser.
      */
-    private PolicyStartsWithPredicate parsePolicyCriterion(String value) throws ParseException {
-        return new PolicyStartsWithPredicate(ParserUtil.parseTag(value).tagName);
+    private PolicyNumberMatchesPredicate parsePolicyCriterion(String value) throws ParseException {
+        return new PolicyNumberMatchesPredicate(ParserUtil.parseTag(value).tagName);
     }
 
     /**

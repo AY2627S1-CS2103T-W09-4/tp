@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
+import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
+import seedu.insureconnect.model.tag.Tag;
 
 public class FindCommandParserTest {
 
@@ -68,6 +70,23 @@ public class FindCommandParserTest {
     @Test
     public void parse_numericNameKeyword_returnsNameSearch() {
         assertParseSuccess(parser, "9876", new FindCommand(new NameContainsKeywordsPredicate(List.of("9876"))));
+    }
+
+    @Test
+    public void parse_policyNumber_returnsPolicyNumberSearch() {
+        assertParseSuccess(parser, "t/LIFE20001",
+                new FindCommand(new PolicyNumberMatchesPredicate("LIFE20001")));
+
+        assertParseSuccess(parser, " \t t/life20001 \n",
+                new FindCommand(new PolicyNumberMatchesPredicate("life20001")));
+    }
+
+    @Test
+    public void parse_invalidPolicyNumber_throwsParseException() {
+        for (String query : List.of("t/", "t/  ", "t/LIFE-20001", "t/LIFE 20001",
+                "t/LIFE20001 Alice")) {
+            assertParseFailure(parser, query, Tag.MESSAGE_CONSTRAINTS);
+        }
     }
 
 }

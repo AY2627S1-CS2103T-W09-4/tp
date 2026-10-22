@@ -28,34 +28,43 @@ public class CombinedFindCommandTest {
 
     @Test
     public void execute_allFields_intersectsCriteriaAndRanksExactNamesFirst() throws ParseException {
-        assertResults("n/Alice p/912 t/LIFE", List.of(exact, prefix));
-        assertResults("t/LIFE n/Alice Bob p/912", List.of(exact, otherName, prefix));
+        assertResults("n/Alice p/912", List.of(exact, otherPolicy, prefix));
+        assertResults("n/Alice p/912 t/life2", List.of(exact));
+        assertResults("n/Bob p/912 t/LIFE2", List.of());
+        assertResults("n/Alice p/812 t/LIFE2", List.of());
+        assertResults("n/Alice p/912 t/LIFE4", List.of());
+        assertResults("t/LIFE3 n/Alice Bob p/912", List.of(otherName));
     }
 
     @Test
     public void execute_withoutName_restoresStoredOrderFromPreviousSort() throws ParseException {
         model.updatePersonListComparator(Comparator.comparing(person -> person.getName().fullName));
-        assertResults("p/912 t/LIFE", List.of(prefix, exact, otherName));
-        assertResults("t/LIFE", List.of(prefix, exact, otherName, otherPhone));
+        assertResults("p/912", List.of(prefix, exact, otherName, otherPolicy));
+        assertResults("p/912 t/LIFE1", List.of(prefix));
+        assertResults("t/life4", List.of(otherPhone));
     }
 
     @Test
     public void execute_subsequentSearch_replacesFilterIncludingEmptyResults() throws ParseException {
         assertResults("n/Alice p/000", List.of());
-        assertResults("n/Bob t/LIFE", List.of(otherName));
+        assertResults("n/Bob t/LIFE3", List.of(otherName));
         assertResults("n/Alice p/812", List.of(otherPhone));
         assertResults("p/912", List.of(prefix, exact, otherName, otherPolicy));
         assertResults("Bob", List.of(otherName));
     }
 
     @Test
-    public void execute_policyPrefix_respectsCaseAndMatchesAnyPolicy() throws ParseException {
+    public void execute_policyNumber_ignoresCaseAndRequiresExactMatchOnAnyPolicy() throws ParseException {
         Person multiplePolicies = new PersonBuilder().withName("Carol").withPhone("92345678")
                 .withTags("AUTO2", "LIFE5").build();
         model.addPerson(multiplePolicies);
-        new FindCommandParser().parse("n/Carol t/LIFE").execute(model);
+        new FindCommandParser().parse("n/Carol t/life5").execute(model);
         assertEquals(List.of(multiplePolicies), model.getFilteredPersonList());
-        new FindCommandParser().parse("n/Carol t/life").execute(model);
+        new FindCommandParser().parse("n/Carol t/LIFE").execute(model);
+        assertEquals(List.of(), model.getFilteredPersonList());
+        new FindCommandParser().parse("t/life5").execute(model);
+        assertEquals(List.of(multiplePolicies), model.getFilteredPersonList());
+        new FindCommandParser().parse("t/LIFE").execute(model);
         assertEquals(List.of(), model.getFilteredPersonList());
     }
 

@@ -14,6 +14,18 @@
     -fx-background-color: -ic-selection;
 }
 
-#helpMessageContainer {
+.help-content {
     -fx-background-color: -ic-background;
+}
+
+.help-heading {
+    -fx-font-size: 18pt;
+    -fx-text-fill: -ic-text;
+}
+
+#commandFormats {
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12pt;
+    -fx-text-fill: -ic-text;
+    -fx-control-inner-background: -ic-base;
 }

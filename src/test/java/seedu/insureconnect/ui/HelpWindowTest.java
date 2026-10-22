@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
 import javafx.stage.Stage;
@@ -25,6 +26,11 @@ public class HelpWindowTest extends GuiTest {
             assertFalse(help.isShowing());
             Label message = (Label) stage.getScene().lookup("#helpMessage");
             assertEquals(HelpWindow.HELP_MESSAGE, message.getText());
+            TextArea formats = (TextArea) stage.getScene().lookup("#commandFormats");
+            String[] commands = {"add ", "edit ", "delete ", "find ", "list ", "clear", "help", "exit"};
+            for (String command : commands) {
+                assertTrue(formats.getText().contains(command));
+            }
             help.show();
             assertTrue(help.isShowing());
             help.focus();
@@ -33,6 +39,15 @@ public class HelpWindowTest extends GuiTest {
             assertFalse(help.isShowing());
             help.show();
             assertTrue(help.isShowing());
+        });
+    }
+
+    @Test
+    public void commandFormats_includesCombinedFindSyntax() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            TextArea formats = (TextArea) help.getRoot().getScene().lookup("#commandFormats");
+            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]"));
         });
     }
 

@@ -1,11 +1,9 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.insureconnect.logic.commands.CommandFormats.EDIT_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.time.Instant;
@@ -36,16 +34,10 @@ import seedu.insureconnect.model.tag.Tag;
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the customer identified "
             + "by the index number used in the displayed customer list. "
             + "Existing values will be overwritten by the input values.\n"
-            + "Parameters: INDEX (must be a positive integer) "
-            + "[" + PREFIX_NAME + "NAME] "
-            + "[" + PREFIX_PHONE + "PHONE] "
-            + "[" + PREFIX_EMAIL + "EMAIL] "
-            + "[" + PREFIX_ADDRESS + "ADDRESS] "
-            + "[" + PREFIX_TAG + "POLICY_NUMBER]...\n"
+            + "Format: " + EDIT_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 "
             + PREFIX_PHONE + "91234567 "
             + PREFIX_EMAIL + "johndoe@example.com";
@@ -117,7 +109,7 @@ public class EditCommand extends Command {
         Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
         Address updatedAddress = editPersonDescriptor.getAddress().orElse(personToEdit.getAddress());
         Set<Tag> updatedTags = editPersonDescriptor.getTags().orElse(personToEdit.getTags());
-        Remark updatedRemark = personToEdit.getRemark();
+        Remark updatedRemark = editPersonDescriptor.getRemark().orElse(personToEdit.getRemark());
         Instant createdAt = personToEdit.getCreatedAt();
 
         return new Person(updatedName, updatedPhone, updatedEmail, updatedAddress, updatedTags,
@@ -148,7 +140,7 @@ public class EditCommand extends Command {
     }
 
     /**
-     * Stores the details to edit the person with. Each non-empty field value will replace the
+     * Stores the details to edit the person with. Each supplied field value will replace the
      * corresponding field value of the person.
      */
     public static class EditPersonDescriptor {
@@ -156,6 +148,7 @@ public class EditCommand extends Command {
         private Phone phone;
         private Email email;
         private Address address;
+        private Remark remark;
         private Set<Tag> tags;
 
         public EditPersonDescriptor() {}
@@ -169,6 +162,7 @@ public class EditCommand extends Command {
             setPhone(toCopy.phone);
             setEmail(toCopy.email);
             setAddress(toCopy.address);
+            setRemark(toCopy.remark);
             setTags(toCopy.tags);
         }
 
@@ -176,7 +170,7 @@ public class EditCommand extends Command {
          * Returns true if at least one field is edited.
          */
         public boolean isAnyFieldEdited() {
-            return CollectionUtil.isAnyNonNull(name, phone, email, address, tags);
+            return CollectionUtil.isAnyNonNull(name, phone, email, address, remark, tags);
         }
 
         public void setName(Name name) {
@@ -211,6 +205,14 @@ public class EditCommand extends Command {
             return Optional.ofNullable(address);
         }
 
+        public void setRemark(Remark remark) {
+            this.remark = remark;
+        }
+
+        public Optional<Remark> getRemark() {
+            return Optional.ofNullable(remark);
+        }
+
         /**
          * Sets {@code tags} to this object's {@code tags}.
          * A defensive copy of {@code tags} is used internally.
@@ -243,6 +245,7 @@ public class EditCommand extends Command {
                     && Objects.equals(phone, otherEditPersonDescriptor.phone)
                     && Objects.equals(email, otherEditPersonDescriptor.email)
                     && Objects.equals(address, otherEditPersonDescriptor.address)
+                    && Objects.equals(remark, otherEditPersonDescriptor.remark)
                     && Objects.equals(tags, otherEditPersonDescriptor.tags);
         }
 
@@ -253,6 +256,7 @@ public class EditCommand extends Command {
                     .add("phone", phone)
                     .add("email", email)
                     .add("address", address)
+                    .add("remark", remark)
                     .add("tags", tags)
                     .toString();
         }

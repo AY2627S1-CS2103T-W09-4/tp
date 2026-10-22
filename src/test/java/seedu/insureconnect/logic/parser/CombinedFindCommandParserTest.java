@@ -13,7 +13,7 @@ import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.model.person.AllCriteriaPredicate;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.PhoneStartsWithPredicate;
-import seedu.insureconnect.model.person.PolicyStartsWithPredicate;
+import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
 import seedu.insureconnect.model.tag.Tag;
 
 /**
@@ -26,7 +26,7 @@ public class CombinedFindCommandParserTest {
     public void parse_combinedCriteria_acceptsAnyOrderAndWhitespace() {
         FindCommand expected = new FindCommand(new AllCriteriaPredicate(List.of(
                 new NameContainsKeywordsPredicate(List.of("Alice", "Bob")),
-                new PhoneStartsWithPredicate("912"), new PolicyStartsWithPredicate("LIFE"))));
+                new PhoneStartsWithPredicate("912"), new PolicyNumberMatchesPredicate("LIFE"))));
         for (String query : List.of("n/Alice Bob p/912 t/LIFE", "t/LIFE p/912 n/Alice Bob",
                 "p/912 n/Alice Bob t/LIFE", " \n n/ Alice\tBob\tp/912\nt/LIFE  ")) {
             assertParseSuccess(parser, query, expected);
@@ -37,7 +37,7 @@ public class CombinedFindCommandParserTest {
     public void parse_singleCriteria_reusesExistingMatchingRules() {
         assertParseSuccess(parser, "n/Alice Bob",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Alice", "Bob"))));
-        assertParseSuccess(parser, "t/LIFE", new FindCommand(new PolicyStartsWithPredicate("LIFE")));
+        assertParseSuccess(parser, "t/LIFE", new FindCommand(new PolicyNumberMatchesPredicate("LIFE")));
         assertParseSuccess(parser, "n/Mohd !a/l",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Mohd", "a/l"))));
         assertParseSuccess(parser, "n/!p/123",

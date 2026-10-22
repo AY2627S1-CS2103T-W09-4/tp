@@ -1,6 +1,7 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.insureconnect.logic.commands.CommandFormats.LIST_COMMAND_FORMAT;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.Comparator;
@@ -18,7 +19,7 @@ public class ListCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Lists all customers, optionally sorted by name or creation time.\n"
-            + "Parameters: [n/|c/]\n"
+            + "Format: " + LIST_COMMAND_FORMAT + "\n"
             + "Examples: list, list n/, list c/";
 
     /** The order in which customers are displayed. */
