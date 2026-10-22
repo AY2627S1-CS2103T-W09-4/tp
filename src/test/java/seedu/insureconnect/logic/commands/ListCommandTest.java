@@ -1,6 +1,8 @@
 package seedu.insureconnect.logic.commands;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.insureconnect.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.insureconnect.logic.commands.ListCommand.SortOrder.CREATED_AT;
@@ -90,5 +92,14 @@ public class ListCommandTest {
         new ListCommand(NAME).execute(sortedModel);
         new ListCommand().execute(sortedModel);
         assertEquals(List.of(zoe, alice, bob), sortedModel.getFilteredPersonList());
+    }
+    @Test
+    public void equals_distinguishesSortOrdersAndOtherTypes() {
+        ListCommand command = new ListCommand();
+        assertEquals(command, command);
+        assertEquals(command, new ListCommand());
+        assertNotEquals(command, new ListCommand(NAME));
+        assertFalse(command.equals(null));
+        assertFalse(command.equals("list"));
     }
 }

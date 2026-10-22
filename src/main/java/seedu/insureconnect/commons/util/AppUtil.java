@@ -8,7 +8,10 @@ import seedu.insureconnect.MainApp;
 /**
  * A container for app-specific utility functions
  */
-public class AppUtil {
+public final class AppUtil {
+    private AppUtil() {
+    }
+
 
     /**
      * Gets an {@code Image} from the specified path.

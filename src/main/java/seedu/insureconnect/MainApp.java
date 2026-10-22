@@ -1,5 +1,7 @@
 package seedu.insureconnect;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -47,14 +49,32 @@ public class MainApp extends Application {
     protected Model model;
     protected String initialFeedback;
 
+    private final Path userPrefsFilePath;
+    private final Path insureConnectFilePath;
+
+    /**
+     * Creates the application using the existing installation's file locations.
+     */
+    public MainApp() {
+        this(USER_PREFS_FILE_PATH, INSURE_CONNECT_FILE_PATH);
+    }
+
+    /**
+     * Creates the application with isolated storage locations for lifecycle tests.
+     */
+    MainApp(Path userPrefsFilePath, Path insureConnectFilePath) {
+        this.userPrefsFilePath = requireNonNull(userPrefsFilePath);
+        this.insureConnectFilePath = requireNonNull(insureConnectFilePath);
+    }
+
     @Override
     public void init() throws Exception {
         logger.info("=============================[ Initializing InsureConnect ]===========================");
         super.init();
 
-        JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(USER_PREFS_FILE_PATH);
+        JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(userPrefsFilePath);
         UserPrefs userPrefs = initPrefs(userPrefsStorage);
-        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(INSURE_CONNECT_FILE_PATH);
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(insureConnectFilePath);
         storage = new StorageManager(insureConnectStorage, userPrefsStorage);
 
         model = initModelManager(storage, userPrefs);
@@ -66,8 +86,7 @@ public class MainApp extends Application {
 
     /**
      * Returns a {@code ModelManager} with the data from {@code storage}'s InsureConnect and {@code userPrefs}. <br>
-     * The data from the sample InsureConnect will be used instead if {@code storage}'s InsureConnect is not found,
-     * or an empty InsureConnect will be used instead if errors occur when reading {@code storage}'s InsureConnect.
+     * Uses an empty InsureConnect when the data file is missing or cannot be read.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
         logger.info("Using data file : " + storage.getInsureConnectFilePath());

@@ -77,7 +77,7 @@ public class UiManager implements Ui {
         } catch (Throwable e) {
             logger.severe(StringUtil.getDetails(e));
             showFatalErrorDialogAndShutdown(
-                    "Fatal error during initializing", e);
+                    primaryStage, "Fatal error during initializing", e);
         }
     }
 
@@ -136,7 +136,7 @@ public class UiManager implements Ui {
      * Shows a fatal-error dialog and exits the application.
      */
     private void showFatalErrorDialogAndShutdown(
-            String title, Throwable exception) {
+            Stage owner, String title, Throwable exception) {
         logger.severe(
                 title
                         + " "
@@ -144,6 +144,7 @@ public class UiManager implements Ui {
                         + StringUtil.getDetails(exception));
 
         showAlertDialogAndWait(
+                owner,
                 AlertType.ERROR,
                 title,
                 exception.getMessage(),

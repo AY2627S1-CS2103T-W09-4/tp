@@ -7,9 +7,12 @@ import java.nio.file.Path;
 /**
  * Writes and reads files
  */
-public class FileUtil {
+public final class FileUtil {
 
     private static final String CHARSET = "UTF-8";
+
+    private FileUtil() {
+    }
 
     /**
      * Creates a file if it does not exist along with its missing parent directories.
