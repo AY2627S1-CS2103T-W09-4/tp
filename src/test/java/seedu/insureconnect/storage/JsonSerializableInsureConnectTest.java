@@ -73,6 +73,36 @@ public class JsonSerializableInsureConnectTest {
     }
 
     @Test
+    public void toModelType_policyNumbersDifferOnlyByCase_throwsIllegalValueException() {
+        JsonAdaptedPerson firstPerson = new JsonAdaptedPerson(
+                "Alice",
+                "11111111",
+                "alice@example.com",
+                "Alice Street",
+                List.of(new JsonAdaptedTag("LIFE123")),
+                "",
+                "2026-01-01T00:00:00Z");
+
+        JsonAdaptedPerson secondPerson = new JsonAdaptedPerson(
+                "Bob",
+                "22222222",
+                "bob@example.com",
+                "Bob Street",
+                List.of(new JsonAdaptedTag("life123")),
+                "",
+                "2026-01-02T00:00:00Z");
+
+        JsonSerializableInsureConnect data =
+                new JsonSerializableInsureConnect(
+                        List.of(firstPerson, secondPerson));
+
+        assertThrows(
+                IllegalValueException.class,
+                JsonSerializableInsureConnect.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                data::toModelType);
+    }
+
+    @Test
     public void toModelType_duplicatePolicyNumber_throwsIllegalValueException() {
         Person firstPerson = TypicalPersons.ALICE;
         Person secondPerson = new PersonBuilder(firstPerson).withPhone("88888888").build();

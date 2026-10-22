@@ -16,6 +16,8 @@ import static seedu.insureconnect.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.insureconnect.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
 
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.insureconnect.commons.core.index.Index;
@@ -218,6 +220,27 @@ public class EditCommandTest {
         assertCommandFailure(new EditCommand(INDEX_SECOND_PERSON, descriptor), model,
                 String.format(AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
                         policyNumber, owner.getName().fullName, owner.getPhone().value));
+    }
+
+    @Test
+    public void execute_policyNumberDiffersOnlyByCase_failure() {
+        Person policyOwner = model.getInsureConnect().getPersonList().get(0);
+        String existingPolicyNumber = policyOwner.getTags().iterator().next().tagName;
+        String differentlyCasedPolicyNumber =
+                existingPolicyNumber.toLowerCase(Locale.ROOT);
+
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withTags(differentlyCasedPolicyNumber)
+                .build();
+
+        assertCommandFailure(
+                new EditCommand(INDEX_SECOND_PERSON, descriptor),
+                model,
+                String.format(
+                        AddCommand.MESSAGE_DUPLICATE_POLICY_NUMBER,
+                        existingPolicyNumber,
+                        policyOwner.getName().fullName,
+                        policyOwner.getPhone().value));
     }
 
     @Test

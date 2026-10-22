@@ -3,6 +3,8 @@ package seedu.insureconnect.model.tag;
 import static java.util.Objects.requireNonNull;
 import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
 
+import java.util.Locale;
+
 /**
  * Represents a Tag in InsureConnect.
  * Guarantees: immutable; name is valid as declared in {@link #isValidTagName(String)}
@@ -22,7 +24,7 @@ public class Tag {
     public Tag(String tagName) {
         requireNonNull(tagName);
         checkArgument(isValidTagName(tagName), MESSAGE_CONSTRAINTS);
-        this.tagName = tagName;
+        this.tagName = tagName.toUpperCase(Locale.ROOT);
     }
 
     /**

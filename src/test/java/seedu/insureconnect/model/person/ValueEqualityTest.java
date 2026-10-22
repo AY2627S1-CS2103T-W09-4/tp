@@ -38,12 +38,13 @@ public class ValueEqualityTest {
     }
 
     @Test
-    public void tagEquality_requiresSameTypeAndCase() {
+    public void tagEquality_ignoresCaseAndRequiresSameType() {
         Tag policy = new Tag("LIFE123");
+
         assertEquals(policy, policy);
         assertFalse(policy.equals(null));
         assertFalse(policy.equals("LIFE123"));
-        assertNotEquals(policy, new Tag("life123"));
+        assertEquals(policy, new Tag("life123"));
     }
 
     @Test
