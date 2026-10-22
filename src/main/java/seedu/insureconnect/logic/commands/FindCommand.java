@@ -9,22 +9,23 @@ import java.util.function.Predicate;
 import seedu.insureconnect.commons.util.ToStringBuilder;
 import seedu.insureconnect.logic.Messages;
 import seedu.insureconnect.model.Model;
+import seedu.insureconnect.model.person.AllCriteriaPredicate;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
 
 /**
- * Finds customers by case-insensitive name prefixes, phone-number prefixes, or an exact policy number.
+ * Finds customers by name keywords, phone prefixes and exact policy numbers, combined with AND.
  * Exact name-word matches appear before prefix-only name matches.
  */
 public class FindCommand extends Command {
 
     public static final String COMMAND_WORD = "find";
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Finds all customers with a name word starting with any of the specified keywords (case-insensitive) "
-            + "and displays them as a list with index numbers, with exact name words before prefix-only matches.\n"
-            + "Alternatively, searches for phone numbers starting with the digits after p/.\n"
+            + ": Finds customers by name keywords, phone prefix or exact policy number.\n"
+            + "Combine fields with AND; name keywords match with OR. Exact name words rank first.\n"
             + "Format: " + FIND_COMMAND_FORMAT + "\n"
-            + "Examples: " + COMMAND_WORD + " alice bob charlie; " + COMMAND_WORD + " p/9876";
+            + "Supply at least one field, once each. Policy numbers match exactly, ignoring case.\n"
+            + "Examples: " + COMMAND_WORD + " alice bob; " + COMMAND_WORD + " n/Alice p/912 t/LIFE20001";
 
     private final Predicate<Person> predicate;
 
@@ -44,13 +45,23 @@ public class FindCommand extends Command {
     }
 
     /**
-     * Ranks name matches by relevance and leaves phone and policy-number matches in stored order.
+     * Ranks name matches by relevance and leaves searches without names in stored order.
      */
     private Comparator<Person> getResultComparator() {
         if (predicate instanceof NameContainsKeywordsPredicate namePredicate) {
-            return Comparator.comparing(namePredicate::hasExactMatch).reversed();
+            return rankNameMatches(namePredicate);
+        }
+        if (predicate instanceof AllCriteriaPredicate combinedPredicate) {
+            return combinedPredicate.getNamePredicate().map(this::rankNameMatches).orElse(null);
         }
         return null;
+    }
+
+    /**
+     * Reuses exact-word ranking for both standalone and combined name searches.
+     */
+    private Comparator<Person> rankNameMatches(NameContainsKeywordsPredicate namePredicate) {
+        return Comparator.comparing(namePredicate::hasExactMatch).reversed();
     }
 
     /**

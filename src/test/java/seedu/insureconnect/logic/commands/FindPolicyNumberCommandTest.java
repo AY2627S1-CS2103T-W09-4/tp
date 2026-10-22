@@ -67,4 +67,3 @@ public class FindPolicyNumberCommandTest {
         assertEquals(List.of(), model.getFilteredPersonList());
     }
 }
-

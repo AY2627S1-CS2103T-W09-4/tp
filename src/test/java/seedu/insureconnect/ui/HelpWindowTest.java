@@ -43,6 +43,15 @@ public class HelpWindowTest extends GuiTest {
     }
 
     @Test
+    public void commandFormats_includesCombinedFindSyntax() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            TextArea formats = (TextArea) help.getRoot().getScene().lookup("#commandFormats");
+            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]"));
+        });
+    }
+
+    @Test
     public void copyButton_copiesUserGuideUrl() throws Exception {
         runOnFxThread(() -> {
             Clipboard clipboard = Clipboard.getSystemClipboard();

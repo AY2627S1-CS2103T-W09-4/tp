@@ -176,15 +176,15 @@ Examples:
 *  `edit 1 r/Prefers WhatsApp after 6pm` Replaces the 1st person's remark.
 *  `edit 1 r/` Clears the 1st person's remark.
 
-### Locating persons by name, phone number, or policy number: `find`
+### Locating customers by name, phone or policy number: `find`
 
-Finds customers with a word in their name starting with any of the given keywords.
+Finds customers by name keywords, phone prefix or exact policy number, optionally combined.
 
-Format: `find KEYWORD [MORE_KEYWORDS]`
+Format: `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]`
 
-* The search is case-insensitive; for example, `hans` matches `Hans`.
+* Name search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
-* Without `p/`, the search considers only names, including when the keyword contains digits.
+* Unprefixed keywords search names only, including when a keyword contains digits.
 * Keywords match the start of any name word; for example, `Han` matches `Hans` and `Bo Hans`.
 * Customers with an exact name-word match appear before prefix-only matches. For example, `find John` shows
   `John Tan` before `Johnny Lim`. Matching is case-insensitive and considers any name word or keyword.
@@ -205,10 +205,29 @@ To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `fi
   For example, `find p/9876` matches `98765432`, but `find p/7654` does not match that number.
 * Supply one nonempty sequence of digits (`0-9`). A single digit is allowed. Leading zeros are preserved.
   Spaces around the digits are allowed; spaces within the digits, letters, `+`, and punctuation are rejected.
-* Each command searches either names or phones. Combining name keywords with `p/`, or supplying multiple
-  phone prefixes, is not supported and produces an error.
+* To combine phone and name criteria, use an explicit `n/` field as described below.
+  Supplying multiple phone prefixes is not supported and produces an error.
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
-  A phone search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
+  A phone-only search replaces the previous search and display sort. Use the displayed indexes for `edit` and `delete`.
+
+#### Combining search criteria
+
+Use `n/` for name keywords, `p/` for a phone prefix, and `t/` for an exact policy number.
+Supply at least one field, once each, in any order. A customer must match **every supplied field (AND)**;
+within `n/`, matching **any keyword (OR)** is sufficient. Policy searches match any policy belonging to the customer.
+
+* `find n/Alice Bob p/912` finds customers matching Alice or Bob whose phone numbers start with 912.
+* `find n/Alice p/912 t/LIFE20001` also requires the policy number LIFE20001, ignoring case.
+* `find t/LIFE20001` searches by policy number alone.
+
+Name matching remains case-insensitive and ranks exact name words before prefix-only matches.
+Phone prefixes contain digits only. Policy numbers match exactly, ignoring case, and contain 1–30 letters or digits.
+Phone and policy searches without a name criterion retain stored order.
+Each new search replaces the previous filter; it does not narrow the previous results.
+
+Empty values and repeated fields are rejected. Use `find n/Alice p/912`, not `find Alice p/912`.
+Only `n/`, `p/`, and `t/` are supported in prefixed searches. Escape a literal name prefix with `!`,
+for example `find n/Mohd !a/l`. Existing unprefixed name searches and `find p/DIGITS` remain available.
 
 To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
 
@@ -216,8 +235,7 @@ To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE
   `find t/life20001` finds a customer with policy number `LIFE20001`.
 * Supply exactly one policy number containing 1 to 30 letters or digits. Spaces, punctuation,
   and multiple policy numbers are rejected.
-* Each command searches either names, phone numbers, or a policy number. Combining `t/` with
-  name keywords or `p/` is not supported and produces an error.
+* Combine `t/` with explicit `n/` and `p/` fields as described above.
 * A policy-number search replaces the previous search and display sort. Use the displayed
   indexes for `edit` and `delete`.
 
@@ -296,6 +314,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find p/DIGITS`<br> e.g., `find James Jake`, `find p/9876`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`

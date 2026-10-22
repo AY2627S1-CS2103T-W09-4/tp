@@ -45,12 +45,12 @@ public class FindCommandParserTest {
     }
 
     /**
-     * Empty values, formatting symbols, and multiple search criteria are rejected.
+     * Empty values and invalid phone formatting are rejected.
      */
     @Test
     public void parse_invalidPhoneQuery_throwsParseException() {
         for (String query : List.of("p/", "p/  ", "p/abc", "p/+6598765432", "p/987-654", "p/98 76",
-                "p/9876 Alice", "p/9876 p/1234", "p/9876 n/Alice", "p/１２３")) {
+                "p/9876 Alice", "p/１２３")) {
             assertParseFailure(parser, query, PhoneStartsWithPredicate.MESSAGE_CONSTRAINTS);
         }
     }
@@ -84,7 +84,7 @@ public class FindCommandParserTest {
     @Test
     public void parse_invalidPolicyNumber_throwsParseException() {
         for (String query : List.of("t/", "t/  ", "t/LIFE-20001", "t/LIFE 20001",
-                "t/LIFE20001 Alice", "t/LIFE20001 t/HEALTH20002")) {
+                "t/LIFE20001 Alice")) {
             assertParseFailure(parser, query, Tag.MESSAGE_CONSTRAINTS);
         }
     }
