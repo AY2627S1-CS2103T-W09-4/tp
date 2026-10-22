@@ -31,9 +31,23 @@ checkstyle {
     toolVersion = '14.1.0'
 }
 
+def processCoverage = fileTree(layout.buildDirectory.dir('jacoco')) {
+    include '*-process.exec'
+}
+
 test {
+    systemProperty 'test.process.coverage.dir', layout.buildDirectory.dir('jacoco').get().asFile.absolutePath
+    outputs.files(processCoverage)
+    doFirst {
+        systemProperty 'test.runtime.classpath', sourceSets.test.runtimeClasspath.asPath
+        delete processCoverage
+    }
     useJUnitPlatform()
     finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    executionData.from processCoverage
 }
 
 task coverage(type: JacocoReport) {
