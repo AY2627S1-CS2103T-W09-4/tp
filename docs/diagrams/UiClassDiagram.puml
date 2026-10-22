@@ -37,7 +37,7 @@ MainWindow *-down->  "1" CommandBox
 MainWindow *-down-> "1" ResultDisplay
 MainWindow *-down-> "1" PersonListPanel
 MainWindow *-down-> "1" CustomerDetailsPanel
-MainWindow --> "0..1" HelpWindow
+MainWindow --> "1" HelpWindow
 MainWindow .right.> FocusNavigation
 MainWindow .left.> ColourSchemeStyles
 UiManager .down.> ColourSchemeStyles
@@ -55,14 +55,16 @@ CustomerDetailsPanel --|> UiPart
 HelpWindow --|> UiPart
 
 PersonCard ..> Model
+PersonListPanel .left.> Model
 CustomerDetailsPanel ..> Model
 MainWindow ..> Model
 UiManager -right-> Logic
 MainWindow -right-> Logic
 HelpWindow ..> Logic
+CommandBox .right.> Logic
 
 PersonListPanel -[hidden]left- HelpWindow
-HelpWindow -[hidden]left- CommandBox
+CommandBox -[hidden]left- HelpWindow
 CommandBox -[hidden]left- ResultDisplay
 ResultDisplay -[hidden]left- CustomerDetailsPanel
 
