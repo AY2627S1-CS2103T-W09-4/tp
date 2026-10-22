@@ -1,6 +1,7 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.insureconnect.logic.commands.CommandFormats.DELETE_COMMAND_FORMAT;
 
 import java.util.List;
 
@@ -17,10 +18,9 @@ import seedu.insureconnect.model.person.Person;
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Requests deletion of the person identified by the index number used in the displayed person list.\n"
-            + "Parameters: INDEX (must be a positive integer)\n"
+            + "Format: " + DELETE_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
             + "Enter confirm immediately afterwards to delete the person.\n"
             + "Example: " + COMMAND_WORD + " 1";
 

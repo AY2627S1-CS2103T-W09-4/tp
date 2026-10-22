@@ -19,7 +19,6 @@ import seedu.insureconnect.model.ModelManager;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
 import seedu.insureconnect.model.ReadOnlyUserPrefs;
 import seedu.insureconnect.model.UserPrefs;
-import seedu.insureconnect.model.util.SampleDataUtil;
 import seedu.insureconnect.storage.JsonInsureConnectStorage;
 import seedu.insureconnect.storage.JsonUserPrefsStorage;
 import seedu.insureconnect.storage.Storage;
@@ -78,10 +77,10 @@ public class MainApp extends Application {
         try {
             insureConnectOptional = storage.readInsureConnect();
             if (insureConnectOptional.isEmpty()) {
-                logger.info("Creating a new data file " + storage.getInsureConnectFilePath()
-                        + " populated with a sample InsureConnect.");
+                logger.info("No data file found. " + storage.getInsureConnectFilePath()
+                        + " populated with an empty InsureConnect.");
             }
-            initialData = insureConnectOptional.orElseGet(SampleDataUtil::getSampleInsureConnect);
+            initialData = insureConnectOptional.orElseGet(InsureConnect::new);
         } catch (DataLoadingException e) {
             logger.warning("Data file at " + storage.getInsureConnectFilePath() + " could not be loaded."
                     + " Will be starting with an empty InsureConnect.");

@@ -1,8 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <ListView fx:id="personListView" VBox.vgrow="ALWAYS" />
+<VBox id="personListPanel"
+      minWidth="0"
+      styleClass="person-list-panel"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1">
+
+  <ListView fx:id="personListView"
+            minWidth="0"
+            focusTraversable="true"
+            styleClass="customer-list"
+            VBox.vgrow="ALWAYS">
+
+    <placeholder>
+      <VBox alignment="CENTER" spacing="6">
+        <Label text="No customers to display"
+               styleClass="empty-state-title" />
+
+        <Label text="Add a customer or change your search."
+               styleClass="empty-state-text" />
+      </VBox>
+    </placeholder>
+  </ListView>
 </VBox>

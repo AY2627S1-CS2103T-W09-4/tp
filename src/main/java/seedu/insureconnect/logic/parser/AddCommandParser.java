@@ -1,6 +1,5 @@
 package seedu.insureconnect.logic.parser;
 
-import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
@@ -9,9 +8,11 @@ import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
 
+import seedu.insureconnect.logic.Messages;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.Address;
@@ -37,20 +38,19 @@ public class AddCommandParser implements Parser<AddCommand> {
                 ArgumentTokenizer.tokenize(args, PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_ADDRESS,
                         PREFIX_TAG, PREFIX_REMARK);
 
-        if (!arePrefixesPresent(argMultimap, PREFIX_NAME, PREFIX_ADDRESS, PREFIX_PHONE, PREFIX_EMAIL, PREFIX_TAG)
-                || !argMultimap.getPreamble().isEmpty()) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
-        }
+        validateRequiredFieldsAndPreamble(argMultimap);
 
         argMultimap.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_EMAIL,
                 PREFIX_ADDRESS, PREFIX_REMARK);
-        Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
-        Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
-        Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get());
-        Address address = ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS).get());
-        Set<Tag> tagList = ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG));
+        Name name = parseField("name", () -> ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
+        Phone phone = parseField("phone", () -> ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get()));
+        Email email = parseField("email", () -> ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get()));
+        Address address = parseField("address", () -> ParserUtil.parseAddress(argMultimap.getValue(PREFIX_ADDRESS)
+                .get()));
+        Set<Tag> tagList = parseField("policy number", () ->
+                ParserUtil.parseTags(argMultimap.getAllValues(PREFIX_TAG)));
         Remark remark = argMultimap.getValue(PREFIX_REMARK).isPresent()
-                ? ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK).get())
+                ? parseField("remark", () -> ParserUtil.parseRemark(argMultimap.getValue(PREFIX_REMARK).get()))
                 : new Remark("");
 
         Person person = new Person(name, phone, email, address, tagList, remark, Instant.now());
@@ -58,12 +58,39 @@ public class AddCommandParser implements Parser<AddCommand> {
         return new AddCommand(person);
     }
 
-    /**
-     * Returns true if none of the prefixes contains empty {@code Optional} values in the given
-     * {@code ArgumentMultimap}.
-     */
-    private static boolean arePrefixesPresent(ArgumentMultimap argumentMultimap, Prefix... prefixes) {
-        return Stream.of(prefixes).allMatch(prefix -> argumentMultimap.getValue(prefix).isPresent());
+    private static void validateRequiredFieldsAndPreamble(ArgumentMultimap argumentMultimap) throws ParseException {
+        List<String> missingFields = new ArrayList<>();
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_NAME, "name");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_PHONE, "phone");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_EMAIL, "email");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_ADDRESS, "address");
+        addMissingFieldIfAbsent(missingFields, argumentMultimap, PREFIX_TAG, "policy number");
+
+        String preamble = argumentMultimap.getPreamble();
+        if (!missingFields.isEmpty() || !preamble.isEmpty()) {
+            throw new ParseException(Messages.getErrorMessageForMissingFieldsAndPreamble(
+                    missingFields, preamble, AddCommand.MESSAGE_USAGE));
+        }
+    }
+
+    private static void addMissingFieldIfAbsent(List<String> missingFields, ArgumentMultimap argumentMultimap,
+                                                Prefix prefix, String fieldName) {
+        if (argumentMultimap.getValue(prefix).isEmpty()) {
+            missingFields.add(fieldName + " (" + prefix + ")");
+        }
+    }
+
+    private static <T> T parseField(String fieldName, FieldParser<T> parser) throws ParseException {
+        try {
+            return parser.parse();
+        } catch (ParseException e) {
+            throw new ParseException("Invalid " + fieldName + ": " + e.getMessage(), e);
+        }
+    }
+
+    @FunctionalInterface
+    private interface FieldParser<T> {
+        T parse() throws ParseException;
     }
 
 }

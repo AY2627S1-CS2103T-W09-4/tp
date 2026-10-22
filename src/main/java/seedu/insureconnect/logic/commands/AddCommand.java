@@ -1,11 +1,11 @@
 package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
+import static seedu.insureconnect.logic.commands.CommandFormats.ADD_COMMAND_FORMAT;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
@@ -22,15 +22,8 @@ import seedu.insureconnect.model.tag.Tag;
 public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
-
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a customer to InsureConnect. "
-            + "Parameters: "
-            + PREFIX_NAME + "NAME "
-            + PREFIX_PHONE + "PHONE "
-            + PREFIX_EMAIL + "EMAIL "
-            + PREFIX_ADDRESS + "ADDRESS "
-            + PREFIX_TAG + "POLICY_NUMBER [" + PREFIX_TAG + "POLICY_NUMBER]... "
-            + "[" + PREFIX_REMARK + "REMARK]\n"
+            + "Format: " + ADD_COMMAND_FORMAT + "\n"
             + "Example: " + COMMAND_WORD + " "
             + PREFIX_NAME + "John Doe "
             + PREFIX_PHONE + "98765432 "
