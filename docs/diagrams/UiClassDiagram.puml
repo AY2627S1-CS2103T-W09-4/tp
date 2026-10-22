@@ -3,6 +3,8 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor UI_COLOR_T4
 skinparam classBackgroundColor UI_COLOR
+skinparam nodesep 60
+skinparam ranksep 75
 
 package UI <<Rectangle>>{
 Class "<<interface>>\nUi" as Ui
@@ -55,13 +57,13 @@ CustomerDetailsPanel --|> UiPart
 HelpWindow --|> UiPart
 
 PersonCard ..> Model
-PersonListPanel .left.> Model
+PersonListPanel ..> Model
 CustomerDetailsPanel ..> Model
 MainWindow ..> Model
-UiManager -right-> Logic
-MainWindow -right-> Logic
+UiManager --> Logic
+MainWindow --> Logic
 HelpWindow ..> Logic
-CommandBox .right.> Logic
+CommandBox ..> Logic
 
 PersonListPanel -[hidden]left- HelpWindow
 CommandBox -[hidden]left- HelpWindow
@@ -69,4 +71,6 @@ CommandBox -[hidden]left- ResultDisplay
 ResultDisplay -[hidden]left- CustomerDetailsPanel
 
 MainWindow -[hidden]-|> UiPart
+HiddenModel -[hidden]right- UiPart
+UiPart -[hidden]right- HiddenLogic
 @enduml
