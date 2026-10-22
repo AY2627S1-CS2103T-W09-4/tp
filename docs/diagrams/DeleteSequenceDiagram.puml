@@ -7,7 +7,10 @@ participant ":LogicManager" as LogicManager LOGIC_COLOR
 participant ":InsureConnectParser" as InsureConnectParser LOGIC_COLOR
 participant ":DeleteCommandParser" as DeleteCommandParser LOGIC_COLOR
 participant "d:DeleteCommand" as DeleteCommand LOGIC_COLOR
-participant "r:CommandResult" as CommandResult LOGIC_COLOR
+participant "c:ConfirmDeleteCommand" as ConfirmDeleteCommand LOGIC_COLOR
+participant "dConfirmed:DeleteCommand" as ConfirmedDeleteCommand LOGIC_COLOR
+participant "r1:CommandResult" as ConfirmationResult LOGIC_COLOR
+participant "r2:CommandResult" as DeletionResult LOGIC_COLOR
 end box
 
 box Model MODEL_COLOR_T1
@@ -49,22 +52,73 @@ deactivate InsureConnectParser
 LogicManager -> DeleteCommand : execute(m)
 activate DeleteCommand
 
-DeleteCommand -> Model : deletePerson(1)
-activate Model
+create ConfirmationResult
+DeleteCommand -> ConfirmationResult
+activate ConfirmationResult
 
-Model --> DeleteCommand
-deactivate Model
+ConfirmationResult --> DeleteCommand
+deactivate ConfirmationResult
 
-create CommandResult
-DeleteCommand -> CommandResult
-activate CommandResult
-
-CommandResult --> DeleteCommand
-deactivate CommandResult
-
-DeleteCommand --> LogicManager : r
+DeleteCommand --> LogicManager : r1
 deactivate DeleteCommand
 
-[<--LogicManager
+LogicManager -> LogicManager : pendingDeleteCommand = d
+
+[<-- LogicManager
+deactivate LogicManager
+
+== User confirms deletion ==
+
+[-> LogicManager : execute("confirm")
+activate LogicManager
+
+LogicManager -> InsureConnectParser : parseCommand("confirm")
+activate InsureConnectParser
+
+create ConfirmDeleteCommand
+InsureConnectParser -> ConfirmDeleteCommand : new ConfirmDeleteCommand()
+activate ConfirmDeleteCommand
+
+ConfirmDeleteCommand --> InsureConnectParser : c
+deactivate ConfirmDeleteCommand
+
+InsureConnectParser --> LogicManager : c
+deactivate InsureConnectParser
+
+LogicManager -> DeleteCommand : confirmed()
+activate DeleteCommand
+
+create ConfirmedDeleteCommand
+DeleteCommand -> ConfirmedDeleteCommand
+activate ConfirmedDeleteCommand
+
+ConfirmedDeleteCommand --> DeleteCommand : dConfirmed
+deactivate ConfirmedDeleteCommand
+
+DeleteCommand --> LogicManager : dConfirmed
+deactivate DeleteCommand
+
+LogicManager -> LogicManager : pendingDeleteCommand = null
+
+LogicManager -> ConfirmedDeleteCommand : execute(m)
+activate ConfirmedDeleteCommand
+
+ConfirmedDeleteCommand -> Model : deletePerson(person)
+activate Model
+
+Model --> ConfirmedDeleteCommand
+deactivate Model
+
+create DeletionResult
+ConfirmedDeleteCommand -> DeletionResult
+activate DeletionResult
+
+DeletionResult --> ConfirmedDeleteCommand
+deactivate DeletionResult
+
+ConfirmedDeleteCommand --> LogicManager : r2
+deactivate ConfirmedDeleteCommand
+
+[<-- LogicManager
 deactivate LogicManager
 @enduml
