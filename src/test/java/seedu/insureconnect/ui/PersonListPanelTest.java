@@ -1,6 +1,7 @@
 package seedu.insureconnect.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -73,6 +74,24 @@ public class PersonListPanelTest extends GuiTest {
 
             listView.resize(500, listView.getHeight());
             assertEquals(500 - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
+        });
+    }
+
+    @Test
+    public void cell_nullItem_clearsPreviousGraphic() throws Exception {
+        runOnFxThread(() -> {
+            ObservableList<Person> persons = FXCollections.observableArrayList(ALICE);
+            PersonListPanel panel = new PersonListPanel(persons);
+            ListView<Person> list = listViewOf(panel);
+            ListCell<Person> cell = list.getCellFactory().call(list);
+            cell.updateListView(list);
+            cell.updateIndex(0);
+            Region previousGraphic = (Region) cell.getGraphic();
+            assertTrue(previousGraphic.prefWidthProperty().isBound());
+            persons.set(0, null);
+            assertNull(cell.getGraphic());
+            assertNull(cell.getText());
+            assertFalse(previousGraphic.prefWidthProperty().isBound());
         });
     }
 

@@ -77,6 +77,15 @@ public class FocusNavigationTest {
         assertTrue(contacts.getStyleClass().contains("navigation-target"));
     }
 
+    @Test
+    public void handleKeyPressed_withoutNodeTarget_entersCycle() {
+        KeyEvent event = new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.F6,
+                false, false, false, false);
+        navigation.handleKeyPressed(event);
+        assertEquals(1, commandInput.focusRequests);
+        assertTrue(event.isConsumed());
+    }
+
     /**
      * Verifies one traversal step and shortcut consumption.
      */
