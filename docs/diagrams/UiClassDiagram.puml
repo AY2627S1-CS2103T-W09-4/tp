@@ -3,6 +3,8 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor UI_COLOR_T4
 skinparam classBackgroundColor UI_COLOR
+skinparam nodesep 60
+skinparam ranksep 75
 
 package UI <<Rectangle>>{
 Class "<<interface>>\nUi" as Ui
@@ -13,8 +15,11 @@ Class HelpWindow
 Class ResultDisplay
 Class PersonListPanel
 Class PersonCard
-Class StatusBarFooter
+Class CustomerDetailsPanel
 Class CommandBox
+Class CommandHistory
+Class FocusNavigation
+Class ColourSchemeStyles
 }
 
 package Model <<Rectangle>> {
@@ -33,10 +38,14 @@ UiManager -down-> "1" MainWindow
 MainWindow *-down->  "1" CommandBox
 MainWindow *-down-> "1" ResultDisplay
 MainWindow *-down-> "1" PersonListPanel
-MainWindow *-down-> "1" StatusBarFooter
-MainWindow --> "0..1" HelpWindow
+MainWindow *-down-> "1" CustomerDetailsPanel
+MainWindow --> "1" HelpWindow
+MainWindow .right.> FocusNavigation
+MainWindow .left.> ColourSchemeStyles
+UiManager .down.> ColourSchemeStyles
 
 PersonListPanel -down-> "*" PersonCard
+CommandBox *-down-> "1" CommandHistory
 
 MainWindow -left-|> UiPart
 
@@ -44,17 +53,24 @@ ResultDisplay --|> UiPart
 CommandBox --|> UiPart
 PersonListPanel --|> UiPart
 PersonCard --|> UiPart
-StatusBarFooter --|> UiPart
+CustomerDetailsPanel --|> UiPart
 HelpWindow --|> UiPart
 
 PersonCard ..> Model
-UiManager -right-> Logic
-MainWindow -left-> Logic
+PersonListPanel ..> Model
+CustomerDetailsPanel ..> Model
+MainWindow ..> Model
+UiManager --> Logic
+MainWindow --> Logic
+HelpWindow ..> Logic
+CommandBox ..> Logic
 
 PersonListPanel -[hidden]left- HelpWindow
-HelpWindow -[hidden]left- CommandBox
+CommandBox -[hidden]left- HelpWindow
 CommandBox -[hidden]left- ResultDisplay
-ResultDisplay -[hidden]left- StatusBarFooter
+ResultDisplay -[hidden]left- CustomerDetailsPanel
 
 MainWindow -[hidden]-|> UiPart
+HiddenModel -[hidden]right- UiPart
+UiPart -[hidden]right- HiddenLogic
 @enduml
