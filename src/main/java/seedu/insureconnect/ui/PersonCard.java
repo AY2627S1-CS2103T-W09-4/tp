@@ -35,15 +35,9 @@ public class PersonCard extends UiPart<Region> {
     @FXML
     private Label phone;
     @FXML
-    private Label address;
-    @FXML
     private Label email;
     @FXML
     private FlowPane tags;
-    @FXML
-    private Label remark;
-    @FXML
-    private VBox remarkPane;
 
     /**
      * Creates a {@code PersonCard} with the given {@code Person} and index to display.
@@ -55,14 +49,13 @@ public class PersonCard extends UiPart<Region> {
         id.setText(String.format("%02d", displayedIndex));
         name.setText(person.getName().fullName);
         phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
         email.setText(person.getEmail().value);
         person.getTags().stream()
                 .sorted(Comparator.comparing(tag -> tag.tagName))
                 .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
-        String remarkText = person.getRemark().value;
-        remark.setText(remarkText);
-        remarkPane.setVisible(!remarkText.isEmpty());
-        remarkPane.setManaged(!remarkText.isEmpty());
+    }
+
+    void setDisplayedIndex(int displayedIndex) {
+        id.setText(String.format("%02d", displayedIndex));
     }
 }

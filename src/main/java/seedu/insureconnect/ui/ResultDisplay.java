@@ -17,8 +17,12 @@ public class ResultDisplay extends UiPart<Region> {
     @FXML
     private TextArea resultDisplay;
 
+    /**
+     * Creates a result display with its initial ready message.
+     */
     public ResultDisplay() {
         super(FXML);
+        resultDisplay.setText("Ready. Type a command to search or manage customers.");
     }
 
     /**

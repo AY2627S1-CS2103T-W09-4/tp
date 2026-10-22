@@ -14,14 +14,18 @@ import seedu.insureconnect.commons.util.StringUtil;
 import seedu.insureconnect.logic.Logic;
 
 /**
- * The manager of the UI component.
+ * The manager of the UI components.
  */
 public class UiManager implements Ui {
 
-    public static final String ALERT_DIALOG_PANE_FIELD_ID = "alertDialogPane";
+    public static final String ALERT_DIALOG_PANE_FIELD_ID =
+            "alertDialogPane";
 
-    private static final Logger logger = LogsCenter.getLogger(UiManager.class);
-    private static final String ICON_APPLICATION = "/images/insureconnect_32.png";
+    private static final Logger logger =
+            LogsCenter.getLogger(UiManager.class);
+
+    private static final String ICON_APPLICATION =
+            "/images/insureconnect_32.png";
 
     private Logic logic;
     private Path dataFilePath;
@@ -29,75 +33,123 @@ public class UiManager implements Ui {
     private MainWindow mainWindow;
 
     /**
-     * Creates a {@code UiManager} with the given {@code Logic} and the data file path
-     * to show in the status bar.
+     * Creates a {@code UiManager}.
+     *
+     * <p>The data file path is temporarily retained for compatibility with
+     * existing callers. It is no longer displayed in the interface.</p>
      */
     public UiManager(Logic logic, Path dataFilePath) {
         this(logic, dataFilePath, null);
     }
 
     /**
-     * Creates a {@code UiManager} with the given {@code Logic}, data file path,
-     * and initial feedback message.
+     * Creates a {@code UiManager} with optional startup feedback.
+     *
+     * <p>The data file path is temporarily retained for compatibility with
+     * existing callers. It is no longer displayed in the interface.</p>
      */
-    public UiManager(Logic logic, Path dataFilePath, String initialFeedback) {
+    public UiManager(Logic logic, Path dataFilePath,
+                     String initialFeedback) {
         this.logic = logic;
         this.dataFilePath = dataFilePath;
         this.initialFeedback = initialFeedback;
     }
 
+    /**
+     * Starts the user interface.
+     */
     @Override
     public void start(Stage primaryStage) {
         logger.info("Starting UI...");
 
-        //Set the application icon.
-        primaryStage.getIcons().add(getImage(ICON_APPLICATION));
+        primaryStage.getIcons().add(
+                getImage(ICON_APPLICATION));
 
         try {
-            mainWindow = new MainWindow(primaryStage, logic, dataFilePath, initialFeedback);
-            mainWindow.show(); //This should be called before creating other UI parts
-            mainWindow.fillInnerParts();
+            mainWindow = new MainWindow(
+                    primaryStage,
+                    logic,
+                    dataFilePath,
+                    initialFeedback);
 
+            mainWindow.show();
+            mainWindow.fillInnerParts();
         } catch (Throwable e) {
             logger.severe(StringUtil.getDetails(e));
-            showFatalErrorDialogAndShutdown("Fatal error during initializing", e);
+            showFatalErrorDialogAndShutdown(
+                    "Fatal error during initializing", e);
         }
     }
 
+    /**
+     * Loads an image from the application's resources.
+     */
     private Image getImage(String imagePath) {
-        return new Image(MainApp.class.getResourceAsStream(imagePath));
-    }
-
-    void showAlertDialogAndWait(Alert.AlertType type, String title, String headerText, String contentText) {
-        showAlertDialogAndWait(mainWindow.getPrimaryStage(), type, title, headerText, contentText);
+        return new Image(
+                MainApp.class.getResourceAsStream(imagePath));
     }
 
     /**
-     * Shows an alert dialog on {@code owner} with the given parameters.
-     * This method only returns after the user has closed the alert dialog.
+     * Shows an alert dialog using the main application window as its owner.
      */
-    private void showAlertDialogAndWait(Stage owner, AlertType type, String title, String headerText,
-                                               String contentText) {
-        final Alert alert = new Alert(type);
-        alert.getDialogPane().getStylesheets().add("view/DarkTheme.css");
-        ColourSchemeStyles.apply(alert.getDialogPane().getStylesheets(), logic.getGuiSettings().getColourScheme());
+    void showAlertDialogAndWait(AlertType type,
+                                String title,
+                                String headerText,
+                                String contentText) {
+        showAlertDialogAndWait(
+                mainWindow.getPrimaryStage(),
+                type,
+                title,
+                headerText,
+                contentText);
+    }
+
+    /**
+     * Shows an alert dialog and waits for the user to close it.
+     */
+    private void showAlertDialogAndWait(Stage owner,
+                                        AlertType type,
+                                        String title,
+                                        String headerText,
+                                        String contentText) {
+        Alert alert = new Alert(type);
+
+        alert.getDialogPane()
+                .getStylesheets()
+                .add("view/DarkTheme.css");
+
+        ColourSchemeStyles.apply(
+                alert.getDialogPane().getStylesheets(),
+                logic.getGuiSettings().getColourScheme());
+
         alert.initOwner(owner);
         alert.setTitle(title);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
-        alert.getDialogPane().setId(ALERT_DIALOG_PANE_FIELD_ID);
+        alert.getDialogPane().setId(
+                ALERT_DIALOG_PANE_FIELD_ID);
+
         alert.showAndWait();
     }
 
     /**
-     * Shows an error alert dialog with {@code title} and error message, {@code e},
-     * and exits the application after the user has closed the alert dialog.
+     * Shows a fatal-error dialog and exits the application.
      */
-    private void showFatalErrorDialogAndShutdown(String title, Throwable e) {
-        logger.severe(title + " " + e.getMessage() + StringUtil.getDetails(e));
-        showAlertDialogAndWait(Alert.AlertType.ERROR, title, e.getMessage(), e.toString());
+    private void showFatalErrorDialogAndShutdown(
+            String title, Throwable exception) {
+        logger.severe(
+                title
+                        + " "
+                        + exception.getMessage()
+                        + StringUtil.getDetails(exception));
+
+        showAlertDialogAndWait(
+                AlertType.ERROR,
+                title,
+                exception.getMessage(),
+                exception.toString());
+
         Platform.exit();
         System.exit(1);
     }
-
 }

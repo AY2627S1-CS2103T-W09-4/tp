@@ -13,14 +13,13 @@ import org.junit.jupiter.api.Test;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
@@ -31,8 +30,11 @@ import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
 public class MainWindowTest extends GuiTest {
 
+    private static final String READY_MESSAGE =
+            "Ready. Type a command to search or manage customers.";
+
     @Test
-    public void initialize_savedGeometryAndFeedback_restoresWindowAndContacts() throws Exception {
+    public void initialize_savedGeometryAndFeedback_restoresWindowAndCustomerWorkspace() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
             logic.setGuiSettings(new GuiSettings(900, 700, 30, 40));
@@ -47,11 +49,11 @@ public class MainWindowTest extends GuiTest {
             window.getRoot().getScene().getRoot().applyCss();
             window.getRoot().getScene().getRoot().layout();
             assertEquals("Load warning", outputOf(window).getText());
-            GridPane cards = (GridPane) window.getPersonListPanel().getRoot().lookup("#personCards");
-            assertEquals(1, cards.getChildren().size());
-            Node card = cards.getChildren().get(0);
-            assertEquals(ALICE.getName().fullName, ((Label) card.lookup("#name")).getText());
-            assertEquals("01", ((Label) card.lookup("#id")).getText());
+            ListView<?> customers = customerListOf(window);
+            assertEquals(List.of(ALICE), customers.getItems());
+            assertSame(ALICE, customers.getSelectionModel().getSelectedItem());
+            Label displayedName = (Label) window.getRoot().getScene().lookup("#detailName");
+            assertEquals(ALICE.getName().fullName, displayedName.getText());
         });
     }
 
@@ -60,7 +62,7 @@ public class MainWindowTest extends GuiTest {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
             MainWindow window = createWindow(logic);
-            assertEquals("", outputOf(window).getText());
+            assertEquals(READY_MESSAGE, outputOf(window).getText());
             submit(window, "list");
             assertEquals(List.of("list"), logic.getCommands());
             assertEquals("Executed: list", outputOf(window).getText());
@@ -177,6 +179,13 @@ public class MainWindowTest extends GuiTest {
      */
     private TextArea outputOf(MainWindow window) {
         return (TextArea) window.getRoot().getScene().lookup("#resultDisplay");
+    }
+
+    /**
+     * Retrieves the customer list from the live scene.
+     */
+    private ListView<?> customerListOf(MainWindow window) {
+        return (ListView<?>) window.getRoot().getScene().lookup("#personListView");
     }
 
     /**

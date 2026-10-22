@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane id="customerDetailsPanel"
+           maxWidth="Infinity"
+           maxHeight="Infinity"
+           styleClass="customer-details-panel"
+           xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1">
+
+  <VBox fx:id="emptyState"
+        alignment="CENTER"
+        spacing="8">
+    <Label text="Select a customer"
+           styleClass="empty-state-title" />
+
+    <Label text="Choose a customer from the list to view their details."
+           wrapText="true"
+           styleClass="empty-state-text" />
+  </VBox>
+
+  <ScrollPane fx:id="detailsScrollPane"
+              fitToWidth="true"
+              hbarPolicy="NEVER"
+              managed="false"
+              visible="false"
+              styleClass="customer-details-scroll">
+
+    <content>
+      <VBox fx:id="detailsContent"
+            maxWidth="Infinity"
+            spacing="18"
+            styleClass="customer-details-content">
+
+        <padding>
+          <Insets top="22" right="24" bottom="22" left="24" />
+        </padding>
+
+        <VBox spacing="7">
+          <Label text="Customer details"
+                 styleClass="detail-heading" />
+
+          <Label fx:id="detailName"
+                 maxWidth="Infinity"
+                 wrapText="true"
+                 styleClass="detail-name" />
+
+          <FlowPane fx:id="detailPolicies"
+                    hgap="7"
+                    vgap="6"
+                    prefWrapLength="420"
+                    styleClass="policy-tags" />
+        </VBox>
+
+        <VBox spacing="10"
+              styleClass="detail-section">
+          <Label text="CONTACT DETAILS"
+                 styleClass="field-caption" />
+
+          <GridPane hgap="24" vgap="8">
+            <columnConstraints>
+              <ColumnConstraints minWidth="0"
+                                 percentWidth="50" />
+              <ColumnConstraints minWidth="0"
+                                 percentWidth="50" />
+            </columnConstraints>
+
+            <VBox spacing="4"
+                  GridPane.columnIndex="0"
+                  GridPane.rowIndex="0">
+              <Label text="PHONE"
+                     styleClass="field-caption" />
+
+              <Label fx:id="detailPhone"
+                     maxWidth="Infinity"
+                     wrapText="true"
+                     styleClass="field-value" />
+            </VBox>
+
+            <VBox spacing="4"
+                  GridPane.columnIndex="1"
+                  GridPane.rowIndex="0">
+              <Label text="EMAIL"
+                     styleClass="field-caption" />
+
+              <Label fx:id="detailEmail"
+                     maxWidth="Infinity"
+                     wrapText="true"
+                     styleClass="field-value" />
+            </VBox>
+          </GridPane>
+        </VBox>
+
+        <VBox spacing="6"
+              styleClass="detail-section">
+          <Label text="ADDRESS"
+                 styleClass="field-caption" />
+
+          <Label fx:id="detailAddress"
+                 maxWidth="Infinity"
+                 wrapText="true"
+                 styleClass="field-value" />
+        </VBox>
+
+        <VBox fx:id="detailRemarkSection"
+              spacing="6"
+              styleClass="detail-section">
+          <Label text="REMARK"
+                 styleClass="field-caption" />
+
+          <Label fx:id="detailRemark"
+                 maxWidth="Infinity"
+                 wrapText="true"
+                 styleClass="field-value" />
+        </VBox>
+      </VBox>
+    </content>
+  </ScrollPane>
+</StackPane>
