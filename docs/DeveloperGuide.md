@@ -74,6 +74,12 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/AY2
 
 The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `CustomerDetailsPanel`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts. `CommandHistory`, `FocusNavigation`, and `ColourSchemeStyles` are helper classes that are not GUI parts, so they do not inherit from `UiPart`.
 
+The sequence diagram below illustrates how the customer list and details panel remain synchronized when the selected customer changes.
+
+<img src="images/CustomerSelectionSequenceDiagram.png" width="650" />
+
+When a customer is selected, `MainWindow` receives the selection change and asks `CustomerDetailsPanel` to display that customer's information. If the displayed list becomes empty, the selection becomes `null` and the details panel displays its empty state. If the selected customer is removed while other customers remain, `PersonListPanel` selects the nearest remaining customer.
+
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/ui/MainWindow.java).
 
 `MainWindow` opens the `HelpWindow` when the user enters `help`, selects the Help menu item, or presses F1.
