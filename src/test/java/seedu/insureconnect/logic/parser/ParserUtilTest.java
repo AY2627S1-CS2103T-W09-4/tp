@@ -100,6 +100,12 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseName_escapedExclamationMark_returnsLiteralExclamationMark() throws Exception {
+        assertEquals(new Name("Zoe !"), ParserUtil.parseName("Zoe !!"));
+        assertEquals(new Name("Zoe! Tan"), ParserUtil.parseName("Zoe!! Tan"));
+    }
+
+    @Test
     public void unescapeName() {
         assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd !a/l Kassim"));
         assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd a!/l Kassim"));
