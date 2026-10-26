@@ -45,6 +45,24 @@ public class CombinedFindCommandParserTest {
     }
 
     @Test
+    public void parse_patronymicInName_acceptsWithoutEscape() {
+        assertParseSuccess(parser, "n/Ravi s/o",
+                new FindCommand(new NameContainsKeywordsPredicate(List.of("Ravi", "s/o"))));
+        assertParseSuccess(parser, "n/Priya D/O",
+                new FindCommand(new NameContainsKeywordsPredicate(List.of("Priya", "D/O"))));
+        assertParseSuccess(parser, "n/Ravi s/o p/912", new FindCommand(new AllCriteriaPredicate(List.of(
+                new NameContainsKeywordsPredicate(List.of("Ravi", "s/o")), new PhoneStartsWithPredicate("912")))));
+    }
+
+    @Test
+    public void parse_slashWordThatIsNotAField_treatsAsNameText() {
+        assertParseSuccess(parser, "n/Tan w/o Lim",
+                new FindCommand(new NameContainsKeywordsPredicate(List.of("Tan", "w/o", "Lim"))));
+        assertParseSuccess(parser, "n/Alice x/value",
+                new FindCommand(new NameContainsKeywordsPredicate(List.of("Alice", "x/value"))));
+    }
+
+    @Test
     public void parse_legacyLiteralKeywords_preservesPunctuation() {
         assertParseSuccess(parser, "!Alice a/l",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("!Alice", "a/l"))));
@@ -76,7 +94,7 @@ public class CombinedFindCommandParserTest {
     @Test
     public void parse_mixedPreambleOrUnsupportedCriteria_rejectsAmbiguity() {
         for (String query : List.of("Alice p/912", "Alice n/Bob", "n/Alice e/a@example.com",
-                "n/Alice x/value", "n/Alice a/address", "t/LIFE z/value")) {
+                "n/Alice a/address", "n/Alice r/remark", "n/Mohd a/l", "t/LIFE e/a@example.com")) {
             assertParseFailure(parser, query, String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
     }
