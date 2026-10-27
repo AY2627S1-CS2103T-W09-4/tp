@@ -2,8 +2,14 @@
 
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Text?>
+<?import javafx.scene.text.TextFlow?>
 
 <StackPane styleClass="stack-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <TextField fx:id="commandTextField" onAction="#handleCommandEntered" promptText="Type a command... (F6: next area, Shift+F6: previous area)"/>
+  <TextFlow styleClass="command-ghost" mouseTransparent="true" StackPane.alignment="CENTER_LEFT"
+            maxWidth="-Infinity" maxHeight="-Infinity">
+    <Text fx:id="commandTypedText" styleClass="command-ghost-typed"/>
+    <Text fx:id="commandSuggestionText" styleClass="command-ghost-suggestion"/>
+  </TextFlow>
 </StackPane>
-
