@@ -62,6 +62,14 @@ History includes successful and failed submissions, skips blank commands and con
 and lasts until you close the application. Navigation stops at the oldest command without wrapping.
 Modified arrow shortcuts and arrow keys in other areas retain their usual behavior.
 
+### Command suggestions
+
+As you type the start of a command word, the rest of the word appears as faded text after the caret.
+For example, typing `ed` shows `edit`. Press **Right** to fill in the suggested word, then continue typing as usual.
+Pressing Right only fills in the word; press Enter to run the command.
+When several commands match, the first in alphabetical order is suggested, so `c` suggests `clear`. Type more letters to narrow it down, such as `co` for `confirm`.
+Suggestions appear only for command words, only while the caret is at the end of the text, and match lowercase input exactly.
+
 ## Changing the colour scheme
 
 Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
