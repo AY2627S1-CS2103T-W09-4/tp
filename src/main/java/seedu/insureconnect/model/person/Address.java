@@ -9,9 +9,9 @@ import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
  */
 public class Address {
 
-    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, but should not be blank and "
-            + "should be at most 300 characters long.";
     public static final int MAX_LENGTH = 300;
+    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, but should not be blank and "
+            + "should be at most " + MAX_LENGTH + " characters long.";
 
     /*
      * The first character of the address must not be a whitespace,
