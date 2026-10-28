@@ -17,9 +17,10 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-W09-4/tp/releases).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your InsureConnect.
+1. Copy the file to the folder you want to use as InsureConnect's _working directory_. InsureConnect stores its data and preferences relative to this folder.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar insureconnect.jar`.<br>
+1. Open a terminal, `cd` to that folder, and run `java -jar insureconnect.jar`.<br>
+   Launch InsureConnect from this same directory each time to keep using the same records and preferences.
    A GUI similar to the one below should appear in a few seconds. <br>
    ![Ui](images/Ui.png)
 
@@ -275,7 +276,7 @@ InsureConnect automatically saves data after every command. You do not need to s
 
 ### Editing the data file
 
-InsureConnect data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. The legacy filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing that data file.
+InsureConnect saves its files relative to the working directory (the directory from which you launch it): customer records are saved to `data/addressbook.json`, and preferences are saved to `preferences.json`. For example, if you run the JAR by its full path while your terminal is in `/home`, the files are `/home/data/addressbook.json` and `/home/preferences.json`, regardless of where the JAR is stored. Launching InsureConnect from different directories uses different records and preferences files. Launch it from the same directory each time to keep using the same records and preferences. The legacy data filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing `data/addressbook.json`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>
@@ -299,7 +300,7 @@ numbers: policy numbers must still be valid and unique across contacts.
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous InsureConnect home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the `data/addressbook.json` file from your previous InsureConnect working directory.
 
 --------------------------------------------------------------------------------------------------------------------
 
