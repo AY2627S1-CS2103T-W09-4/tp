@@ -1,5 +1,9 @@
 package seedu.insureconnect.ui;
 
+import java.awt.Desktop;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -34,7 +38,9 @@ public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
     private static final KeyCombination TOGGLE_COLOUR_SCHEME =
-        new KeyCodeCombination(KeyCode.F2);
+            new KeyCodeCombination(KeyCode.F2);
+    private static final String MESSAGE_USER_GUIDE_OPEN_FAILURE =
+            "Unable to open the User Guide in your browser.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -387,6 +393,22 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
+     * Opens the online User Guide in the user's default web browser.
+     */
+    private void openUserGuide() throws CommandException {
+        if (!Desktop.isDesktopSupported()
+                || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            throw new CommandException(MESSAGE_USER_GUIDE_OPEN_FAILURE);
+        }
+
+        try {
+            Desktop.getDesktop().browse(new URI(HelpWindow.USERGUIDE_URL));
+        } catch (IOException | URISyntaxException e) {
+            throw new CommandException(MESSAGE_USER_GUIDE_OPEN_FAILURE, e);
+        }
+    }
+
+    /**
      * Executes a command and displays its result.
      */
     private CommandResult executeCommand(String commandText)
@@ -402,6 +424,10 @@ public class MainWindow extends UiPart<Stage> {
 
             if (commandResult.isShowHelp()) {
                 handleHelp();
+            }
+
+            if (commandResult.isOpenUserGuide()) {
+                openUserGuide();
             }
 
             if (commandResult.isExit()) {

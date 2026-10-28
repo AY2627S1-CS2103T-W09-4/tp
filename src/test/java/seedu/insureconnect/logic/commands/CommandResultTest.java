@@ -34,6 +34,9 @@ public class CommandResultTest {
         // different exit value -> returns false
         assertFalse(commandResult.equals(new CommandResult("feedback", false, true)));
         assertFalse(commandResult.equals(new CommandResult("feedback", false, false, true)));
+
+        // different openUserGuide value -> returns false
+        assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true)));
     }
 
     @Test
@@ -52,6 +55,9 @@ public class CommandResultTest {
         // different exit value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, true).hashCode());
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, false, true).hashCode());
+
+        // different openUserGuide value -> returns different hashcode
+        assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true)));
     }
 
     @Test
@@ -60,7 +66,7 @@ public class CommandResultTest {
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser() + ", showHelp=" + commandResult.isShowHelp()
                 + ", exit=" + commandResult.isExit() + ", confirmationRequired="
-                + commandResult.isConfirmationRequired() + "}";
+                + commandResult.isConfirmationRequired() + ", openUserGuide=" + commandResult.isOpenUserGuide() + "}";
         assertEquals(expected, commandResult.toString());
     }
 
@@ -68,4 +74,14 @@ public class CommandResultTest {
     public void confirmationRequired_isExposedByResult() {
         assertTrue(new CommandResult("confirm", false, false, true).isConfirmationRequired());
     }
+
+    @Test
+    public void openUserGuide_isExposedByResult() {
+        // EP: User Guide is not requested by default
+        assertFalse(new CommandResult("result").isOpenUserGuide());
+
+        // EP: User Guide is explicitly requested
+        assertTrue(new CommandResult("open", false, false, false, true).isOpenUserGuide());
+    }
+
 }
