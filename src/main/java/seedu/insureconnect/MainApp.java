@@ -21,7 +21,6 @@ import seedu.insureconnect.model.ModelManager;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
 import seedu.insureconnect.model.ReadOnlyUserPrefs;
 import seedu.insureconnect.model.UserPrefs;
-import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.storage.JsonInsureConnectStorage;
 import seedu.insureconnect.storage.JsonUserPrefsStorage;
 import seedu.insureconnect.storage.Storage;
@@ -38,13 +37,6 @@ public class MainApp extends Application {
 
     public static final String MESSAGE_DATA_FILE_ERROR =
             "Warning: Data file at %s could not be loaded. Will be starting with an empty contact list.";
-    public static final String MESSAGE_ADDRESS_MIGRATED = "Warning: One or more saved addresses exceeded the "
-            + Address.MAX_LENGTH + "-character limit. Those addresses were truncated to " + Address.MAX_LENGTH
-            + " characters and the changes were saved.";
-    public static final String MESSAGE_ADDRESS_MIGRATION_SAVE_FAILED = "Warning: One or more saved addresses "
-            + "exceeded the " + Address.MAX_LENGTH + "-character limit and were truncated to " + Address.MAX_LENGTH
-            + " characters for this session, but the changes could not be saved to the data file.";
-
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     // Keep the legacy filename so existing installations continue to load their records.
@@ -107,10 +99,6 @@ public class MainApp extends Application {
                         + " populated with an empty InsureConnect.");
             }
             initialData = insureConnectOptional.orElseGet(InsureConnect::new);
-            if (storage.isAddressMigrationPerformed()) {
-                initialFeedback = storage.isAddressMigrationSaved()
-                        ? MESSAGE_ADDRESS_MIGRATED : MESSAGE_ADDRESS_MIGRATION_SAVE_FAILED;
-            }
         } catch (DataLoadingException e) {
             logger.warning("Data file at " + storage.getInsureConnectFilePath() + " could not be loaded."
                     + " Will be starting with an empty InsureConnect.");

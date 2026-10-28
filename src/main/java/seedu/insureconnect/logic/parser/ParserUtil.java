@@ -97,6 +97,9 @@ public class ParserUtil {
     public static Address parseAddress(String address) throws ParseException {
         requireNonNull(address);
         String trimmedAddress = address.trim();
+        if (trimmedAddress.length() > Address.MAX_LENGTH) {
+            throw new ParseException(Address.MESSAGE_LENGTH_CONSTRAINTS);
+        }
         if (!Address.isValidAddress(trimmedAddress)) {
             throw new ParseException(Address.MESSAGE_CONSTRAINTS);
         }

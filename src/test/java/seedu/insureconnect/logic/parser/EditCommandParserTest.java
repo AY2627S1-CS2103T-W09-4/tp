@@ -203,7 +203,7 @@ public class EditCommandParserTest {
 
         String tooLongAddress = "a".repeat(Address.MAX_LENGTH + 1);
         assertParseFailure(parser, INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ADDRESS + tooLongAddress,
-                Address.MESSAGE_CONSTRAINTS);
+                Address.MESSAGE_LENGTH_CONSTRAINTS);
     }
 
     @Test

@@ -60,16 +60,6 @@ public class StorageManager implements Storage {
     }
 
     @Override
-    public boolean isAddressMigrationPerformed() {
-        return insureConnectStorage.isAddressMigrationPerformed();
-    }
-
-    @Override
-    public boolean isAddressMigrationSaved() {
-        return insureConnectStorage.isAddressMigrationSaved();
-    }
-
-    @Override
     public void saveInsureConnect(ReadOnlyInsureConnect insureConnect) throws IOException {
         logger.fine("Attempting to write to data file: " + insureConnectStorage.getInsureConnectFilePath());
         insureConnectStorage.saveInsureConnect(insureConnect);

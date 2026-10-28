@@ -161,6 +161,12 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseAddress_tooLong_throwsParseException() {
+        assertThrows(ParseException.class, Address.MESSAGE_LENGTH_CONSTRAINTS,
+                () -> ParserUtil.parseAddress("a".repeat(Address.MAX_LENGTH + 1)));
+    }
+
+    @Test
     public void parseEmail_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseEmail((String) null));
     }

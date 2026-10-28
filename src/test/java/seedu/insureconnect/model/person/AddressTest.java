@@ -1,5 +1,6 @@
 package seedu.insureconnect.model.person;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
@@ -35,9 +36,10 @@ public class AddressTest {
     }
 
     @Test
-    public void isValidAddress_lengthBoundary() {
+    public void isValidAddress_longValuesArePreserved() {
         assertTrue(Address.isValidAddress("a".repeat(Address.MAX_LENGTH)));
-        assertFalse(Address.isValidAddress("a".repeat(Address.MAX_LENGTH + 1)));
+        assertTrue(Address.isValidAddress("a".repeat(Address.MAX_LENGTH + 1)));
+        assertEquals("a".repeat(Address.MAX_LENGTH + 1), new Address("a".repeat(Address.MAX_LENGTH + 1)).value);
     }
 
     @Test

@@ -116,21 +116,18 @@ public class JsonInsureConnectStorageTest {
     }
 
     @Test
-    public void readInsureConnect_longAddress_truncatesAndPersistsMigration() throws Exception {
+    public void readInsureConnect_longAddress_preservesAddressAndFile() throws Exception {
         Path filePath = testFolder.resolve("longAddress.json");
-        String overlongAddress = "x".repeat(301);
-        String maxAddress = "x".repeat(300);
+        String longAddress = "x".repeat(301);
         String json = Files.readString(TEST_DATA_FOLDER.resolve("legacyInsureConnect.json"))
-                .replace("123, Jurong West Ave 6, #08-111", overlongAddress);
+                .replace("123, Jurong West Ave 6, #08-111", longAddress);
         Files.writeString(filePath, json);
         JsonInsureConnectStorage storage = new JsonInsureConnectStorage(filePath);
 
         ReadOnlyInsureConnect restored = storage.readInsureConnect().orElseThrow();
 
-        assertTrue(storage.isAddressMigrationPerformed());
-        assertEquals(maxAddress, restored.getPersonList().get(0).getAddress().value);
-        assertTrue(Files.readString(filePath).contains("\"address\" : \"" + maxAddress + "\""));
-        assertFalse(Files.readString(filePath).contains(overlongAddress));
+        assertEquals(longAddress, restored.getPersonList().get(0).getAddress().value);
+        assertEquals(json, Files.readString(filePath));
     }
 
     @Test

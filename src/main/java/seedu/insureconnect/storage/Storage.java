@@ -47,12 +47,6 @@ public interface Storage {
      */
     Optional<ReadOnlyInsureConnect> readInsureConnect() throws DataLoadingException;
 
-    /** Returns true if any data read by this storage instance truncated saved addresses. */
-    boolean isAddressMigrationPerformed();
-
-    /** Returns true if a detected address migration was persisted successfully. */
-    boolean isAddressMigrationSaved();
-
     /**
      * Saves the given {@link ReadOnlyInsureConnect} to the storage.
      * @param insureConnect cannot be null.

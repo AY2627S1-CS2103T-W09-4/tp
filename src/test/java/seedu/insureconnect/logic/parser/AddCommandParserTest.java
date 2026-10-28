@@ -315,7 +315,7 @@ public class AddCommandParserTest {
         String invalidAddressDescription = " " + PREFIX_ADDRESS + "a".repeat(Address.MAX_LENGTH + 1);
         String invalidCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + invalidAddressDescription + TAG_DESC_FRIEND;
-        assertParseFailure(parser, invalidCommand, "Invalid address: " + Address.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, invalidCommand, "Invalid address: " + Address.MESSAGE_LENGTH_CONSTRAINTS);
     }
 
     @Test
