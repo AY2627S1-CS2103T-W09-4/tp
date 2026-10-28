@@ -57,7 +57,8 @@ public class CommandResultTest {
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, false, true).hashCode());
 
         // different openUserGuide value -> returns different hashcode
-        assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true)));
+        assertNotEquals(commandResult.hashCode(),
+                new CommandResult("feedback", false, false, false, true).hashCode());
     }
 
     @Test
@@ -77,10 +78,10 @@ public class CommandResultTest {
 
     @Test
     public void openUserGuide_isExposedByResult() {
-        // EP: User Guide is not requested by default
+        // default openUserGuide value -> returns false
         assertFalse(new CommandResult("result").isOpenUserGuide());
 
-        // EP: User Guide is explicitly requested
+        // true openUserGuide value -> returns true
         assertTrue(new CommandResult("open", false, false, false, true).isOpenUserGuide());
     }
 

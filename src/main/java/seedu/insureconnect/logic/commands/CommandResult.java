@@ -32,12 +32,15 @@ public class CommandResult {
         this(feedbackToUser, showHelp, exit, false, false);
     }
 
+    /**
+     * Constructs a {@code CommandResult} with the specified fields and confirmation state.
+     */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired) {
         this(feedbackToUser, showHelp, exit, confirmationRequired, false);
     }
 
     /**
-     * Constructs a {@code CommandResult} with the specified fields and confirmation state.
+     * Constructs a {@code CommandResult} with confirmation and User Guide states.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
                          boolean openUserGuide) {

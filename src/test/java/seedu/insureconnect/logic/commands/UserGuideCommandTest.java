@@ -13,7 +13,7 @@ public class UserGuideCommandTest {
 
     @Test
     public void execute_userGuide_success() {
-        // EP: valid userguide command opens the online User Guide without changing customer data
+        // valid userguide command -> opens the User Guide without changing customer data
         CommandResult expectedResult = new CommandResult(
                 UserGuideCommand.MESSAGE_SUCCESS, false, false, false, true);
 
