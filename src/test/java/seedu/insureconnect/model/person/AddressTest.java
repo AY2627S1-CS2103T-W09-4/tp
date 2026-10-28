@@ -35,6 +35,12 @@ public class AddressTest {
     }
 
     @Test
+    public void isValidAddress_lengthBoundary() {
+        assertTrue(Address.isValidAddress("a".repeat(Address.MAX_LENGTH)));
+        assertFalse(Address.isValidAddress("a".repeat(Address.MAX_LENGTH + 1)));
+    }
+
+    @Test
     public void equals() {
         Address address = new Address("Valid Address");
 

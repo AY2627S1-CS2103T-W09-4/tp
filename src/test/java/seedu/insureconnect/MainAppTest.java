@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
 
 import java.io.IOException;
@@ -62,6 +63,22 @@ public class MainAppTest extends GuiTest {
         assertEquals(data.getPersonList(), app.logic.getFilteredPersonList());
         assertEquals(prefs.getGuiSettings(), app.logic.getGuiSettings());
         assertNull(app.initialFeedback);
+    }
+
+    @Test
+    public void init_longAddress_truncatesAndShowsStartupWarning() throws Exception {
+        new JsonInsureConnectStorage(dataPath()).saveInsureConnect(getTypicalInsureConnect());
+        String overlongAddress = "x".repeat(301);
+        Files.writeString(dataPath(), Files.readString(dataPath()).replace(ALICE.getAddress().value, overlongAddress));
+        assertTrue(Files.readString(dataPath()).contains(overlongAddress));
+
+        MainApp app = newApplication();
+        app.init();
+
+        assertEquals("x".repeat(300), app.model.getInsureConnect().getPersonList().get(0).getAddress().value);
+        assertTrue(app.storage.wasAddressMigrationPerformed());
+        assertEquals(MainApp.MESSAGE_ADDRESS_MIGRATED, app.initialFeedback);
+        assertFalse(Files.readString(dataPath()).contains(overlongAddress));
     }
 
     @Test
