@@ -24,6 +24,7 @@ import seedu.insureconnect.commons.exceptions.DataLoadingException;
 import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
+import seedu.insureconnect.model.person.Address;
 
 public class JsonInsureConnectStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonInsureConnectStorageTest");
@@ -118,7 +119,7 @@ public class JsonInsureConnectStorageTest {
     @Test
     public void readInsureConnect_longAddress_preservesAddressAndFile() throws Exception {
         Path filePath = testFolder.resolve("longAddress.json");
-        String longAddress = "x".repeat(301);
+        String longAddress = "x".repeat(Address.MAX_LENGTH + 1);
         String json = Files.readString(TEST_DATA_FOLDER.resolve("legacyInsureConnect.json"))
                 .replace("123, Jurong West Ave 6, #08-111", longAddress);
         Files.writeString(filePath, json);

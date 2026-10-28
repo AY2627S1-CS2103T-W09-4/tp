@@ -22,6 +22,7 @@ import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyUserPrefs;
 import seedu.insureconnect.model.UserPrefs;
+import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.storage.JsonInsureConnectStorage;
 import seedu.insureconnect.storage.JsonUserPrefsStorage;
 import seedu.insureconnect.storage.StorageManager;
@@ -67,7 +68,7 @@ public class MainAppTest extends GuiTest {
     @Test
     public void init_longAddress_preservesAddressAndShowsNoWarning() throws Exception {
         new JsonInsureConnectStorage(dataPath()).saveInsureConnect(getTypicalInsureConnect());
-        String longAddress = "x".repeat(301);
+        String longAddress = "x".repeat(Address.MAX_LENGTH + 1);
         String originalData = Files.readString(dataPath()).replace("123, Jurong West Ave 6, #08-111", longAddress);
         Files.writeString(dataPath(), originalData);
 
