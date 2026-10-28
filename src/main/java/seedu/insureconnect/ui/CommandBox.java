@@ -3,7 +3,7 @@ package seedu.insureconnect.ui;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -32,7 +32,7 @@ public class CommandBox extends UiPart<Region> {
     private int draftCaret;
 
     @FXML
-    private TextField commandTextField;
+    private TextArea commandTextField;
 
     /**
      * Creates a {@code CommandBox} with the given {@code CommandExecutor}.
@@ -40,9 +40,22 @@ public class CommandBox extends UiPart<Region> {
     public CommandBox(CommandExecutor commandExecutor) {
         super(FXML);
         this.commandExecutor = commandExecutor;
-        commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleHistoryKey);
+        commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleCommandKey);
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
+    }
+
+    /**
+     * Submits on Enter and handles command-history navigation.
+     */
+    private void handleCommandKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            handleCommandEntered();
+            event.consume();
+            return;
+        }
+
+        handleHistoryKey(event);
     }
 
     /**

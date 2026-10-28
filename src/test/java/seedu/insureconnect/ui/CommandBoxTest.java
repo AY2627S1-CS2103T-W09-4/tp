@@ -9,8 +9,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -25,7 +26,7 @@ public class CommandBoxTest extends GuiTest {
                 commands.add(command);
                 return new CommandResult("Done");
             });
-            TextField input = inputOf(box);
+            TextArea input = inputOf(box);
             submit(input, "  list n/  ");
             assertEquals(List.of("  list n/  "), commands);
             assertEquals("", input.getText());
@@ -54,7 +55,7 @@ public class CommandBoxTest extends GuiTest {
                         ? new CommandResult("Confirm?", false, false, true)
                         : new CommandResult("Cancelled");
             });
-            TextField input = inputOf(box);
+            TextArea input = inputOf(box);
             submit(input, "clear");
             submit(input, "");
             assertEquals(List.of("clear", ""), commands);
@@ -76,14 +77,24 @@ public class CommandBoxTest extends GuiTest {
         }));
     }
 
+    @Test
+    public void input_wrappingEnabled() throws Exception {
+        runOnFxThread(() -> {
+            TextArea input = inputOf(new CommandBox(command -> new CommandResult("Done")));
+
+            assertTrue(input.isWrapText());
+            assertEquals(3, input.getPrefRowCount());
+        });
+    }
+
     /**
      * Verifies retry styling is not duplicated and that editing clears only the error state.
      */
     private void assertFailurePreservesDraft(CommandBox.CommandExecutor executor) {
-        TextField input = inputOf(new CommandBox(executor));
+        TextArea input = inputOf(new CommandBox(executor));
         input.getStyleClass().add("custom-style");
         submit(input, "invalid draft");
-        input.fireEvent(new ActionEvent());
+        pressEnter(input);
         assertEquals("invalid draft", input.getText());
         assertEquals(1, input.getStyleClass().stream().filter(CommandBox.ERROR_STYLE_CLASS::equals).count());
         input.appendText(" corrected");
@@ -92,17 +103,26 @@ public class CommandBoxTest extends GuiTest {
     }
 
     /**
-     * Retrieves the real text field loaded from FXML.
+     * Retrieves the real text area loaded from FXML.
      */
-    private TextField inputOf(CommandBox box) {
-        return (TextField) box.getRoot().lookup("#commandTextField");
+    private TextArea inputOf(CommandBox box) {
+        return (TextArea) box.getRoot().lookup("#commandTextField");
     }
 
     /**
-     * Submits a command through the control's FXML action handler.
+     * Submits a command through the control's Enter-key handler.
      */
-    private void submit(TextField input, String command) {
+    private void submit(TextArea input, String command) {
         input.setText(command);
-        input.fireEvent(new ActionEvent());
+        pressEnter(input);
+    }
+
+    /**
+     * Sends an unmodified Enter key through the control's event filters.
+     */
+    private void pressEnter(TextArea input) {
+        input.fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER,
+                false, false, false, false));
     }
 }

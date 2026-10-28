@@ -188,7 +188,6 @@
 /*
  * Command box
  */
-
 #commandTextField {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -197,11 +196,25 @@
     -fx-border-radius: 0;
     -fx-border-width: 2;
     -fx-border-insets: 0;
-    -fx-padding: 13 14 13 14;
+    -fx-padding: 0;
     -fx-font-family: "System";
     -fx-font-size: 15px;
     -fx-text-fill: -ic-text;
     -fx-prompt-text-fill: -ic-muted;
+}
+
+#commandTextField .scroll-pane,
+#commandTextField .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+#commandTextField .content {
+    -fx-background-color: -ic-surface;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 13 14 13 14;
 }
 
 #commandTextField:focused {

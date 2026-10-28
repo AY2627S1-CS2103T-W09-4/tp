@@ -7,8 +7,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import seedu.insureconnect.logic.commands.CommandResult;
@@ -22,7 +21,7 @@ public class CommandBoxHistoryTest extends GuiTest {
     public void arrows_history_restoresDraftSelectionWithoutExecuting() throws Exception {
         runOnFxThread(() -> {
             List<String> commands = new ArrayList<>();
-            TextField input = createInput(command -> {
+            TextArea input = createInput(command -> {
                 commands.add(command);
                 return new CommandResult("Done");
             });
@@ -49,7 +48,7 @@ public class CommandBoxHistoryTest extends GuiTest {
     public void submit_failure_recallsEditableCommand() throws Exception {
         runOnFxThread(() -> {
             List<String> commands = new ArrayList<>();
-            TextField input = createInput(command -> {
+            TextArea input = createInput(command -> {
                 commands.add(command);
                 throw new ParseException("Invalid command");
             });
@@ -58,7 +57,7 @@ public class CommandBoxHistoryTest extends GuiTest {
             press(input, KeyCode.UP);
             assertEquals("invalid", input.getText());
             input.appendText(" corrected");
-            input.fireEvent(new ActionEvent());
+            press(input, KeyCode.ENTER);
             press(input, KeyCode.UP);
             assertEquals("invalid corrected", input.getText());
             assertEquals(List.of("invalid", "invalid corrected"), commands);
@@ -68,7 +67,7 @@ public class CommandBoxHistoryTest extends GuiTest {
     @Test
     public void arrows_emptyHistoryAndModifiedKeys_leaveTextUnchanged() throws Exception {
         runOnFxThread(() -> {
-            TextField input = createInput(command -> new CommandResult("Done"));
+            TextArea input = createInput(command -> new CommandResult("Done"));
             input.setText("draft");
             input.selectRange(3, 1);
             press(input, KeyCode.UP);
@@ -86,7 +85,7 @@ public class CommandBoxHistoryTest extends GuiTest {
     /**
      * Verifies modifier combinations retain normal text-control behavior.
      */
-    private void assertModifiedKeysKeepDraft(TextField input) {
+    private void assertModifiedKeysKeepDraft(TextArea input) {
         for (KeyCode key : List.of(KeyCode.UP, KeyCode.DOWN)) {
             for (int modifier = 0; modifier < 4; modifier++) {
                 input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", key,
@@ -99,7 +98,7 @@ public class CommandBoxHistoryTest extends GuiTest {
     /**
      * Checks both selection direction and text after returning to the draft.
      */
-    private void assertDraftSelection(TextField input) {
+    private void assertDraftSelection(TextArea input) {
         assertEquals("unfinished command", input.getText());
         assertEquals(8, input.getAnchor());
         assertEquals(3, input.getCaretPosition());
@@ -108,26 +107,26 @@ public class CommandBoxHistoryTest extends GuiTest {
     /**
      * Loads and focuses the real command input with its native skin.
      */
-    private TextField createInput(CommandBox.CommandExecutor executor) {
+    private TextArea createInput(CommandBox.CommandExecutor executor) {
         CommandBox box = new CommandBox(executor);
         show(box.getRoot());
-        TextField input = (TextField) box.getFocusTarget();
+        TextArea input = (TextArea) box.getFocusTarget();
         input.requestFocus();
         return input;
     }
 
     /**
-     * Submits text using the FXML action handler.
+     * Submits text using the command input's Enter-key handler.
      */
-    private void submit(TextField input, String text) {
+    private void submit(TextArea input, String text) {
         input.setText(text);
-        input.fireEvent(new ActionEvent());
+        press(input, KeyCode.ENTER);
     }
 
     /**
      * Sends an unmodified key through the control's event filters.
      */
-    private void press(TextField input, KeyCode key) {
+    private void press(TextArea input, KeyCode key) {
         input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", key, false, false, false, false));
     }
 }
