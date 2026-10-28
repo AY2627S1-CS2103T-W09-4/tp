@@ -166,6 +166,24 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_duplicateHiddenByNameSearch_reportsIndexInRankedList() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        Person duplicate = model.getInsureConnect().getPersonList().get(0);
+        Person searched = model.getInsureConnect().getPersonList().get(2);
+        logic.execute("find " + searched.getName().fullName.split(" ")[0]);
+        String addDuplicate = "add n/" + duplicate.getName().fullName + " p/" + duplicate.getPhone().value
+                + " e/new@example.com a/Somewhere t/NEWPOLICY1";
+        // The name search ranks its match first, which moves the duplicate from 1 to 2.
+        int expectedIndex = 2;
+
+        assertThrows(CommandException.class, String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, expectedIndex,
+                duplicate.getName().fullName, duplicate.getPhone().value), () -> logic.execute(addDuplicate));
+        assertEquals(searched, model.getFilteredPersonList().get(0));
+        assertEquals(duplicate, model.getFilteredPersonList().get(expectedIndex - 1));
+        assertEquals(model.getInsureConnect().getPersonList().size(), model.getFilteredPersonList().size());
+    }
+
+    @Test
     public void execute_storageThrowsIoException_throwsCommandException() {
         assertCommandFailureForExceptionFromStorage(DUMMY_IO_EXCEPTION, String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage()));
