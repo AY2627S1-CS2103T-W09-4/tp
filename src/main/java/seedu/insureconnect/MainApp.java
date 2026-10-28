@@ -145,7 +145,15 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) {
         logger.info("Starting InsureConnect " + MainApp.VERSION);
+        var loadedGuiSettings = model.getGuiSettings();
         ui.start(primaryStage);
+        if (!loadedGuiSettings.equals(model.getGuiSettings())) {
+            try {
+                storage.saveUserPrefs(model.getUserPrefs());
+            } catch (IOException e) {
+                logger.warning("Failed to save corrected window preferences " + StringUtil.getDetails(e));
+            }
+        }
     }
 
     @Override
