@@ -16,6 +16,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import seedu.insureconnect.commons.core.ColourScheme;
@@ -66,6 +68,51 @@ public class MainWindowInteractionTest extends GuiTest {
             logic.getFilteredPersonList().clear();
             assertEquals("", name.getText());
         });
+    }
+
+    @Test
+    public void colourSchemeShortcut_togglesSchemeFromBothWindows() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            window.handleHelp();
+
+            Stage help = Window.getWindows().stream()
+                    .filter(Stage.class::isInstance)
+                    .map(Stage.class::cast)
+                    .filter(stage -> "Help".equals(stage.getTitle()))
+                    .findFirst()
+                    .orElseThrow();
+
+            pressColourSchemeShortcut(window.getRoot());
+            assertScheme(
+                    window.getRoot(),
+                    help,
+                    logic,
+                    ColourScheme.LIGHT);
+
+            pressColourSchemeShortcut(help);
+            assertScheme(
+                    window.getRoot(),
+                    help,
+                    logic,
+                    ColourScheme.DARK);
+        });
+    }
+
+    /**
+     * Sends F2 through the given window's keyboard event filters.
+     */
+    private void pressColourSchemeShortcut(Stage stage) {
+        stage.getScene().getRoot().fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED,
+                "",
+                "",
+                KeyCode.F2,
+                false,
+                false,
+                false,
+                false));
     }
 
     /**
