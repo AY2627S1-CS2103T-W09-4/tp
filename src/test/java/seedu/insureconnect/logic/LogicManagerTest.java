@@ -102,6 +102,7 @@ public class LogicManagerTest {
         assertEquals(recordsBeforePrompt, model.getInsureConnect());
         assertFalse(Files.exists(insureConnectFile));
 
+        // EP: affirmative confirmation input; uppercase Y is accepted case-insensitively
         CommandResult result = logic.execute("Y");
         assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
         assertEquals(new InsureConnect(), model.getInsureConnect());
@@ -114,6 +115,7 @@ public class LogicManagerTest {
         ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
 
         logic.execute(ClearCommand.COMMAND_WORD);
+        // EP: explicit negative confirmation input
         CommandResult result = logic.execute("n");
 
         assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
@@ -127,6 +129,7 @@ public class LogicManagerTest {
         ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
 
         logic.execute(ClearCommand.COMMAND_WORD);
+        // EP: empty input uses the default negative response
         CommandResult result = logic.execute("");
 
         assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
@@ -140,6 +143,7 @@ public class LogicManagerTest {
         ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
 
         logic.execute(ClearCommand.COMMAND_WORD);
+        // EP: another command is consumed as a non-y response and cancels clearing
         CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
 
         assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
@@ -328,6 +332,7 @@ public class LogicManagerTest {
         assertFalse(Files.exists(dataFile));
         assertTrue(model.hasPerson(AMY));
 
+        // EP: affirmative confirmation input
         logic.execute("y");
 
         // Confirmation deletes the customer and persists the changed book.
@@ -354,6 +359,7 @@ public class LogicManagerTest {
         ModelManager deletedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
         deletedModel.deletePerson(AMY);
 
+        // EP: affirmative confirmation input with uppercase Y
         assertCommandSuccess("Y",
                 String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY)),
                 deletedModel);
@@ -364,6 +370,7 @@ public class LogicManagerTest {
         model.addPerson(AMY);
 
         logic.execute("delete 1");
+        // EP: explicit negative confirmation input
         CommandResult result = logic.execute("n");
 
         assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
@@ -376,6 +383,7 @@ public class LogicManagerTest {
         model.addPerson(AMY);
 
         logic.execute("delete 1");
+        // EP: empty input uses the default negative response
         CommandResult result = logic.execute("");
 
         assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
@@ -397,6 +405,7 @@ public class LogicManagerTest {
                 DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
 
         assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
+        // EP: another command is consumed as a non-y response and cancels deletion
         CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
         assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
         assertEquals(unchangedModel, model);
@@ -412,6 +421,7 @@ public class LogicManagerTest {
                 DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
         assertCommandSuccess("delete 1", confirmationMessage, model);
 
+        // EP: invalid non-y input cancels the pending deletion
         CommandResult result = logic.execute("confirm now");
         assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
         assertTrue(model.hasPerson(AMY));
@@ -423,6 +433,7 @@ public class LogicManagerTest {
 
         logic.execute("delete 1");
 
+        // EP: unrecognized non-y input cancels the pending deletion
         CommandResult result = logic.execute("unknown");
         assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
 
@@ -448,6 +459,7 @@ public class LogicManagerTest {
 
         String expectedSaveFailureMessage = String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
+        // EP: affirmative confirmation input reaches the save path
         assertThrows(CommandException.class, expectedSaveFailureMessage, () -> logic.execute("y"));
 
         // Both stored data and the displayed filtered list are restored.

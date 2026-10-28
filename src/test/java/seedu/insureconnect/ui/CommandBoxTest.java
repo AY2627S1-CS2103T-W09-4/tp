@@ -56,6 +56,7 @@ public class CommandBoxTest extends GuiTest {
             });
             TextField input = inputOf(box);
             submit(input, "clear");
+            // EP: empty input is submitted so the logic can apply default n
             submit(input, "");
             assertEquals(List.of("clear", ""), commands);
             assertEquals("", input.getText());
@@ -74,6 +75,7 @@ public class CommandBoxTest extends GuiTest {
             });
             TextField input = inputOf(box);
             submit(input, "delete 1");
+            // EP: affirmative confirmation input is forwarded unchanged
             submit(input, "Y");
             assertEquals(List.of("delete 1", "Y"), commands);
             assertEquals("", input.getText());
