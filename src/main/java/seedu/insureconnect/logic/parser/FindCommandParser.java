@@ -86,7 +86,7 @@ public class FindCommandParser implements Parser<FindCommand> {
     private List<Predicate<Person>> parseCriteria(ArgumentMultimap arguments) throws ParseException {
         List<Predicate<Person>> criteria = new ArrayList<>();
         if (arguments.getValue(PREFIX_NAME).isPresent()) {
-            criteria.add(parseNameCriterion(ParserUtil.unescapeName(arguments.getValue(PREFIX_NAME).orElseThrow())));
+            criteria.add(parseNameCriterion(ParserUtil.unescape(arguments.getValue(PREFIX_NAME).orElseThrow())));
         }
         if (arguments.getValue(PREFIX_PHONE).isPresent()) {
             criteria.add(parsePhoneCriterion(arguments.getValue(PREFIX_PHONE).orElseThrow()));
