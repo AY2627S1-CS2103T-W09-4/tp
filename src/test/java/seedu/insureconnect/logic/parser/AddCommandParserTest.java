@@ -318,6 +318,7 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_remarkEscapedPrefixAndExclamation_success() {
+        // EP: escaped prefix-like text and a doubled exclamation mark are unescaped in an added remark
         Person expectedPerson = new PersonBuilder(AMY)
                 .withRemark("dietary restrictions: n/a Follow up!")
                 .build();

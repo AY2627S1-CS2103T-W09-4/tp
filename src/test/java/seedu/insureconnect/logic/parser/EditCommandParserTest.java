@@ -196,6 +196,7 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_remarkEscapedPrefixAndExclamation_success() {
+        // EP: escaped prefix-like text and a doubled exclamation mark are unescaped in an edited remark
         String userInput = INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_REMARK
                 + "dietary restrictions: !n/a Follow up!!";
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
