@@ -75,9 +75,7 @@ public class HelpWindowTest extends GuiTest {
             HelpWindow help = new HelpWindow();
             help.show();
 
-            help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
-                    KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE,
-                    false, false, false, false));
+            pressKey(help, KeyCode.ESCAPE);
 
             assertFalse(help.isShowing());
         });
@@ -89,12 +87,28 @@ public class HelpWindowTest extends GuiTest {
             HelpWindow help = new HelpWindow();
             help.show();
 
-            help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
-                    KeyEvent.KEY_PRESSED, "", "", KeyCode.F1,
-                    false, false, false, false));
+            pressKey(help, KeyCode.F1);
 
             assertFalse(help.isShowing());
         });
+    }
+
+    @Test
+    public void enterKey_doesNotCloseHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            pressKey(help, KeyCode.ENTER);
+
+            assertTrue(help.isShowing());
+        });
+    }
+
+    private void pressKey(HelpWindow help, KeyCode keyCode) {
+        help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", keyCode,
+                false, false, false, false));
     }
 
     /**
