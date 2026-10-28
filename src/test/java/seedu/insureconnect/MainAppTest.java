@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import javafx.scene.control.TextArea;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
@@ -62,6 +63,23 @@ public class MainAppTest extends GuiTest {
         assertEquals(data.getPersonList(), app.logic.getFilteredPersonList());
         assertEquals(prefs.getGuiSettings(), app.logic.getGuiSettings());
         assertNull(app.initialFeedback);
+    }
+
+    @Test
+    public void start_oversizedSavedWindow_correctsPreferencesFile() throws Exception {
+        UserPrefs prefs = new UserPrefs();
+        prefs.setGuiSettings(new GuiSettings().withWindowGeometry(10000, 10000, null));
+        new JsonUserPrefsStorage(preferencesPath()).saveUserPrefs(prefs);
+        MainApp app = newApplication();
+        app.init();
+
+        runOnFxThread(() -> {
+            app.start(new Stage());
+            GuiSettings saved = app.storage.readUserPrefs().orElseThrow().getGuiSettings();
+            var visualBounds = Screen.getPrimary().getVisualBounds();
+            assertTrue(saved.getWindowWidth() < visualBounds.getWidth());
+            assertTrue(saved.getWindowHeight() < visualBounds.getHeight());
+        });
     }
 
     @Test
