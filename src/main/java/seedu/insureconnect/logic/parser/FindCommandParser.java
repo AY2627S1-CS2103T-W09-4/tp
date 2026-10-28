@@ -1,15 +1,16 @@
 package seedu.insureconnect.logic.parser;
 
 import static seedu.insureconnect.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_ADDRESS;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_EMAIL;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_NAME;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_REMARK;
 import static seedu.insureconnect.logic.parser.CliSyntax.PREFIX_TAG;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import seedu.insureconnect.logic.commands.FindCommand;
@@ -24,7 +25,7 @@ import seedu.insureconnect.model.person.PolicyNumberMatchesPredicate;
  * Parses legacy name searches and explicit, conjunctive name, phone and policy criteria.
  */
 public class FindCommandParser implements Parser<FindCommand> {
-    private static final Pattern PREFIX_TOKEN = Pattern.compile("(?<!\\S)[A-Za-z]+/");
+    private static final Prefix[] UNSUPPORTED_PREFIXES = {PREFIX_EMAIL, PREFIX_ADDRESS, PREFIX_REMARK};
 
     @Override
     public FindCommand parse(String args) throws ParseException {
@@ -63,20 +64,19 @@ public class FindCommandParser implements Parser<FindCommand> {
         if (!arguments.getPreamble().isEmpty()) {
             throw invalidFormat();
         }
-        validatePrefixTokens(query);
+        rejectUnsupportedFields(query);
         arguments.verifyNoDuplicatePrefixesFor(PREFIX_NAME, PREFIX_PHONE, PREFIX_TAG);
     }
 
     /**
-     * Prevents unsupported field markers from silently becoming part of a name value.
+     * Rejects customer fields that find cannot search, such as {@code e/}, so they do not silently
+     * become part of a name value. Other words containing a slash, such as {@code s/o}, are name text,
+     * as they are in {@code add}.
      */
-    private void validatePrefixTokens(String query) throws ParseException {
-        Matcher matcher = PREFIX_TOKEN.matcher(query);
-        while (matcher.find()) {
-            if (!List.of(PREFIX_NAME.getPrefix(), PREFIX_PHONE.getPrefix(), PREFIX_TAG.getPrefix())
-                    .contains(matcher.group())) {
-                throw invalidFormat();
-            }
+    private void rejectUnsupportedFields(String query) throws ParseException {
+        ArgumentMultimap unsupportedFields = ArgumentTokenizer.tokenize(" " + query, UNSUPPORTED_PREFIXES);
+        if (Stream.of(UNSUPPORTED_PREFIXES).anyMatch(prefix -> unsupportedFields.getValue(prefix).isPresent())) {
+            throw invalidFormat();
         }
     }
 
