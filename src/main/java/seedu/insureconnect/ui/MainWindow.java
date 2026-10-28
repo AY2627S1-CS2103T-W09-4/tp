@@ -1,5 +1,6 @@
 package seedu.insureconnect.ui;
 
+import java.awt.Point;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
@@ -7,6 +8,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -15,12 +17,14 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.Logic;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.WindowResize;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.Person;
@@ -31,6 +35,9 @@ import seedu.insureconnect.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+    private static final double RESIZE_MARGIN = 12;
+    private static final double MIN_WIDTH = 880;
+    private static final double MIN_HEIGHT = 600;
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -99,7 +106,10 @@ public class MainWindow extends UiPart<Stage> {
      * Restores window preferences and connects menu actions.
      */
     private void configureWindow() {
-        setWindowDefaultSize(logic.getGuiSettings());
+        GuiSettings settings = logic.getGuiSettings();
+        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings.getWindowCoordinates()).getVisualBounds());
+        logic.setGuiSettings(safeSettings);
+        setWindowDefaultSize(safeSettings);
         setAccelerators();
         configureColourSchemeMenu();
         applyColourScheme(logic.getGuiSettings().getColourScheme());
@@ -300,6 +310,8 @@ public class MainWindow extends UiPart<Stage> {
      * Sets the default window size and position.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
+        primaryStage.setMinWidth(Math.min(primaryStage.getMinWidth(), guiSettings.getWindowWidth()));
+        primaryStage.setMinHeight(Math.min(primaryStage.getMinHeight(), guiSettings.getWindowHeight()));
         primaryStage.setHeight(guiSettings.getWindowHeight());
         primaryStage.setWidth(guiSettings.getWindowWidth());
 
@@ -309,6 +321,78 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setY(
                     guiSettings.getWindowCoordinates().getY());
         }
+    }
+
+    /** Returns the monitor containing the window origin, or the primary monitor. */
+    private static Screen screenFor(Point coordinates) {
+        if (coordinates != null) {
+            var screens = Screen.getScreensForRectangle(coordinates.getX(), coordinates.getY(), 1, 1);
+            if (!screens.isEmpty()) {
+                return screens.get(0);
+            }
+        }
+        return Screen.getPrimary();
+    }
+
+    /** Keeps the window and its resize edges within the monitor's usable area. */
+    static GuiSettings fitToScreen(GuiSettings settings, Rectangle2D bounds) {
+        double width = Math.min(settings.getWindowWidth(), Math.max(1, bounds.getWidth() - 2 * RESIZE_MARGIN));
+        double height = Math.min(settings.getWindowHeight(), Math.max(1, bounds.getHeight() - 2 * RESIZE_MARGIN));
+        Point coordinates = settings.getWindowCoordinates();
+        if (coordinates != null) {
+            int x = (int) Math.max(bounds.getMinX() + RESIZE_MARGIN,
+                    Math.min(coordinates.getX(), bounds.getMaxX() - width - RESIZE_MARGIN));
+            int y = (int) Math.max(bounds.getMinY() + RESIZE_MARGIN,
+                    Math.min(coordinates.getY(), bounds.getMaxY() - height - RESIZE_MARGIN));
+            coordinates = new Point(x, y);
+        }
+        return settings.withWindowGeometry(width, height, coordinates);
+    }
+
+    /** Applies a requested size on the monitor containing the current window. */
+    private void resizeWindow(WindowResize request) throws CommandException {
+        Point position = new Point((int) primaryStage.getX(), (int) primaryStage.getY());
+        Rectangle2D bounds = screenFor(position).getVisualBounds();
+        double maxWidth = bounds.getWidth() - 2 * RESIZE_MARGIN;
+        double maxHeight = bounds.getHeight() - 2 * RESIZE_MARGIN;
+        if (maxWidth < MIN_WIDTH || maxHeight < MIN_HEIGHT) {
+            throw new CommandException("The current screen is too small for the minimum window size (880 by 600).");
+        }
+
+        double width;
+        double height;
+        switch (request.preset()) {
+            case MIN -> {
+                width = MIN_WIDTH;
+                height = MIN_HEIGHT;
+            }
+            case MED -> {
+                width = Math.max(MIN_WIDTH, Math.floor(bounds.getWidth() * 2 / 3));
+                height = Math.max(MIN_HEIGHT, Math.floor(bounds.getHeight() * 2 / 3));
+            }
+            case MAX -> {
+                width = maxWidth;
+                height = maxHeight;
+            }
+            case CUSTOM -> {
+                width = request.width();
+                height = request.height();
+            }
+            default -> throw new IllegalStateException("Unknown resize preset");
+        }
+        if (width > maxWidth || height > maxHeight) {
+            throw new CommandException("Window size exceeds the current screen's usable area.");
+        }
+
+        GuiSettings settings = fitToScreen(logic.getGuiSettings().withWindowGeometry(width, height, position), bounds);
+        if (primaryStage.isMaximized()) {
+            primaryStage.setMaximized(false);
+        }
+        primaryStage.setWidth(settings.getWindowWidth());
+        primaryStage.setHeight(settings.getWindowHeight());
+        primaryStage.setX(settings.getWindowCoordinates().getX());
+        primaryStage.setY(settings.getWindowCoordinates().getY());
+        logic.setGuiSettings(settings);
     }
 
     /**
@@ -335,15 +419,13 @@ public class MainWindow extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
-        GuiSettings guiSettings = new GuiSettings(
+        GuiSettings guiSettings = logic.getGuiSettings().withWindowGeometry(
                 primaryStage.getWidth(),
                 primaryStage.getHeight(),
-                (int) primaryStage.getX(),
-                (int) primaryStage.getY());
+                new Point((int) primaryStage.getX(), (int) primaryStage.getY()));
 
-        logic.setGuiSettings(
-                guiSettings.withColourScheme(
-                        logic.getGuiSettings().getColourScheme()));
+        logic.setGuiSettings(fitToScreen(guiSettings,
+                screenFor(guiSettings.getWindowCoordinates()).getVisualBounds()));
 
         helpWindow.hide();
         primaryStage.hide();
@@ -360,6 +442,10 @@ public class MainWindow extends UiPart<Stage> {
             throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
+
+            if (commandResult.getWindowResize() != null) {
+                resizeWindow(commandResult.getWindowResize());
+            }
 
             logger.info(
                     "Result: " + commandResult.getFeedbackToUser());

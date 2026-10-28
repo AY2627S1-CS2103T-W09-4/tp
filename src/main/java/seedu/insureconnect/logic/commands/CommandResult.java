@@ -21,6 +21,7 @@ public class CommandResult {
 
     /** The next command input should be treated as a confirmation response. */
     private final boolean confirmationRequired;
+    private final WindowResize windowResize;
 
     /**
      * Constructs a {@code CommandResult} with the specified fields.
@@ -33,10 +34,20 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields and confirmation state.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired) {
+        this(feedbackToUser, showHelp, exit, confirmationRequired, null);
+    }
+
+    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
+                         WindowResize windowResize) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.confirmationRequired = confirmationRequired;
+        this.windowResize = windowResize;
+    }
+
+    public CommandResult(String feedbackToUser, WindowResize windowResize) {
+        this(feedbackToUser, false, false, false, requireNonNull(windowResize));
     }
 
     /**
@@ -63,6 +74,10 @@ public class CommandResult {
         return confirmationRequired;
     }
 
+    public WindowResize getWindowResize() {
+        return windowResize;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -77,12 +92,13 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
-                && confirmationRequired == otherCommandResult.confirmationRequired;
+                && confirmationRequired == otherCommandResult.confirmationRequired
+                && Objects.equals(windowResize, otherCommandResult.windowResize);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired);
+        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, windowResize);
     }
 
     @Override
@@ -92,6 +108,7 @@ public class CommandResult {
                 .add("showHelp", showHelp)
                 .add("exit", exit)
                 .add("confirmationRequired", confirmationRequired)
+                .add("windowResize", windowResize)
                 .toString();
     }
 

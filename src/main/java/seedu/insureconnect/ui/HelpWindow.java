@@ -26,6 +26,7 @@ public class HelpWindow extends UiPart<Stage> {
             CommandFormats.DELETE_COMMAND_FORMAT,
             CommandFormats.FIND_COMMAND_FORMAT,
             CommandFormats.LIST_COMMAND_FORMAT,
+            CommandFormats.RESIZE_COMMAND_FORMAT,
             CommandFormats.CLEAR_COMMAND_FORMAT,
             CommandFormats.HELP_COMMAND_FORMAT,
             CommandFormats.EXIT_COMMAND_FORMAT);

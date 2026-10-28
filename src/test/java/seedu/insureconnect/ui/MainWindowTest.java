@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
+import java.awt.Point;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -20,11 +23,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.WindowResize;
+import seedu.insureconnect.logic.commands.WindowResize.Preset;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
@@ -32,6 +38,62 @@ public class MainWindowTest extends GuiTest {
 
     private static final String READY_MESSAGE =
             "Ready. Type a command to search or manage customers.";
+
+    @Test
+    public void fitToScreen_oversizedGeometry_keepsResizeEdgesVisible() {
+        GuiSettings saved = new GuiSettings(1936, 1048, -8, -8);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 0, 1920, 1040));
+        assertEquals(1896, fitted.getWindowWidth());
+        assertEquals(1016, fitted.getWindowHeight());
+        assertEquals(new Point(12, 12), fitted.getWindowCoordinates());
+    }
+
+    @Test
+    public void resizePresetAndCustom_applyBoundsAndSaveGeometry() throws Exception {
+        runOnFxThread(() -> {
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            assumeTrue(bounds.getWidth() >= 904 && bounds.getHeight() >= 624);
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MIN)));
+            submit(window, "resize p/min");
+            assertEquals(880, window.getRoot().getWidth());
+            assertEquals(600, window.getRoot().getHeight());
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MED)));
+            submit(window, "resize p/med");
+            assertEquals(Math.max(880, Math.floor(bounds.getWidth() * 2 / 3)), window.getRoot().getWidth());
+            assertEquals(Math.max(600, Math.floor(bounds.getHeight() * 2 / 3)), window.getRoot().getHeight());
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MAX)));
+            submit(window, "resize p/max");
+            assertEquals(bounds.getWidth() - 24, window.getRoot().getWidth());
+            assertEquals(bounds.getHeight() - 24, window.getRoot().getHeight());
+            assertEquals(window.getRoot().getWidth(), logic.getGuiSettings().getWindowWidth());
+            assertTrue(window.getRoot().getX() >= bounds.getMinX() + 12);
+            assertTrue(window.getRoot().getY() >= bounds.getMinY() + 12);
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.custom(880, 600)));
+            submit(window, "resize s/880 600");
+            assertEquals(880, window.getRoot().getWidth());
+            assertEquals(600, window.getRoot().getHeight());
+        });
+    }
+
+    @Test
+    public void resizeTooLarge_displaysErrorAndRetainsInput() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            double originalWidth = window.getRoot().getWidth();
+            logic.setExecutor(command -> new CommandResult("Window resized.",
+                    WindowResize.custom(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+            submit(window, "resize s/2147483647 2147483647");
+            assertEquals(originalWidth, window.getRoot().getWidth());
+            assertEquals("resize s/2147483647 2147483647", inputOf(window).getText());
+            assertTrue(outputOf(window).getText().contains("exceeds"));
+        });
+    }
 
     @Test
     public void initialize_savedGeometryAndFeedback_restoresWindowAndCustomerWorkspace() throws Exception {
