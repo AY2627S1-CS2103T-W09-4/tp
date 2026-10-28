@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 import seedu.insureconnect.model.person.Person;
@@ -47,11 +48,11 @@ public class CustomerDetailsPanelTest extends GuiTest {
             assertFalse(emptyStateOf(panel).isManaged());
             assertTrue(detailsOf(panel).isVisible());
             assertTrue(detailsOf(panel).isManaged());
-            assertEquals(customer.getName().fullName, labelOf(panel, "detailName").getText());
-            assertEquals(customer.getPhone().value, labelOf(panel, "detailPhone").getText());
-            assertEquals(customer.getEmail().value, labelOf(panel, "detailEmail").getText());
-            assertEquals(customer.getAddress().value, labelOf(panel, "detailAddress").getText());
-            assertEquals("Call after 6", labelOf(panel, "detailRemark").getText());
+            assertEquals(customer.getName().fullName, textControlOf(panel, "detailName").getText());
+            assertEquals(customer.getPhone().value, textControlOf(panel, "detailPhone").getText());
+            assertEquals(customer.getEmail().value, textControlOf(panel, "detailEmail").getText());
+            assertEquals(customer.getAddress().value, textControlOf(panel, "detailAddress").getText());
+            assertEquals("Call after 6", textControlOf(panel, "detailRemark").getText());
             assertTrue(remarkSectionOf(panel).isVisible());
             assertTrue(remarkSectionOf(panel).isManaged());
             assertEquals(List.of("A123", "Z999"), policiesOf(panel).getChildren().stream()
@@ -73,6 +74,30 @@ public class CustomerDetailsPanelTest extends GuiTest {
     }
 
     @Test
+    public void displayCustomer_detailsAreReadOnlyAndSelectable() throws Exception {
+        runOnFxThread(() -> {
+            CustomerDetailsPanel panel = new CustomerDetailsPanel();
+            show(panel.getRoot());
+            panel.displayCustomer(ALICE);
+
+            List.of(
+                    "detailName",
+                    "detailPhone",
+                    "detailEmail",
+                    "detailAddress"
+            ).forEach(id -> {
+                TextInputControl detail = textControlOf(panel, id);
+
+                assertFalse(detail.isEditable());
+                assertTrue(detail.isFocusTraversable());
+
+                detail.selectAll();
+                assertEquals(detail.getText(), detail.getSelectedText());
+            });
+        });
+    }
+
+    @Test
     public void clear_displayedCustomer_restoresEmptyStateAndClearsDetails() throws Exception {
         runOnFxThread(() -> {
             CustomerDetailsPanel panel = new CustomerDetailsPanel();
@@ -85,11 +110,11 @@ public class CustomerDetailsPanelTest extends GuiTest {
             assertTrue(emptyStateOf(panel).isManaged());
             assertFalse(detailsOf(panel).isVisible());
             assertFalse(detailsOf(panel).isManaged());
-            assertEquals("", labelOf(panel, "detailName").getText());
-            assertEquals("", labelOf(panel, "detailPhone").getText());
-            assertEquals("", labelOf(panel, "detailEmail").getText());
-            assertEquals("", labelOf(panel, "detailAddress").getText());
-            assertEquals("", labelOf(panel, "detailRemark").getText());
+            assertEquals("", textControlOf(panel, "detailName").getText());
+            assertEquals("", textControlOf(panel, "detailPhone").getText());
+            assertEquals("", textControlOf(panel, "detailEmail").getText());
+            assertEquals("", textControlOf(panel, "detailAddress").getText());
+            assertEquals("", textControlOf(panel, "detailRemark").getText());
             assertTrue(policiesOf(panel).getChildren().isEmpty());
         });
     }
@@ -132,9 +157,9 @@ public class CustomerDetailsPanelTest extends GuiTest {
     }
 
     /**
-     * Returns a detail label by its FXML identifier.
+     * Returns a selectable detail control by its FXML identifier.
      */
-    private Label labelOf(CustomerDetailsPanel panel, String id) {
-        return (Label) panel.getRoot().lookup("#" + id);
+    private TextInputControl textControlOf(CustomerDetailsPanel panel, String id) {
+        return (TextInputControl) panel.getRoot().lookup("#" + id);
     }
 }

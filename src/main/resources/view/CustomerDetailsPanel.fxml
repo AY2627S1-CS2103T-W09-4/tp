@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import seedu.insureconnect.ui.SelectableText?>
 
 <StackPane id="customerDetailsPanel"
            maxWidth="Infinity"
@@ -48,10 +49,9 @@
           <Label text="Customer details"
                  styleClass="detail-heading" />
 
-          <Label fx:id="detailName"
-                 maxWidth="Infinity"
-                 wrapText="true"
-                 styleClass="detail-name" />
+          <SelectableText fx:id="detailName"
+                          maxWidth="Infinity"
+                          styleClass="detail-name, selectable-detail" />
 
           <FlowPane fx:id="detailPolicies"
                     hgap="7"
@@ -77,24 +77,22 @@
                   GridPane.columnIndex="0"
                   GridPane.rowIndex="0">
               <Label text="PHONE"
-                     styleClass="field-caption" />
+                    styleClass="field-caption" />
 
-              <Label fx:id="detailPhone"
-                     maxWidth="Infinity"
-                     wrapText="true"
-                     styleClass="field-value" />
+              <SelectableText fx:id="detailPhone"
+                              maxWidth="Infinity"
+                              styleClass="field-value, selectable-detail" />
             </VBox>
 
             <VBox spacing="4"
                   GridPane.columnIndex="1"
                   GridPane.rowIndex="0">
               <Label text="EMAIL"
-                     styleClass="field-caption" />
+                    styleClass="field-caption" />
 
-              <Label fx:id="detailEmail"
-                     maxWidth="Infinity"
-                     wrapText="true"
-                     styleClass="field-value" />
+              <SelectableText fx:id="detailEmail"
+                              maxWidth="Infinity"
+                              styleClass="field-value, selectable-detail" />
             </VBox>
           </GridPane>
         </VBox>
@@ -102,24 +100,22 @@
         <VBox spacing="6"
               styleClass="detail-section">
           <Label text="ADDRESS"
-                 styleClass="field-caption" />
+                styleClass="field-caption" />
 
-          <Label fx:id="detailAddress"
-                 maxWidth="Infinity"
-                 wrapText="true"
-                 styleClass="field-value" />
+          <SelectableText fx:id="detailAddress"
+                          maxWidth="Infinity"
+                          styleClass="field-value, selectable-detail" />
         </VBox>
 
         <VBox fx:id="detailRemarkSection"
               spacing="6"
               styleClass="detail-section">
           <Label text="REMARK"
-                 styleClass="field-caption" />
+                styleClass="field-caption" />
 
-          <Label fx:id="detailRemark"
-                 maxWidth="Infinity"
-                 wrapText="true"
-                 styleClass="field-value" />
+          <SelectableText fx:id="detailRemark"
+                          maxWidth="Infinity"
+                          styleClass="field-value, selectable-detail" />
         </VBox>
       </VBox>
     </content>

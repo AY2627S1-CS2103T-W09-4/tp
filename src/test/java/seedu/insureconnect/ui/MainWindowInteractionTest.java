@@ -11,11 +11,11 @@ import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.TextInputControl;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import seedu.insureconnect.commons.core.ColourScheme;
@@ -59,7 +59,7 @@ public class MainWindowInteractionTest extends GuiTest {
             ListView<?> list = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertSame(list, window.getPersonListPanel().getFocusTarget());
             list.getSelectionModel().select(1);
-            Label name = (Label) window.getRoot().getScene().lookup("#detailName");
+            TextInputControl name = (TextInputControl) window.getRoot().getScene().lookup("#detailName");
             assertEquals(BENSON.getName().fullName, name.getText());
             logic.getFilteredPersonList().remove(BENSON);
             assertEquals(ALICE.getName().fullName, name.getText());

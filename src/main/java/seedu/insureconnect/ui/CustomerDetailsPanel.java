@@ -26,16 +26,16 @@ public class CustomerDetailsPanel extends UiPart<Region> {
     private ScrollPane detailsScrollPane;
 
     @FXML
-    private Label detailName;
+    private SelectableText detailName;
 
     @FXML
-    private Label detailPhone;
+    private SelectableText detailPhone;
 
     @FXML
-    private Label detailEmail;
+    private SelectableText detailEmail;
 
     @FXML
-    private Label detailAddress;
+    private SelectableText detailAddress;
 
     @FXML
     private FlowPane detailPolicies;
@@ -44,7 +44,7 @@ public class CustomerDetailsPanel extends UiPart<Region> {
     private VBox detailRemarkSection;
 
     @FXML
-    private Label detailRemark;
+    private SelectableText detailRemark;
 
     /**
      * Creates an empty customer details panel.
