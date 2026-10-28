@@ -24,6 +24,11 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
    ![Ui](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+
+   As you type a command prefix, InsureConnect suggests the remaining command text in grey. Press **Right Arrow** to accept the suggestion.
+
+   ![Command box showing a ghost-text command suggestion](images/commandBoxGhostText.png)
+
    Some example commands you can try:
 
    * `list` : Lists all contacts.
