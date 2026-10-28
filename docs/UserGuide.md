@@ -17,9 +17,10 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 2. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-W09-4/tp/releases).
 
-3. Copy the file to the folder you want to use as the _home folder_ for your InsureConnect.
+3. Copy the file to the folder you want to use as InsureConnect's _working directory_. InsureConnect stores its data and preferences relative to this folder.
 
-4. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar insureconnect.jar`.<br>
+4. Open a terminal, `cd` to that folder, and run `java -jar insureconnect.jar`.<br>
+   Launch InsureConnect from this same directory each time to keep using the same records and preferences.
    A GUI similar to the one below should appear in a few seconds. <br>
    ![Ui](images/Ui.png)
 
@@ -47,7 +48,7 @@ Press **Shift+F6** to move in the reverse direction. A thin outline marks the fo
 These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
 If focus is outside these areas, F6 enters the command box and Shift+F6 enters the contacts list.
 
-Press **F1** to open the Help window. While the Help window is open, press **F1** again or **Esc** to close it.
+Press **F1** to open the Help window. While the Help window is focused, press **F1** again or **Esc** to close it.
 
 In the contacts list, use **Up/Down** to move between contacts and **Page Up/Page Down** to browse longer lists.
 In the output box, use the arrow keys to move through feedback, **Shift+arrow keys** to select text,
@@ -63,6 +64,14 @@ Recalled commands are editable; press Enter to run them. Navigating again discar
 History includes successful and failed submissions, skips blank commands and consecutive identical submissions,
 and lasts until you close the application. Navigation stops at the oldest command without wrapping.
 Modified arrow shortcuts and arrow keys in other areas retain their usual behavior.
+
+### Command suggestions
+
+As you type the start of a command word, the rest of the word appears as faded text after the caret.
+For example, typing `ed` shows `edit`. Press **Right** to fill in the suggested word, then continue typing as usual.
+Pressing Right only fills in the word; press Enter to run the command.
+When several commands match, the first in alphabetical order is suggested, so `c` suggests `clear`. Type more letters to narrow it down, such as `co` for `confirm`.
+Suggestions appear only for command words, only while the caret is at the end of the text, and match lowercase input exactly.
 
 ## Changing the colour scheme
 
@@ -92,17 +101,19 @@ preserves your command text, output, and selected contact.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, and `/`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
+* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, `/`, and `!`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
 
 * **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
 
-* **Escape character (`!`) for name prefix collisions**:
-  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names that contain patterns such as ` a/` (common in Malaysian and Singaporean names with `a/l` or `a/p`, e.g. `Mohd a/l Kassim`) will conflict with these command prefixes if typed directly.<br>
-  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name field:
+* **Escape character (`!`) for name and remark prefix collisions**:
+  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names or remarks that contain these patterns can conflict with command prefixes if typed directly.<br>
+  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name or remark field:
   * `n/Mohd !a/l Kassim` or `n/Mohd a!/l Kassim` will be saved as `Mohd a/l Kassim`.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
-  * If you need a literal exclamation mark in a name, type `!!`.
-  * **Note:** `!` is treated as an escape character **only for the name field (`n/`)**. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
+  * In a remark, `r/dietary restrictions: !n/a` will be saved as `dietary restrictions: n/a`.
+  * If you need a literal exclamation mark in a name or remark, type `!!` (for example, `r/Follow up!!` is saved as `Follow up!`).
+  * **Warning:** A single `!` before any character is treated as an escape marker and removed. For example, `r/Great! Thanks` is saved as `Great Thanks`.
+  * **Note:** `!` is treated as an escape character only in the name (`n/`) and remark (`r/`) fields. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
@@ -115,7 +126,7 @@ preserves your command text, output, and selected contact.
 Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
 The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
 
-You can open the same window from the **Help** menu or by pressing **F1**.
+You can open the same window from the **Help** menu or by pressing **F1** when the Help window is focused.
 Press **F1** again or **Esc** to close the Help window.
 
 ![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
@@ -152,7 +163,7 @@ Examples:
 
 ### Listing all persons: `list`
 
-Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged.
+Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged. The chosen sort stays in effect when you add a customer, so the new customer appears in its sorted position. A search replaces the sort.
 
 Format: `list [n/|c/]`
 
@@ -165,6 +176,7 @@ Edits an existing customer in InsureConnect.
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`
 
 * Edits the customer at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* After a successful edit, the active search filter is cleared and the full customer list is shown. This also happens if the edit changes a field used by the search, which ensures that the customer being edited is always visible in the customer list even after edits.
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
@@ -230,8 +242,10 @@ Phone and policy searches without a name criterion retain stored order.
 Each new search replaces the previous filter; it does not narrow the previous results.
 
 Empty values and repeated fields are rejected. Use `find n/Alice p/912`, not `find Alice p/912`.
-Only `n/`, `p/`, and `t/` are supported in prefixed searches. Escape a literal name prefix with `!`,
-for example `find n/Mohd !a/l`. Existing unprefixed name searches and `find p/DIGITS` remain available.
+Only `n/`, `p/`, and `t/` are supported in prefixed searches; `e/`, `a/`, and `r/` are rejected.
+As in `add`, escape those prefixes with `!` when they are part of a name, for example `find n/Mohd !a/l`.
+Other slashes need no escaping, for example `find n/Ravi s/o p/912`.
+Existing unprefixed name searches and `find p/DIGITS` remain available.
 
 To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
 
@@ -279,7 +293,7 @@ InsureConnect automatically saves data after every command. You do not need to s
 
 ### Editing the data file
 
-InsureConnect data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. The legacy filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing that data file.
+InsureConnect saves its files relative to the working directory (the directory from which you launch it): customer records are saved to `data/addressbook.json`, and preferences are saved to `preferences.json`. For example, if you run the JAR by its full path while your terminal is in `/home`, the files are `/home/data/addressbook.json` and `/home/preferences.json`, regardless of where the JAR is stored. Launching InsureConnect from different directories uses different records and preferences files. Launch it from the same directory each time to keep using the same records and preferences. The legacy data filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing `data/addressbook.json`.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>
@@ -303,7 +317,7 @@ numbers: policy numbers must still be valid and unique across contacts.
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous InsureConnect home folder.
+**A**: Install the app on the other computer and overwrite the data file it creates with the `data/addressbook.json` file from your previous InsureConnect working directory.
 
 --------------------------------------------------------------------------------------------------------------------
 

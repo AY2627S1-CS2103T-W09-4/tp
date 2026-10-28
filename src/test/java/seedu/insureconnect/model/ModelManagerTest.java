@@ -2,12 +2,17 @@ package seedu.insureconnect.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.insureconnect.model.Model.COMPARATOR_BY_CREATION_TIME;
+import static seedu.insureconnect.model.Model.COMPARATOR_BY_NAME;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 import static seedu.insureconnect.testutil.TypicalPersons.BENSON;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -68,6 +73,38 @@ public class ModelManagerTest {
     public void hasPerson_personInInsureConnect_returnsTrue() {
         modelManager.addPerson(ALICE);
         assertTrue(modelManager.hasPerson(ALICE));
+    }
+
+    @Test
+    public void addPerson_nameSortActive_keepsNameOrder() {
+        modelManager.addPerson(BENSON);
+        modelManager.updatePersonListComparator(COMPARATOR_BY_NAME);
+
+        modelManager.addPerson(ALICE);
+
+        assertSame(COMPARATOR_BY_NAME, modelManager.getPersonListComparator());
+        assertEquals(List.of(ALICE, BENSON), modelManager.getFilteredPersonList());
+    }
+
+    @Test
+    public void addPerson_creationTimeSortActive_keepsSort() {
+        modelManager.addPerson(BENSON);
+        modelManager.updatePersonListComparator(COMPARATOR_BY_CREATION_TIME);
+
+        modelManager.addPerson(ALICE);
+
+        assertSame(COMPARATOR_BY_CREATION_TIME, modelManager.getPersonListComparator());
+    }
+
+    @Test
+    public void addPerson_searchRankingActive_restoresStoredOrder() {
+        modelManager.addPerson(BENSON);
+        modelManager.updatePersonListComparator(Comparator.comparing(person -> person.getName().fullName));
+
+        modelManager.addPerson(ALICE);
+
+        assertNull(modelManager.getPersonListComparator());
+        assertEquals(List.of(BENSON, ALICE), modelManager.getFilteredPersonList());
     }
 
     @Test
