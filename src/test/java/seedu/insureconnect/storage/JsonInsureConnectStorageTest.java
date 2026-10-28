@@ -127,7 +127,7 @@ public class JsonInsureConnectStorageTest {
 
         ReadOnlyInsureConnect restored = storage.readInsureConnect().orElseThrow();
 
-        assertTrue(storage.wasAddressMigrationPerformed());
+        assertTrue(storage.isAddressMigrationPerformed());
         assertEquals(maxAddress, restored.getPersonList().get(0).getAddress().value);
         assertTrue(Files.readString(filePath).contains("\"address\" : \"" + maxAddress + "\""));
         assertFalse(Files.readString(filePath).contains(overlongAddress));

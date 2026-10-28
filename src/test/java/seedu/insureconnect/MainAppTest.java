@@ -76,7 +76,7 @@ public class MainAppTest extends GuiTest {
         app.init();
 
         assertEquals("x".repeat(300), app.model.getInsureConnect().getPersonList().get(0).getAddress().value);
-        assertTrue(app.storage.wasAddressMigrationPerformed());
+        assertTrue(app.storage.isAddressMigrationPerformed());
         assertEquals(MainApp.MESSAGE_ADDRESS_MIGRATED, app.initialFeedback);
         assertFalse(Files.readString(dataPath()).contains(overlongAddress));
     }

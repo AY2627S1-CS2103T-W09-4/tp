@@ -67,7 +67,7 @@ class JsonSerializableInsureConnect {
     /** Returns true if any customer address was truncated while reading this file. */
     @JsonIgnore
     public boolean hasTruncatedAddresses() {
-        return persons.stream().anyMatch(JsonAdaptedPerson::wasAddressTruncated);
+        return persons.stream().anyMatch(JsonAdaptedPerson::isAddressTruncated);
     }
 
 }

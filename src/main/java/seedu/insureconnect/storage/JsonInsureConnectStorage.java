@@ -25,8 +25,8 @@ public class JsonInsureConnectStorage {
 
     private final Set<Path> unreadableFilePaths = new HashSet<>();
     private Path filePath;
-    private boolean addressMigrationPerformed;
-    private boolean addressMigrationSaved;
+    private boolean isAddressMigrationPerformed;
+    private boolean isAddressMigrationSaved;
 
     public JsonInsureConnectStorage(Path filePath) {
         this.filePath = filePath;
@@ -45,13 +45,13 @@ public class JsonInsureConnectStorage {
     }
 
     /** Returns true if any read by this storage instance truncated saved addresses. */
-    public boolean wasAddressMigrationPerformed() {
-        return addressMigrationPerformed;
+    public boolean isAddressMigrationPerformed() {
+        return isAddressMigrationPerformed;
     }
 
     /** Returns true if a detected address migration was persisted successfully. */
-    public boolean wasAddressMigrationSaved() {
-        return addressMigrationSaved;
+    public boolean isAddressMigrationSaved() {
+        return isAddressMigrationSaved;
     }
 
     /**
@@ -85,11 +85,11 @@ public class JsonInsureConnectStorage {
             ReadOnlyInsureConnect loaded = serializedData.toModelType();
             unreadableFilePaths.remove(normalizedPath);
             if (serializedData.hasTruncatedAddresses()) {
-                addressMigrationPerformed = true;
-                addressMigrationSaved = false;
+                isAddressMigrationPerformed = true;
+                isAddressMigrationSaved = false;
                 try {
                     saveInsureConnect(loaded, filePath);
-                    addressMigrationSaved = true;
+                    isAddressMigrationSaved = true;
                 } catch (IOException e) {
                     logger.warning("Could not persist truncated customer addresses to " + filePath + ": "
                             + e.getMessage());

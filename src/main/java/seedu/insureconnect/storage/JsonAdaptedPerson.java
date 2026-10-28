@@ -33,7 +33,7 @@ class JsonAdaptedPerson {
     private final String email;
     private final String address;
     @JsonIgnore
-    private final boolean addressWasTruncated;
+    private final boolean isAddressTruncated;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String remark;
     private final String createdAt;
@@ -49,8 +49,8 @@ class JsonAdaptedPerson {
         this.name = name;
         this.phone = phone;
         this.email = email;
-        addressWasTruncated = address != null && address.length() > Address.MAX_LENGTH;
-        this.address = addressWasTruncated ? address.substring(0, Address.MAX_LENGTH) : address;
+        isAddressTruncated = address != null && address.length() > Address.MAX_LENGTH;
+        this.address = isAddressTruncated ? address.substring(0, Address.MAX_LENGTH) : address;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -66,7 +66,7 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
-        addressWasTruncated = false;
+        isAddressTruncated = false;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -86,8 +86,8 @@ class JsonAdaptedPerson {
 
     /** Returns true if this customer address was truncated while loading stored data. */
     @JsonIgnore
-    public boolean wasAddressTruncated() {
-        return addressWasTruncated;
+    public boolean isAddressTruncated() {
+        return isAddressTruncated;
     }
 
     /**

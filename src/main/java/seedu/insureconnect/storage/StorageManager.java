@@ -60,13 +60,13 @@ public class StorageManager implements Storage {
     }
 
     @Override
-    public boolean wasAddressMigrationPerformed() {
-        return insureConnectStorage.wasAddressMigrationPerformed();
+    public boolean isAddressMigrationPerformed() {
+        return insureConnectStorage.isAddressMigrationPerformed();
     }
 
     @Override
-    public boolean wasAddressMigrationSaved() {
-        return insureConnectStorage.wasAddressMigrationSaved();
+    public boolean isAddressMigrationSaved() {
+        return insureConnectStorage.isAddressMigrationSaved();
     }
 
     @Override
