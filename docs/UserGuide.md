@@ -62,6 +62,14 @@ History includes successful and failed submissions, skips blank commands and con
 and lasts until you close the application. Navigation stops at the oldest command without wrapping.
 Modified arrow shortcuts and arrow keys in other areas retain their usual behavior.
 
+### Command suggestions
+
+As you type the start of a command word, the rest of the word appears as faded text after the caret.
+For example, typing `ed` shows `edit`. Press **Right** to fill in the suggested word, then continue typing as usual.
+Pressing Right only fills in the word; press Enter to run the command.
+When several commands match, the first in alphabetical order is suggested, so `c` suggests `clear`. Type more letters to narrow it down, such as `co` for `confirm`.
+Suggestions appear only for command words, only while the caret is at the end of the text, and match lowercase input exactly.
+
 ## Changing the colour scheme
 
 Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
@@ -90,7 +98,7 @@ preserves your command text, output, and selected contact.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, and `/`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
+* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, `/`, and `!`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
 
 * **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
 
@@ -148,7 +156,7 @@ Examples:
 
 ### Listing all persons: `list`
 
-Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged.
+Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged. The chosen sort stays in effect when you add a customer, so the new customer appears in its sorted position. A search replaces the sort.
 
 Format: `list [n/|c/]`
 
@@ -161,6 +169,7 @@ Edits an existing customer in InsureConnect.
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`
 
 * Edits the customer at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* After a successful edit, the active search filter is cleared and the full customer list is shown. This also happens if the edit changes a field used by the search, which ensures that the customer being edited is always visible in the customer list even after edits.
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
@@ -226,8 +235,10 @@ Phone and policy searches without a name criterion retain stored order.
 Each new search replaces the previous filter; it does not narrow the previous results.
 
 Empty values and repeated fields are rejected. Use `find n/Alice p/912`, not `find Alice p/912`.
-Only `n/`, `p/`, and `t/` are supported in prefixed searches. Escape a literal name prefix with `!`,
-for example `find n/Mohd !a/l`. Existing unprefixed name searches and `find p/DIGITS` remain available.
+Only `n/`, `p/`, and `t/` are supported in prefixed searches; `e/`, `a/`, and `r/` are rejected.
+As in `add`, escape those prefixes with `!` when they are part of a name, for example `find n/Mohd !a/l`.
+Other slashes need no escaping, for example `find n/Ravi s/o p/912`.
+Existing unprefixed name searches and `find p/DIGITS` remain available.
 
 To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
 

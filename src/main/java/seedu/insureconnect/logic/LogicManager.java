@@ -51,7 +51,7 @@ public class LogicManager implements Logic {
     }
 
     /**
-     * Restores customer data and the displayed view after an unsuccessful command.
+     * Restores customer data and the displayed view after the data could not be saved.
      */
     private void restoreModelState(ReadOnlyInsureConnect previousData,
             Predicate<Person> previousFilter, Comparator<? super Person> previousComparator) {
@@ -97,7 +97,8 @@ public class LogicManager implements Logic {
         try {
             commandResult = command.execute(model);
         } catch (CommandException ce) {
-            restoreModelState(previousData, previousFilter, previousComparator);
+            // Keep the view so that an error can show the customer it refers to.
+            model.setInsureConnect(previousData);
             throw ce;
         }
 

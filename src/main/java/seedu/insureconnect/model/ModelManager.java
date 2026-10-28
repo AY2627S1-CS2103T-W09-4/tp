@@ -88,7 +88,20 @@ public class ModelManager implements Model {
     public void addPerson(Person person) {
         insureConnect.addPerson(person);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        updatePersonListComparator(null);
+        keepOnlyListSortOrder();
+    }
+
+    /**
+     * Keeps a sort chosen with the list command and restores the stored order otherwise,
+     * so that a search ranking does not outlive the search that produced it.
+     */
+    private void keepOnlyListSortOrder() {
+        Comparator<? super Person> comparator = getPersonListComparator();
+        // Reference comparison is intended: only the shared list sorts should survive.
+        boolean isListSortOrder = comparator == COMPARATOR_BY_NAME || comparator == COMPARATOR_BY_CREATION_TIME;
+        if (!isListSortOrder) {
+            updatePersonListComparator(null);
+        }
     }
 
     @Override

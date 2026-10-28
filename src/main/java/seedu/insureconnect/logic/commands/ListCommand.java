@@ -2,6 +2,8 @@ package seedu.insureconnect.logic.commands;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.insureconnect.logic.commands.CommandFormats.LIST_COMMAND_FORMAT;
+import static seedu.insureconnect.model.Model.COMPARATOR_BY_CREATION_TIME;
+import static seedu.insureconnect.model.Model.COMPARATOR_BY_NAME;
 import static seedu.insureconnect.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.Comparator;
@@ -43,8 +45,8 @@ public class ListCommand extends Command {
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
         Comparator<Person> comparator = switch (sortOrder) {
             case STORED -> null;
-            case NAME -> Comparator.comparing(person -> person.getName().fullName, String.CASE_INSENSITIVE_ORDER);
-            case CREATED_AT -> Comparator.comparing(Person::getCreatedAt);
+            case NAME -> COMPARATOR_BY_NAME;
+            case CREATED_AT -> COMPARATOR_BY_CREATION_TIME;
         };
         model.updatePersonListComparator(comparator);
         return new CommandResult(String.format(MESSAGE_SUCCESS,
