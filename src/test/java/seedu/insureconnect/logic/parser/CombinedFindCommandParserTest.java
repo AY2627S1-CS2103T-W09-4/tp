@@ -46,16 +46,19 @@ public class CombinedFindCommandParserTest {
 
     @Test
     public void parse_patronymicInName_acceptsWithoutEscape() {
+        // EP: patronymic slash words that are valid name text, in any case
         assertParseSuccess(parser, "n/Ravi s/o",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Ravi", "s/o"))));
         assertParseSuccess(parser, "n/Priya D/O",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Priya", "D/O"))));
+        // EP: patronymic followed by another supported criterion
         assertParseSuccess(parser, "n/Ravi s/o p/912", new FindCommand(new AllCriteriaPredicate(List.of(
                 new NameContainsKeywordsPredicate(List.of("Ravi", "s/o")), new PhoneStartsWithPredicate("912")))));
     }
 
     @Test
     public void parse_slashWordThatIsNotAField_treatsAsNameText() {
+        // EP: slash words that are not recognised command prefixes
         assertParseSuccess(parser, "n/Tan w/o Lim",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Tan", "w/o", "Lim"))));
         assertParseSuccess(parser, "n/Alice x/value",
@@ -93,8 +96,14 @@ public class CombinedFindCommandParserTest {
 
     @Test
     public void parse_mixedPreambleOrUnsupportedCriteria_rejectsAmbiguity() {
-        for (String query : List.of("Alice p/912", "Alice n/Bob", "n/Alice e/a@example.com",
-                "n/Alice a/address", "n/Alice r/remark", "n/Mohd a/l", "t/LIFE e/a@example.com")) {
+        List<String> queries = List.of(
+                // EP: preamble before a prefixed criterion
+                "Alice p/912", "Alice n/Bob",
+                // EP: customer-field prefixes that find cannot search
+                "n/Alice e/a@example.com", "n/Alice a/address", "n/Alice r/remark", "t/LIFE e/a@example.com",
+                // EP: unescaped field prefix inside a name
+                "n/Mohd a/l");
+        for (String query : queries) {
             assertParseFailure(parser, query, String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE));
         }
     }
