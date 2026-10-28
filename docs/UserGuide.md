@@ -156,7 +156,7 @@ Examples:
 
 ### Listing all persons: `list`
 
-Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged.
+Shows a list of all persons in InsureConnect. `list` uses the stored order, `list n/` sorts by name from A to Z (case-insensitive), and `list c/` sorts by creation time from oldest to newest. Sorting changes the displayed order only; the stored order is unchanged. The chosen sort stays in effect when you add a customer, so the new customer appears in its sorted position. A search replaces the sort.
 
 Format: `list [n/|c/]`
 
