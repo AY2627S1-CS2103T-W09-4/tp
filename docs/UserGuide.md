@@ -139,6 +139,7 @@ A customer must have at least one policy number. An existing customer's policy n
 </div>
 
 * `r/REMARK` is optional. If omitted, the customer's remark is empty. Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
+* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
 
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
@@ -164,6 +165,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLIC
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
+* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
 * Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
@@ -276,6 +278,8 @@ InsureConnect automatically saves data after every command. You do not need to s
 ### Editing the data file
 
 InsureConnect data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. The legacy filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing that data file.
+
+When InsureConnect starts, any saved address longer than 300 characters is truncated to 300 characters and the shortened data is saved back to the file. A warning appears in the app's feedback area to let you know that this happened. If the shortened data cannot be saved, the warning says so.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>
