@@ -94,13 +94,14 @@ preserves your command text, output, and selected contact.
 
 * **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
 
-* **Escape character (`!`) for name prefix collisions**:
-  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names that contain patterns such as ` a/` (common in Malaysian and Singaporean names with `a/l` or `a/p`, e.g. `Mohd a/l Kassim`) will conflict with these command prefixes if typed directly.<br>
-  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name field:
+* **Escape character (`!`) for name and remark prefix collisions**:
+  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names or remarks that contain these patterns can conflict with command prefixes if typed directly.<br>
+  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name or remark field:
   * `n/Mohd !a/l Kassim` or `n/Mohd a!/l Kassim` will be saved as `Mohd a/l Kassim`.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
-  * If you need a literal exclamation mark in a name, type `!!`.
-  * **Note:** `!` is treated as an escape character **only for the name field (`n/`)**. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
+  * In a remark, `r/dietary restrictions: !n/a` will be saved as `dietary restrictions: n/a`.
+  * If you need a literal exclamation mark in a name or remark, type `!!` (for example, `r/Follow up!!` is saved as `Follow up!`).
+  * **Note:** `!` is treated as an escape character only in the name (`n/`) and remark (`r/`) fields. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
