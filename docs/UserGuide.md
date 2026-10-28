@@ -234,8 +234,10 @@ Phone and policy searches without a name criterion retain stored order.
 Each new search replaces the previous filter; it does not narrow the previous results.
 
 Empty values and repeated fields are rejected. Use `find n/Alice p/912`, not `find Alice p/912`.
-Only `n/`, `p/`, and `t/` are supported in prefixed searches. Escape a literal name prefix with `!`,
-for example `find n/Mohd !a/l`. Existing unprefixed name searches and `find p/DIGITS` remain available.
+Only `n/`, `p/`, and `t/` are supported in prefixed searches; `e/`, `a/`, and `r/` are rejected.
+As in `add`, escape those prefixes with `!` when they are part of a name, for example `find n/Mohd !a/l`.
+Other slashes need no escaping, for example `find n/Ravi s/o p/912`.
+Existing unprefixed name searches and `find p/DIGITS` remain available.
 
 To search by policy number, use `find t/POLICY_NUMBER`, for example `find t/LIFE20001`.
 
