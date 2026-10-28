@@ -195,6 +195,17 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_remarkEscapedPrefixAndExclamation_success() {
+        // EP: escaped prefix-like text and a doubled exclamation mark are unescaped in an edited remark
+        String userInput = INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_REMARK
+                + "dietary restrictions: !n/a Follow up!!";
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withRemark("dietary restrictions: n/a Follow up!").build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(INDEX_FIRST_PERSON, descriptor));
+    }
+
+    @Test
     public void parse_addressLengthBoundary() {
         String maxAddress = "a".repeat(Address.MAX_LENGTH);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withAddress(maxAddress).build();
