@@ -106,12 +106,12 @@ public class ParserUtilTest {
     }
 
     @Test
-    public void unescapeName() {
-        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd !a/l Kassim"));
-        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd a!/l Kassim"));
-        assertEquals("Ravi s/o Muthu", ParserUtil.unescapeName("Ravi s/o Muthu"));
-        assertEquals("!Exclamation", ParserUtil.unescapeName("!!Exclamation"));
-        assertEquals("Ending with !", ParserUtil.unescapeName("Ending with !"));
+    public void unescape() {
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescape("Mohd !a/l Kassim"));
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescape("Mohd a!/l Kassim"));
+        assertEquals("Ravi s/o Muthu", ParserUtil.unescape("Ravi s/o Muthu"));
+        assertEquals("!Exclamation", ParserUtil.unescape("!!Exclamation"));
+        assertEquals("Ending with !", ParserUtil.unescape("Ending with !"));
     }
 
     @Test
@@ -236,9 +236,23 @@ public class ParserUtilTest {
 
     @Test
     public void parseRemark_validValue_returnsNormalizedRemark() throws Exception {
+        // EP: remarks with leading, trailing, and repeated whitespace
         assertEquals(new Remark("Prefers WhatsApp after 6pm"),
                 ParserUtil.parseRemark("   Prefers   WhatsApp after 6pm   "));
         assertEquals(new Remark(""), ParserUtil.parseRemark("   "));
+    }
+
+    @Test
+    public void parseRemark_escapingAndPunctuation_returnsExpectedRemark() throws Exception {
+        // EP: escape marker before a prefix-like sequence is removed
+        assertEquals(new Remark("dietary restrictions: n/a Follow up!"),
+                ParserUtil.parseRemark("dietary restrictions: !n/a Follow up!!"));
+
+        // EP: doubled exclamation mark represents one literal exclamation mark
+        assertEquals(new Remark("Follow up!"), ParserUtil.parseRemark("Follow up!!"));
+
+        // EP: single exclamation mark before another character is removed
+        assertEquals(new Remark("Great Thanks"), ParserUtil.parseRemark("Great! Thanks"));
     }
 
     @Test
