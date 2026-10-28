@@ -316,6 +316,18 @@ public class AddCommandParserTest {
                 new AddCommand(expectedPerson));
     }
 
+    @Test
+    public void parse_remarkEscapedPrefixAndExclamation_success() {
+        Person expectedPerson = new PersonBuilder(AMY)
+                .withRemark("dietary restrictions: n/a Follow up!")
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + TAG_DESC_FRIEND
+                        + " " + PREFIX_REMARK + "dietary restrictions: !n/a Follow up!!",
+                new AddCommand(expectedPerson));
+    }
+
 
     private static String expectedFormatError(String details) {
         return String.format(MESSAGE_INVALID_COMMAND_FORMAT, details + "\n" + AddCommand.MESSAGE_USAGE);
