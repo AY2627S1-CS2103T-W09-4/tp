@@ -16,14 +16,28 @@ import seedu.insureconnect.testutil.PersonBuilder;
  */
 public class PhoneStartsWithPredicateTest {
     /**
-     * Direct construction rejects null, empty, and non-digit prefixes.
+     * Direct construction rejects null, empty, and non-digit prefixes
+     * (with the exception of + as first char being allowed).
      */
     @Test
     public void constructor_invalidPrefix_throwsException() {
         assertThrows(NullPointerException.class, () -> new PhoneStartsWithPredicate(null));
-        for (String prefix : List.of("", " ", "abc", "+65", "98 76", "98-76", "１２３")) {
-            assertThrows(IllegalArgumentException.class, () -> new PhoneStartsWithPredicate(prefix));
+
+        for (String prefix : List.of(
+                "", " ", "abc", "+", "++65", "65+1",
+                "98 76", "98-76", "１２３")) {
+            assertThrows(
+                    IllegalArgumentException.class, () -> new PhoneStartsWithPredicate(prefix));
         }
+    }
+
+    /**
+     * Accepts phone prefixes containing digits with an optional leading plus sign.
+     */
+    @Test
+    public void isValidPrefix_optionalLeadingPlusAccepted() {
+        assertTrue(PhoneStartsWithPredicate.isValidPrefix("65"));
+        assertTrue(PhoneStartsWithPredicate.isValidPrefix("+65"));
     }
 
     /**

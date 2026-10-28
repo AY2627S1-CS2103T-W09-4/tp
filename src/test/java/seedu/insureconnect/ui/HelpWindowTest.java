@@ -47,7 +47,7 @@ public class HelpWindowTest extends GuiTest {
         runOnFxThread(() -> {
             HelpWindow help = new HelpWindow();
             TextArea formats = (TextArea) help.getRoot().getScene().lookup("#commandFormats");
-            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]"));
+            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]"));
         });
     }
 

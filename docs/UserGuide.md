@@ -136,14 +136,17 @@ Adds a person to InsureConnect.
 
 A person is a duplicate only when both their name and phone number match an existing person.
 Name matching ignores case, leading or trailing spaces, and repeated spaces between words.
-For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
-Customers with the same name but different phone numbers, or different names with the same phone number, are allowed.
-Names are displayed as entered after surrounding spaces are trimmed by the command parser.
-If an added person is a duplicate, InsureConnect explains that the name and phone number already exist and identifies
-the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
-so the index refers to the full displayed list.
+Phone number matching ignores a leading `+`. For Singapore numbers, an 8-digit local
+number is also treated as equivalent to the same number prefixed with the country code `65`.
+For example, `+1800988989898989` matches `1800988989898989`, while `+6591110101`,
+`6591110101`, and `91110101` are treated as the same phone number.
+Customers with the same name but different phone numbers, or different names with the same
+phone number, are allowed.
 
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]`
+
+* Phone numbers must contain at least 3 digits. They may begin with a single `+` for an international country code.
+  Spaces, letters, hyphens, parentheses, other punctuation, and a `+` anywhere else are not allowed.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A customer must have at least one policy number. An existing customer's policy number cannot be reused.
@@ -153,7 +156,7 @@ A customer must have at least one policy number. An existing customer's policy n
 * Addresses can be at most 300 characters after leading and trailing whitespace is removed.
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
+* `add n/John Doe p/+6598765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
 * `add n/Betsy Crowe t/LIFE20482 e/betsycrowe@example.com a/Newgate Prison p/1234567 t/HEALTH20483`
 * `add n/Ravi s/o Muthu p/91234567 e/ravi@example.com a/Blk 123 Jurong West t/LIFE20484`
 * `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20485`
@@ -194,7 +197,7 @@ Examples:
 
 Finds customers by name keywords, phone prefix or exact policy number, optionally combined.
 
-Format: `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]`
+Format: `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`
 
 * Name search is case-insensitive; for example, `hans` matches `Hans`.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
@@ -213,12 +216,13 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
-To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `find p/98765432`.
+To search by phone number, use `find p/PHONE_PREFIX`, for example `find p/9876` or `find p/+65`.
 
 * Phone searches match the beginning of the phone number, including the complete number.
-  For example, `find p/9876` matches `98765432`, but `find p/7654` does not match that number.
-* Supply one nonempty sequence of digits (`0-9`). A single digit is allowed. Leading zeros are preserved.
-  Spaces around the digits are allowed; spaces within the digits, letters, `+`, and punctuation are rejected.
+  For example, `find p/9876` matches `98765432`, while `find p/+65` matches `+6591234567`.
+* Supply an optional leading `+` followed by one or more digits (`0-9`). A single digit is allowed, and leading zeros
+  are preserved. Spaces around the prefix are allowed; spaces within it, letters, hyphens, parentheses, other
+  punctuation, and a `+` anywhere except the beginning are rejected.
 * To combine phone and name criteria, use an explicit `n/` field as described below.
   Supplying multiple phone prefixes is not supported and produces an error.
 * All customers with matching phone numbers are shown in stored order, including customers sharing a number.
@@ -235,7 +239,7 @@ within `n/`, matching **any keyword (OR)** is sufficient. Policy searches match 
 * `find t/LIFE20001` searches by policy number alone.
 
 Name matching remains case-insensitive and ranks exact name words before prefix-only matches.
-Phone prefixes contain digits only. Policy numbers match exactly, ignoring case, and contain 1–30 letters or digits.
+Phone prefixes contain digits only with an optional leading `+`. Policy numbers match exactly, ignoring case, and contain 1–30 letters or digits.
 Phone and policy searches without a name criterion retain stored order.
 Each new search replaces the previous filter; it does not narrow the previous results.
 
@@ -336,6 +340,6 @@ Action | Format, Examples
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
-**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
+**Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
