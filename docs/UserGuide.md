@@ -109,6 +109,7 @@ preserves your command text, output, and selected contact.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
   * In a remark, `r/dietary restrictions: !n/a` will be saved as `dietary restrictions: n/a`.
   * If you need a literal exclamation mark in a name or remark, type `!!` (for example, `r/Follow up!!` is saved as `Follow up!`).
+  * **Warning:** A single `!` before any character is treated as an escape marker and removed. For example, `r/Great! Thanks` is saved as `Great Thanks`.
   * **Note:** `!` is treated as an escape character only in the name (`n/`) and remark (`r/`) fields. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
 
 * Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
