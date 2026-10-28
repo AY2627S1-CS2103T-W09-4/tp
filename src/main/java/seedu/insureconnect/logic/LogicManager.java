@@ -15,7 +15,6 @@ import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.Command;
 import seedu.insureconnect.logic.commands.CommandResult;
-import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
 import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.InsureConnectParser;
@@ -40,9 +39,7 @@ public class LogicManager implements Logic {
     private final Model model;
     private final Storage storage;
     private final InsureConnectParser insureConnectParser;
-    private boolean awaitingClearConfirmation;
-
-    private DeleteCommand pendingDeleteCommand;
+    private Command pendingConfirmationCommand;
 
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
@@ -67,19 +64,23 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        if (awaitingClearConfirmation) {
-            awaitingClearConfirmation = false;
+        if (pendingConfirmationCommand != null) {
+            Command commandAwaitingConfirmation = pendingConfirmationCommand;
+            pendingConfirmationCommand = null;
             if (!"y".equals(commandText.trim().toLowerCase(Locale.ROOT))) {
-                return new CommandResult(ClearCommand.MESSAGE_CANCELLED);
+                String cancellationMessage = commandAwaitingConfirmation instanceof ClearCommand
+                        ? ClearCommand.MESSAGE_CANCELLED : DeleteCommand.MESSAGE_CANCELLED;
+                return new CommandResult(cancellationMessage);
             }
-            return executeCommand(new ClearCommand());
+            Command confirmedCommand = commandAwaitingConfirmation instanceof DeleteCommand deleteCommand
+                    ? deleteCommand.confirmed() : new ClearCommand();
+            return executeCommand(confirmedCommand);
         }
 
-        Command command = parseCommandWithPendingDeletionHandling(commandText);
-        command = resolvePendingConfirmation(command);
+        Command command = insureConnectParser.parseCommand(commandText);
 
         if (command instanceof ClearCommand) {
-            awaitingClearConfirmation = true;
+            pendingConfirmationCommand = command;
             return new CommandResult(ClearCommand.MESSAGE_CONFIRMATION, false, false, true);
         }
 
@@ -101,7 +102,7 @@ public class LogicManager implements Logic {
         }
 
         if (command instanceof DeleteCommand deleteCommand && !deleteCommand.isConfirmed()) {
-            pendingDeleteCommand = deleteCommand;
+            pendingConfirmationCommand = deleteCommand;
             logger.info("Deletion awaiting confirmation for displayed index "
                     + deleteCommand.getTargetIndexOneBased());
         }
@@ -119,57 +120,6 @@ public class LogicManager implements Logic {
             }
         }
         return commandResult;
-    }
-
-    /**
-     * Parses a command and cancels a pending deletion for unrelated invalid commands.
-     */
-    private Command parseCommandWithPendingDeletionHandling(String commandText) throws ParseException {
-        try {
-            return insureConnectParser.parseCommand(commandText);
-        } catch (ParseException pe) {
-            if (pendingDeleteCommand != null && isMalformedConfirmation(commandText)) {
-                throw new ParseException(String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER,
-                        pendingDeleteCommand.getTargetIndexOneBased()));
-            }
-
-            if (pendingDeleteCommand != null) {
-                logger.info("Pending deletion cancelled after an unrelated invalid command.");
-                pendingDeleteCommand = null;
-            }
-            throw pe;
-        }
-    }
-
-    /**
-     * Converts a valid confirmation into the stored deletion, or cancels it for another command.
-     */
-    private Command resolvePendingConfirmation(Command command) throws CommandException {
-        if (command instanceof ConfirmDeleteCommand) {
-            if (pendingDeleteCommand == null) {
-                throw new CommandException(ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
-            }
-
-            logger.info("Deletion confirmation received for displayed index "
-                    + pendingDeleteCommand.getTargetIndexOneBased());
-            Command confirmedDelete = pendingDeleteCommand.confirmed();
-            pendingDeleteCommand = null;
-            return confirmedDelete;
-        }
-
-        if (pendingDeleteCommand != null) {
-            logger.info("Pending deletion cancelled by " + command.getClass().getSimpleName());
-            pendingDeleteCommand = null;
-        }
-        return command;
-    }
-
-    /**
-     * Returns whether the input appears to be an attempt to confirm a pending deletion.
-     */
-    private boolean isMalformedConfirmation(String commandText) {
-        return commandText.trim().toLowerCase(Locale.ROOT)
-                .startsWith(ConfirmDeleteCommand.COMMAND_WORD);
     }
 
     @Override
