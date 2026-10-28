@@ -197,7 +197,7 @@ Examples:
 * `find John` returns `john` and `John Doe`
 * `find jo` returns `John Doe` and `Mary Jones`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+  ![result for 'find alex david'](images/findAlexDavid.png)
 
 To search by phone number, use `find p/DIGITS`, for example `find p/9876` or `find p/98765432`.
 
