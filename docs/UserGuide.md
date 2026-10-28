@@ -136,12 +136,12 @@ Adds a person to InsureConnect.
 
 A person is a duplicate only when both their name and phone number match an existing person.
 Name matching ignores case, leading or trailing spaces, and repeated spaces between words.
-For example, `John Doe` and `JOHN  DOE` with the same phone number are duplicates.
-Customers with the same name but different phone numbers, or different names with the same phone number, are allowed.
-Names are displayed as entered after surrounding spaces are trimmed by the command parser.
-If an added person is a duplicate, InsureConnect explains that the name and phone number already exist and identifies
-the existing person by their name, phone number, and 1-based index. If a filter hides that person, the filter is cleared
-so the index refers to the full displayed list.
+Phone number matching ignores a leading `+`. For Singapore numbers, an 8-digit local
+number is also treated as equivalent to the same number prefixed with the country code `65`.
+For example, `+1800988989898989` matches `1800988989898989`, while `+6591110101`,
+`6591110101`, and `91110101` are treated as the same phone number.
+Customers with the same name but different phone numbers, or different names with the same
+phone number, are allowed.
 
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]`
 

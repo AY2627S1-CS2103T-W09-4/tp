@@ -45,6 +45,15 @@ public class PhoneTest {
     }
 
     @Test
+    public void hasSameDigits_equivalentSingaporeFormats_returnsTrue() {
+        Phone internationalPhone = new Phone("+6591110101");
+        Phone localPhone = new Phone("91110101");
+
+        assertTrue(internationalPhone.hasSameDigits(localPhone));
+        assertTrue(localPhone.hasSameDigits(internationalPhone));
+    }
+
+    @Test
     public void equals() {
         Phone phone = new Phone("999");
 

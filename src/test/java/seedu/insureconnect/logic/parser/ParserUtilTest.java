@@ -27,7 +27,8 @@ public class ParserUtilTest {
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = "Rachel Walker";
-    private static final String VALID_PHONE = "+65123456";
+    private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE_WITH_PLUS = "+65123456";
     private static final String VALID_ADDRESS = "123 Main Street #0505";
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_TAG_1 = "friend";
@@ -135,6 +136,12 @@ public class ParserUtilTest {
         String phoneWithWhitespace = WHITESPACE + VALID_PHONE + WHITESPACE;
         Phone expectedPhone = new Phone(VALID_PHONE);
         assertEquals(expectedPhone, ParserUtil.parsePhone(phoneWithWhitespace));
+    }
+
+    @Test
+    public void parsePhone_validValueWithLeadingPlus_returnsPhone() throws Exception {
+        Phone expectedPhone = new Phone(VALID_PHONE_WITH_PLUS);
+        assertEquals(expectedPhone, ParserUtil.parsePhone(VALID_PHONE_WITH_PLUS));
     }
 
     @Test
