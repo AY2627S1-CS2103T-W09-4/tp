@@ -150,6 +150,7 @@ A customer must have at least one policy number. An existing customer's policy n
 </div>
 
 * `r/REMARK` is optional. If omitted, the customer's remark is empty. Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
+* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
 
 Examples:
 * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
@@ -176,6 +177,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLIC
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
+* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
 * Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
@@ -290,6 +292,8 @@ InsureConnect automatically saves data after every command. You do not need to s
 ### Editing the data file
 
 InsureConnect saves its files relative to the working directory (the directory from which you launch it): customer records are saved to `data/addressbook.json`, and preferences are saved to `preferences.json`. For example, if you run the JAR by its full path while your terminal is in `/home`, the files are `/home/data/addressbook.json` and `/home/preferences.json`, regardless of where the JAR is stored. Launching InsureConnect from different directories uses different records and preferences files. Launch it from the same directory each time to keep using the same records and preferences. The legacy data filename is retained so existing installations continue to load their records. Advanced users are welcome to update data directly by editing `data/addressbook.json`.
+
+Addresses already saved with more than 300 characters are loaded and preserved as-is. The 300-character limit applies to addresses entered with the `add` and `edit` commands.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>

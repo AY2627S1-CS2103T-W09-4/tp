@@ -302,6 +302,23 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_addressLengthBoundary() {
+        String validAddressDescription = " " + PREFIX_ADDRESS + "a".repeat(Address.MAX_LENGTH);
+        String validCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + validAddressDescription + TAG_DESC_FRIEND;
+        Person expectedPerson = new PersonBuilder(BOB)
+                .withAddress("a".repeat(Address.MAX_LENGTH))
+                .withTags(VALID_TAG_FRIEND)
+                .build();
+        assertParseSuccess(parser, validCommand, new AddCommand(expectedPerson));
+
+        String invalidAddressDescription = " " + PREFIX_ADDRESS + "a".repeat(Address.MAX_LENGTH + 1);
+        String invalidCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + invalidAddressDescription + TAG_DESC_FRIEND;
+        assertParseFailure(parser, invalidCommand, "Invalid address: " + Address.MESSAGE_LENGTH_CONSTRAINTS);
+    }
+
+    @Test
     public void parse_remarkWhitespaceNormalized_success() {
         String remarkWithExtraWhitespace = " " + PREFIX_REMARK
                 + "  Prefers   WhatsApp after 6pm  ";
