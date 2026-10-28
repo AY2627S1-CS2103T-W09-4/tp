@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class HelpWindowTest extends GuiTest {
@@ -64,6 +66,34 @@ public class HelpWindowTest extends GuiTest {
             } finally {
                 clipboard.setContent(original);
             }
+        });
+    }
+
+    @Test
+    public void escapeKey_closesHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
+                    KeyEvent.KEY_PRESSED, "", "", KeyCode.ESCAPE,
+                    false, false, false, false));
+
+            assertFalse(help.isShowing());
+        });
+    }
+
+    @Test
+    public void f1Key_closesHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
+                    KeyEvent.KEY_PRESSED, "", "", KeyCode.F1,
+                    false, false, false, false));
+
+            assertFalse(help.isShowing());
         });
     }
 
