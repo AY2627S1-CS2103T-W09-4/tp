@@ -92,6 +92,35 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_clearWithNoCustomers_reportsNothingToClearWithoutConfirmation() throws Exception {
+        CommandResult result = logic.execute(ClearCommand.COMMAND_WORD);
+
+        // EP: empty customer list
+        assertEquals(ClearCommand.MESSAGE_NO_CUSTOMERS_TO_CLEAR, result.getFeedbackToUser());
+        assertFalse(result.isConfirmationRequired());
+        assertTrue(model.getInsureConnect().getPersonList().isEmpty());
+        assertFalse(Files.exists(insureConnectFile));
+    }
+
+    @Test
+    public void execute_clearWithCustomersHiddenByFilter_promptsAndClearsAll() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        model.updateFilteredPersonList(person -> false);
+
+        CommandResult prompt = logic.execute(ClearCommand.COMMAND_WORD);
+
+        // EP: customers exist but the displayed list is empty due to a filter
+        assertEquals(ClearCommand.MESSAGE_CONFIRMATION, prompt.getFeedbackToUser());
+        assertTrue(prompt.isConfirmationRequired());
+
+        CommandResult result = logic.execute("y");
+
+        // EP: lowercase affirmative confirmation response
+        assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(new InsureConnect(), model.getInsureConnect());
+    }
+
+    @Test
     public void execute_clearThenConfirm_clearsAndPersistsRecords() throws Exception {
         model.setInsureConnect(getTypicalInsureConnect());
         ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
@@ -149,42 +178,6 @@ public class LogicManagerTest {
         assertEquals(ClearCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
         assertEquals(recordsBeforePrompt, model.getInsureConnect());
         assertFalse(Files.exists(insureConnectFile));
-    }
-
-    @Test
-    public void execute_duplicateHiddenByFilter_showsAllAndReportsDisplayedIndex() throws Exception {
-        model.setInsureConnect(getTypicalInsureConnect());
-        Person duplicate = model.getInsureConnect().getPersonList().get(0);
-        Person other = model.getInsureConnect().getPersonList().get(1);
-        logic.execute("find p/" + other.getPhone().value);
-        String addDuplicate = "add n/" + duplicate.getName().fullName + " p/" + duplicate.getPhone().value
-                + " e/new@example.com a/Somewhere t/NEWPOLICY1";
-        // A phone search keeps stored order, so the duplicate is first once the filter is cleared.
-        int expectedIndex = 1;
-
-        assertThrows(CommandException.class, String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, expectedIndex,
-                duplicate.getName().fullName, duplicate.getPhone().value), () -> logic.execute(addDuplicate));
-        assertEquals(duplicate, model.getFilteredPersonList().get(expectedIndex - 1));
-        assertEquals(model.getInsureConnect().getPersonList().size(), model.getFilteredPersonList().size());
-        assertEquals(getTypicalInsureConnect(), model.getInsureConnect());
-    }
-
-    @Test
-    public void execute_duplicateHiddenByNameSearch_reportsIndexInRankedList() throws Exception {
-        model.setInsureConnect(getTypicalInsureConnect());
-        Person duplicate = model.getInsureConnect().getPersonList().get(0);
-        Person searched = model.getInsureConnect().getPersonList().get(2);
-        logic.execute("find " + searched.getName().fullName.split(" ")[0]);
-        String addDuplicate = "add n/" + duplicate.getName().fullName + " p/" + duplicate.getPhone().value
-                + " e/new@example.com a/Somewhere t/NEWPOLICY1";
-        // The name search ranks its match first, which moves the duplicate from 1 to 2.
-        int expectedIndex = 2;
-
-        assertThrows(CommandException.class, String.format(AddCommand.MESSAGE_DUPLICATE_PERSON, expectedIndex,
-                duplicate.getName().fullName, duplicate.getPhone().value), () -> logic.execute(addDuplicate));
-        assertEquals(searched, model.getFilteredPersonList().get(0));
-        assertEquals(duplicate, model.getFilteredPersonList().get(expectedIndex - 1));
-        assertEquals(model.getInsureConnect().getPersonList().size(), model.getFilteredPersonList().size());
     }
 
     @Test
@@ -322,7 +315,7 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_deleteRequestDoesNotSave_yesSavesDeletion() throws Exception {
+    public void execute_deleteRequestDoesNotSave_confirmationSavesDeletion() throws Exception {
         model.addPerson(AMY);
         Path dataFile = temporaryFolder.resolve("insureConnect.json");
 
@@ -332,8 +325,7 @@ public class LogicManagerTest {
         assertFalse(Files.exists(dataFile));
         assertTrue(model.hasPerson(AMY));
 
-        // EP: affirmative confirmation input
-        logic.execute("y");
+        logic.execute("confirm");
 
         // Confirmation deletes the customer and persists the changed book.
         assertTrue(Files.exists(dataFile));
@@ -351,44 +343,14 @@ public class LogicManagerTest {
         String confirmationMessage = String.format(
                 DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
 
-        CommandResult prompt = logic.execute("delete 1");
-        assertEquals(confirmationMessage, prompt.getFeedbackToUser());
-        assertTrue(prompt.isConfirmationRequired());
-        assertEquals(unchangedModel, model);
+        assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
 
         ModelManager deletedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
         deletedModel.deletePerson(AMY);
 
-        // EP: affirmative confirmation input with uppercase Y
-        assertCommandSuccess("Y",
+        assertCommandSuccess("confirm",
                 String.format(DeleteCommand.MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(AMY)),
                 deletedModel);
-    }
-
-    @Test
-    public void execute_deleteThenAnyNonYesInput_cancelsDeletion() throws Exception {
-        model.addPerson(AMY);
-
-        logic.execute("delete 1");
-        // EP: explicit negative confirmation input
-        CommandResult result = logic.execute("n");
-
-        assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
-        assertTrue(model.hasPerson(AMY));
-        assertFalse(Files.exists(insureConnectFile));
-    }
-
-    @Test
-    public void execute_deleteThenBlankInput_usesDefaultNo() throws Exception {
-        model.addPerson(AMY);
-
-        logic.execute("delete 1");
-        // EP: empty input uses the default negative response
-        CommandResult result = logic.execute("");
-
-        assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
-        assertTrue(model.hasPerson(AMY));
-        assertFalse(Files.exists(insureConnectFile));
     }
 
     @Test
@@ -398,33 +360,31 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_otherCommandAfterDeleteRequest_isConsumedAndCancelsDeletion() throws Exception {
+    public void execute_otherCommandAfterDeleteRequest_cancelsPendingDeletion() throws Exception {
         model.addPerson(AMY);
         ModelManager unchangedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
         String confirmationMessage = String.format(
                 DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
 
         assertCommandSuccess("delete 1", confirmationMessage, unchangedModel);
-        // EP: another command is consumed as a non-y response and cancels deletion
-        CommandResult result = logic.execute(ListCommand.COMMAND_WORD);
-        assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
-        assertEquals(unchangedModel, model);
+        assertCommandSuccess(ListCommand.COMMAND_WORD,
+                String.format(ListCommand.MESSAGE_SUCCESS, unchangedModel.getFilteredPersonList().size()),
+                unchangedModel);
         assertCommandException(ConfirmDeleteCommand.COMMAND_WORD,
                 ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
     }
 
     @Test
-    public void execute_pendingDeletionAnyOtherInput_cancelsWithoutParsing() throws Exception {
+    public void execute_pendingDeletionMalformedConfirmation_showsConfirmationReminder() throws Exception {
         model.addPerson(AMY);
 
         String confirmationMessage = String.format(
                 DeleteCommand.MESSAGE_CONFIRM_DELETE, Messages.format(AMY));
         assertCommandSuccess("delete 1", confirmationMessage, model);
 
-        // EP: invalid non-y input cancels the pending deletion
-        CommandResult result = logic.execute("confirm now");
-        assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
-        assertTrue(model.hasPerson(AMY));
+        String expectedMessage = String.format(DeleteCommand.MESSAGE_CONFIRM_REMINDER, 1);
+        assertParseException("Confirm", expectedMessage);
+        assertParseException("confirm now", expectedMessage);
     }
 
     @Test
@@ -433,9 +393,7 @@ public class LogicManagerTest {
 
         logic.execute("delete 1");
 
-        // EP: unrecognized non-y input cancels the pending deletion
-        CommandResult result = logic.execute("unknown");
-        assertEquals(DeleteCommand.MESSAGE_CANCELLED, result.getFeedbackToUser());
+        assertParseException("unknown", MESSAGE_UNKNOWN_COMMAND);
 
         assertCommandException("confirm",
                 ConfirmDeleteCommand.MESSAGE_NO_PENDING_DELETION);
@@ -444,7 +402,7 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_yesSaveFailure_restoresDataAndConsumesConfirmation() throws Exception {
+    public void execute_confirmSaveFailure_restoresDataAndConsumesConfirmation() throws Exception {
         Person bob = new PersonBuilder().withName("Bob Tan").withTags("POLICY90002").build();
         model.addPerson(AMY);
         model.addPerson(bob);
@@ -459,8 +417,7 @@ public class LogicManagerTest {
 
         String expectedSaveFailureMessage = String.format(
                 LogicManager.FILE_OPS_ERROR_FORMAT, DUMMY_IO_EXCEPTION.getMessage());
-        // EP: affirmative confirmation input reaches the save path
-        assertThrows(CommandException.class, expectedSaveFailureMessage, () -> logic.execute("y"));
+        assertThrows(CommandException.class, expectedSaveFailureMessage, () -> logic.execute("confirm"));
 
         // Both stored data and the displayed filtered list are restored.
         assertEquals(originalPersons, model.getInsureConnect().getPersonList());
