@@ -283,7 +283,10 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from InsureConnect after confirmation. When prompted, enter `y` to clear the records. The response is case-insensitive (i.e. `y` and `Y` are equivalent). Enter `n`, press Enter without a response, or enter anything else to cancel. The default response is `n`.
+Clears all entries from InsureConnect after confirmation.
+If there are no customers to clear, InsureConnect displays a message and does not request confirmation.
+When prompted, enter `y` to clear the records. The response is case-insensitive (i.e. `y` and `Y` are equivalent). 
+Enter `n`, press Enter without a response, or enter anything else to cancel. The default response is `n`.
 
 Format: `clear`
 
