@@ -161,6 +161,7 @@ Edits an existing customer in InsureConnect.
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`
 
 * Edits the customer at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* After a successful edit, the active search filter is cleared and the full customer list is shown. This also happens if the edit changes a field used by the search, which ensures that the customer being edited is always visible in the customer list even after edits.
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
