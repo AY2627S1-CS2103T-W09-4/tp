@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
@@ -61,6 +62,12 @@ class JsonSerializableInsureConnect {
             insureConnect.addPerson(person);
         }
         return insureConnect;
+    }
+
+    /** Returns true if any customer address was truncated while reading this file. */
+    @JsonIgnore
+    public boolean hasTruncatedAddresses() {
+        return persons.stream().anyMatch(JsonAdaptedPerson::wasAddressTruncated);
     }
 
 }

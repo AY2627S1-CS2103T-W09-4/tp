@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.insureconnect.commons.exceptions.IllegalValueException;
@@ -31,6 +32,8 @@ class JsonAdaptedPerson {
     private final String phone;
     private final String email;
     private final String address;
+    @JsonIgnore
+    private final boolean addressWasTruncated;
     private final List<JsonAdaptedTag> tags = new ArrayList<>();
     private final String remark;
     private final String createdAt;
@@ -46,7 +49,8 @@ class JsonAdaptedPerson {
         this.name = name;
         this.phone = phone;
         this.email = email;
-        this.address = address;
+        addressWasTruncated = address != null && address.length() > Address.MAX_LENGTH;
+        this.address = addressWasTruncated ? address.substring(0, Address.MAX_LENGTH) : address;
         if (tags != null) {
             this.tags.addAll(tags);
         }
@@ -62,6 +66,7 @@ class JsonAdaptedPerson {
         phone = source.getPhone().value;
         email = source.getEmail().value;
         address = source.getAddress().value;
+        addressWasTruncated = false;
         tags.addAll(source.getTags().stream()
                 .map(JsonAdaptedTag::new)
                 .collect(Collectors.toList()));
@@ -77,6 +82,12 @@ class JsonAdaptedPerson {
     public Person toModelType() throws IllegalValueException {
         return new Person(readName(), readPhone(), readEmail(), readAddress(),
                 readTags(), readRemark(), readCreatedAt());
+    }
+
+    /** Returns true if this customer address was truncated while loading stored data. */
+    @JsonIgnore
+    public boolean wasAddressTruncated() {
+        return addressWasTruncated;
     }
 
     /**

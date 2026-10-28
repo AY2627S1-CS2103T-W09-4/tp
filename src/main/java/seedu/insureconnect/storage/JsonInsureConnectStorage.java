@@ -25,6 +25,8 @@ public class JsonInsureConnectStorage {
 
     private final Set<Path> unreadableFilePaths = new HashSet<>();
     private Path filePath;
+    private boolean addressMigrationPerformed;
+    private boolean addressMigrationSaved;
 
     public JsonInsureConnectStorage(Path filePath) {
         this.filePath = filePath;
@@ -40,6 +42,16 @@ public class JsonInsureConnectStorage {
     public boolean isUnreadableFile(Path filePath) {
         requireNonNull(filePath);
         return unreadableFilePaths.contains(filePath.toAbsolutePath().normalize());
+    }
+
+    /** Returns true if any read by this storage instance truncated saved addresses. */
+    public boolean wasAddressMigrationPerformed() {
+        return addressMigrationPerformed;
+    }
+
+    /** Returns true if a detected address migration was persisted successfully. */
+    public boolean wasAddressMigrationSaved() {
+        return addressMigrationSaved;
     }
 
     /**
@@ -69,8 +81,20 @@ public class JsonInsureConnectStorage {
                 return Optional.empty();
             }
 
-            ReadOnlyInsureConnect loaded = jsonInsureConnect.get().toModelType();
+            JsonSerializableInsureConnect serializedData = jsonInsureConnect.get();
+            ReadOnlyInsureConnect loaded = serializedData.toModelType();
             unreadableFilePaths.remove(normalizedPath);
+            if (serializedData.hasTruncatedAddresses()) {
+                addressMigrationPerformed = true;
+                addressMigrationSaved = false;
+                try {
+                    saveInsureConnect(loaded, filePath);
+                    addressMigrationSaved = true;
+                } catch (IOException e) {
+                    logger.warning("Could not persist truncated customer addresses to " + filePath + ": "
+                            + e.getMessage());
+                }
+            }
             return Optional.of(loaded);
         } catch (DataLoadingException | IllegalValueException e) {
             unreadableFilePaths.add(normalizedPath);
