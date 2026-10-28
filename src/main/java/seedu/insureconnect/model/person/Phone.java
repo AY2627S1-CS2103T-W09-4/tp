@@ -34,6 +34,22 @@ public class Phone {
         return test.matches(VALIDATION_REGEX);
     }
 
+    /**
+     * Returns true if both phone numbers contain the same digits, ignoring a leading plus sign.
+     */
+    public boolean hasSameDigits(Phone otherPhone) {
+        requireNonNull(otherPhone);
+        return withoutLeadingPlus(value)
+                .equals(withoutLeadingPlus(otherPhone.value));
+    }
+
+    /**
+     * Removes the optional leading plus sign from a phone number for duplicate detection.
+     */
+    private static String withoutLeadingPlus(String phone) {
+        return phone.startsWith("+") ? phone.substring(1) : phone;
+    }
+
     @Override
     public String toString() {
         return value;

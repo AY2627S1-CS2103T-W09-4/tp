@@ -90,7 +90,7 @@ public class Person {
         }
 
         return otherPerson != null
-                && otherPerson.getPhone().equals(getPhone())
+                && otherPerson.getPhone().hasSameDigits(getPhone())
                 && getNormalizedName().equalsIgnoreCase(otherPerson.getNormalizedName());
     }
 
