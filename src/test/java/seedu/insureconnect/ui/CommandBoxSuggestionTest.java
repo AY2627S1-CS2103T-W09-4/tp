@@ -20,18 +20,24 @@ import seedu.insureconnect.logic.commands.CommandResult;
 public class CommandBoxSuggestionTest extends GuiTest {
     @Test
     public void findSuggestion_partialCommandWord_returnsRestOfFirstMatch() {
+        // EP: prefix of exactly one command word
         assertEquals("dd", CommandBox.findSuggestion("a"));
-        assertEquals("lear", CommandBox.findSuggestion("c"));
-        assertEquals("nfirm", CommandBox.findSuggestion("co"));
-        assertEquals("dit", CommandBox.findSuggestion("e"));
         assertEquals("it", CommandBox.findSuggestion("ex"));
+        // EP: prefix of several command words, first in alphabetical order wins
+        assertEquals("lear", CommandBox.findSuggestion("c"));
+        assertEquals("dit", CommandBox.findSuggestion("e"));
+        // EP: longer prefix that narrows to a later match
+        assertEquals("nfirm", CommandBox.findSuggestion("co"));
     }
 
     @Test
     public void findSuggestion_noPartialCommandWord_returnsEmpty() {
-        assertEquals("", CommandBox.findSuggestion(""));
-        assertEquals("", CommandBox.findSuggestion("edit"));
+        // EP: empty input
+        assertEquals("", CommandBox.findSuggestion("")); // boundary value
+        // EP: complete command word, with or without arguments
+        assertEquals("", CommandBox.findSuggestion("edit")); // boundary value
         assertEquals("", CommandBox.findSuggestion("edit 1"));
+        // EP: input that does not start with a lowercase command word prefix
         assertEquals("", CommandBox.findSuggestion(" ed"));
         assertEquals("", CommandBox.findSuggestion("Ed"));
         assertEquals("", CommandBox.findSuggestion("x"));
@@ -76,6 +82,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
             TextField input = getInput(box);
+            // Presses Shift, Ctrl, Alt, then Meta with Right, one modifier at a time.
             for (int modifier = 0; modifier < 4; modifier++) {
                 type(input, "fi");
                 input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.RIGHT,
