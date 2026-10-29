@@ -57,15 +57,22 @@
                    HBox.hgrow="ALWAYS">
 
             <Menu mnemonicParsing="false"
-                  text="View">
-              <Menu mnemonicParsing="false"
-                    text="Colour scheme">
+      text="View">
+
+  <MenuItem mnemonicParsing="false"
+            text="Toggle colour scheme"
+            accelerator="F2"
+            onAction="#handleToggleColourScheme" />
+
+            <Menu mnemonicParsing="false"
+                    text="Colour scheme preference">
+
                 <RadioMenuItem fx:id="darkSchemeMenuItem"
-                               text="Dark" />
+                            text="Dark" />
 
                 <RadioMenuItem fx:id="lightSchemeMenuItem"
-                               text="Light" />
-              </Menu>
+                            text="Light" />
+            </Menu>
             </Menu>
 
             <Menu mnemonicParsing="false"
@@ -106,29 +113,30 @@
                                  hgrow="ALWAYS" />
             </columnConstraints>
 
-            <VBox minWidth="0"
-                  minHeight="0"
-                  maxWidth="Infinity"
-                  maxHeight="Infinity"
-                  styleClass="workspace-card"
-                  GridPane.columnIndex="0"
-                  GridPane.hgrow="ALWAYS"
-                  GridPane.vgrow="ALWAYS">
+            <VBox fx:id="customerWorkspaceCard"
+                minWidth="0"
+                minHeight="0"
+                maxWidth="Infinity"
+                maxHeight="Infinity"
+                styleClass="workspace-card"
+                GridPane.columnIndex="0"
+                GridPane.hgrow="ALWAYS"
+                GridPane.vgrow="ALWAYS">
 
-              <HBox alignment="CENTER_LEFT"
+            <HBox alignment="BASELINE_LEFT"
                     spacing="8">
 
                 <Label text="Customers"
-                       styleClass="section-title" />
+                    styleClass="section-title" />
 
                 <Label fx:id="customerCountLabel"
-                       styleClass="customer-count" />
-              </HBox>
+                    styleClass="customer-count" />
+            </HBox>
 
-              <StackPane fx:id="personListPanelPlaceholder"
-                         minWidth="0"
-                         minHeight="0"
-                         VBox.vgrow="ALWAYS" />
+            <StackPane fx:id="personListPanelPlaceholder"
+                        minWidth="0"
+                        minHeight="0"
+                        VBox.vgrow="ALWAYS" />
             </VBox>
 
             <StackPane fx:id="customerDetailsPlaceholder"

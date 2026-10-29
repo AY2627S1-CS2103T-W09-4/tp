@@ -38,7 +38,11 @@ public class MainWindowInteractionTest extends GuiTest {
             MenuBar menus = (MenuBar) window.getRoot().getScene().lookup("#menuBar");
             Menu view = menus.getMenus().stream().filter(menu -> "View".equals(menu.getText()))
                     .findFirst().orElseThrow();
-            Menu schemes = (Menu) view.getItems().getFirst();
+            Menu schemes = view.getItems().stream()
+                    .filter(Menu.class::isInstance)
+                    .map(Menu.class::cast)
+                    .findFirst()
+                    .orElseThrow();
             RadioMenuItem dark = (RadioMenuItem) schemes.getItems().get(0);
             RadioMenuItem light = (RadioMenuItem) schemes.getItems().get(1);
             light.fire();

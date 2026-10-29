@@ -19,7 +19,7 @@ import seedu.insureconnect.model.person.Person;
 public class PersonListPanel extends UiPart<Region> {
 
     private static final String FXML = "PersonListPanel.fxml";
-    private static final double CARD_WIDTH_MARGIN = 28;
+    private static final double CARD_WIDTH_MARGIN = 17;
 
     @FXML
     private ListView<Person> personListView;
@@ -33,8 +33,7 @@ public class PersonListPanel extends UiPart<Region> {
         requireNonNull(personList);
 
         personListView.setItems(personList);
-        personListView.setCellFactory(PersonListViewCell::new);
-
+        personListView.setCellFactory(unused -> new PersonListViewCell());
         personListView.getSelectionModel()
                 .selectedIndexProperty()
                 .addListener((observable, oldIndex, newIndex) -> {
@@ -94,12 +93,7 @@ public class PersonListPanel extends UiPart<Region> {
      */
     private static class PersonListViewCell extends ListCell<Person> {
 
-        private final ListView<Person> listView;
         private Region cardRoot;
-
-        private PersonListViewCell(ListView<Person> listView) {
-            this.listView = listView;
-        }
 
         @Override
         protected void updateItem(Person person, boolean empty) {
@@ -118,9 +112,7 @@ public class PersonListPanel extends UiPart<Region> {
 
             cardRoot.setMinWidth(0);
             cardRoot.prefWidthProperty().bind(
-                    Bindings.max(
-                            listView.widthProperty().subtract(CARD_WIDTH_MARGIN),
-                            0));
+                    Bindings.max(widthProperty().subtract(CARD_WIDTH_MARGIN), 0));
             cardRoot.setMaxWidth(Region.USE_PREF_SIZE);
 
             setText(null);
