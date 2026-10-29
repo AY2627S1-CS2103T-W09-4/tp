@@ -42,8 +42,16 @@ public class MainWindowTest extends GuiTest {
 
         assertEquals(1896, fitted.getWindowWidth());
         assertEquals(1016, fitted.getWindowHeight());
-        assertEquals(new Point(12, 12), fitted.getWindowCoordinates());
+        assertEquals(new Point(0, 0), fitted.getWindowCoordinates());
         assertEquals(ColourScheme.LIGHT, fitted.getColourScheme());
+    }
+
+    @Test
+    public void fitToScreen_windowAlreadyFits_keepsGeometry() {
+        GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 34, 1710, 1018));
+
+        assertEquals(saved, fitted);
     }
 
     @Test
