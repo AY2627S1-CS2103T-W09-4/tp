@@ -67,16 +67,19 @@ public class MainWindowTest extends GuiTest {
     }
 
     @Test
-    public void initialize_savedGeometryAndFeedback_restoresWindowAndCustomerWorkspace() throws Exception {
+    public void initialize_savedGeometryAndFeedback_fitsWindowAndRestoresCustomerWorkspace() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
-            logic.setGuiSettings(new GuiSettings(900, 700, 30, 40));
+            GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+            logic.setGuiSettings(saved);
             logic.getFilteredPersonList().add(ALICE);
             MainWindow window = new MainWindow(new Stage(), logic, Path.of("data", "test.json"), "Load warning");
-            assertEquals(900, window.getRoot().getWidth());
-            assertEquals(700, window.getRoot().getHeight());
-            assertEquals(30, window.getRoot().getX());
-            assertEquals(40, window.getRoot().getY());
+            GuiSettings fitted = MainWindow.fitToScreen(saved, Screen.getPrimary().getVisualBounds());
+            assertEquals(fitted, logic.getGuiSettings());
+            assertEquals(fitted.getWindowWidth(), window.getRoot().getWidth());
+            assertEquals(fitted.getWindowHeight(), window.getRoot().getHeight());
+            assertEquals(fitted.getWindowCoordinates().getX(), window.getRoot().getX());
+            assertEquals(fitted.getWindowCoordinates().getY(), window.getRoot().getY());
             window.show();
             window.fillInnerParts();
             window.getRoot().getScene().getRoot().applyCss();
