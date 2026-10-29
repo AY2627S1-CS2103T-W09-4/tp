@@ -8,11 +8,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -23,6 +26,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.ColourScheme;
@@ -40,6 +44,8 @@ import seedu.insureconnect.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+    private static final PseudoClass CUSTOMER_LIST_FOCUSED =
+        PseudoClass.getPseudoClass("customer-list-focused");
     private static final double RESIZE_MARGIN = 12;
     private static final KeyCombination TOGGLE_COLOUR_SCHEME =
             new KeyCodeCombination(KeyCode.F2);
@@ -66,6 +72,9 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private StackPane personListPanelPlaceholder;
+
+    @FXML
+    private VBox customerWorkspaceCard;
 
     @FXML
     private StackPane customerDetailsPlaceholder;
@@ -125,6 +134,11 @@ public class MainWindow extends UiPart<Stage> {
 
         helpWindow = new HelpWindow();
         configureWindow();
+    }
+
+    @FXML
+    private void handleToggleColourScheme() {
+        toggleColourScheme();
     }
 
     /**
@@ -256,7 +270,11 @@ public class MainWindow extends UiPart<Stage> {
     void fillInnerParts() {
         fillCustomerWorkspace();
         fillResultDisplay();
-        configureFocusNavigation(fillCommandBox());
+
+        CommandBox commandBox = fillCommandBox();
+        configureFocusNavigation(commandBox);
+        Platform.runLater(() ->
+            commandBox.getFocusTarget().requestFocus());
     }
 
     /**
@@ -270,6 +288,11 @@ public class MainWindow extends UiPart<Stage> {
 
         personListPanelPlaceholder.getChildren()
                 .setAll(personListPanel.getRoot());
+
+        Node customerListFocusTarget = personListPanel.getFocusTarget();
+        getRoot().getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) ->
+                customerWorkspaceCard.pseudoClassStateChanged(
+                        CUSTOMER_LIST_FOCUSED, newFocusOwner == customerListFocusTarget));
 
         customerDetailsPlaceholder.getChildren()
                 .setAll(customerDetailsPanel.getRoot());
