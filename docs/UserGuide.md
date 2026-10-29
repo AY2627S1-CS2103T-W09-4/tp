@@ -350,9 +350,10 @@ numbers: policy numbers must still be valid and unique across contacts.
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
-**Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Clear** | `clear`, then `y` to confirm
+**Delete** | `delete INDEX`, then `y` to confirm<br> e.g., `delete 3`, then `y`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
+**Exit** | `exit`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
