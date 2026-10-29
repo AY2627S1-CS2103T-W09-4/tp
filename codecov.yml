@@ -1,0 +1,13 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto      # compare against the base commit's coverage
+        threshold: 3%     # allow a drop of up to 3% before failing
+    patch:
+      default:
+        target: 80%       # report how much of the changed lines are covered
+        informational: true  # never fail the PR on patch coverage
+comment:
+  layout: "condensed_header, diff, files"
+  require_changes: false

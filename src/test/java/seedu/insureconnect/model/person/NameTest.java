@@ -41,6 +41,7 @@ public class NameTest {
         assertFalse(Name.isValidName("-Mary")); // starts with hyphen
         assertFalse(Name.isValidName(".Tan")); // starts with period
         assertFalse(Name.isValidName("/Mary")); // starts with slash
+        assertFalse(Name.isValidName("!Zoe")); // starts with exclamation mark
 
         // valid name
         assertTrue(Name.isValidName("peter jack")); // alphabets only
@@ -62,6 +63,7 @@ public class NameTest {
         assertTrue(Name.isValidName("Mohd a/l Kassim")); // Malaysian name with a/l
         assertTrue(Name.isValidName("Siti a/p Ahmad")); // Malaysian name with a/p
         assertTrue(Name.isValidName("Tan a/k/a Teck")); // with a/k/a
+        assertTrue(Name.isValidName("Zoe !")); // with exclamation mark
     }
 
     @Test

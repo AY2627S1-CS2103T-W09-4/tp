@@ -11,8 +11,9 @@ public class Phone {
 
 
     public static final String MESSAGE_CONSTRAINTS =
-            "Phone numbers should only contain digits, and should be at least 3 digits long";
-    public static final String VALIDATION_REGEX = "\\d{3,}";
+        "Phone numbers should only contain digits, may optionally start with '+', "
+            + "and should be at least 3 digits long";
+    public static final String VALIDATION_REGEX = "\\+?\\d{3,}";
     public final String value;
 
     /**
@@ -31,6 +32,39 @@ public class Phone {
      */
     public static boolean isValidPhone(String test) {
         return test.matches(VALIDATION_REGEX);
+    }
+
+    /**
+     * Returns true if both phone numbers are equivalent for duplicate detection.
+     * A leading plus sign is ignored for all phone numbers. For Singapore numbers,
+     * the country code {@code 65} is also ignored when followed by an 8-digit
+     * local number.
+     */
+    public boolean hasSameDigits(Phone otherPhone) {
+        requireNonNull(otherPhone);
+        return normalizeForComparison(value)
+                .equals(normalizeForComparison(otherPhone.value));
+    }
+
+    /**
+     * Normalizes Singapore phone numbers for duplicate detection.
+     */
+    private static String normalizeForComparison(String phone) {
+        String digits = phone.startsWith("+") ? phone.substring(1) : phone;
+
+        // Remove Singapore country code when followed by an 8-digit local number.
+        if (digits.startsWith("65") && digits.length() == 10) {
+            return digits.substring(2);
+        }
+
+        return digits;
+    }
+
+    /**
+     * Removes the optional leading plus sign from a phone number for duplicate detection.
+     */
+    private static String withoutLeadingPlus(String phone) {
+        return phone.startsWith("+") ? phone.substring(1) : phone;
     }
 
     @Override

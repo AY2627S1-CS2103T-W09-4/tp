@@ -24,10 +24,10 @@ public class JsonInsureConnectStorage {
     private static final Logger logger = LogsCenter.getLogger(JsonInsureConnectStorage.class);
 
     private final Set<Path> unreadableFilePaths = new HashSet<>();
-    private Path filePath;
+    private final Path filePath;
 
     public JsonInsureConnectStorage(Path filePath) {
-        this.filePath = filePath;
+        this.filePath = requireNonNull(filePath);
     }
 
     public Path getInsureConnectFilePath() {
@@ -69,7 +69,8 @@ public class JsonInsureConnectStorage {
                 return Optional.empty();
             }
 
-            ReadOnlyInsureConnect loaded = jsonInsureConnect.get().toModelType();
+            JsonSerializableInsureConnect serializedData = jsonInsureConnect.get();
+            ReadOnlyInsureConnect loaded = serializedData.toModelType();
             unreadableFilePaths.remove(normalizedPath);
             return Optional.of(loaded);
         } catch (DataLoadingException | IllegalValueException e) {

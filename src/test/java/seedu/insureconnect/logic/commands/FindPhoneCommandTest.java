@@ -35,7 +35,12 @@ public class FindPhoneCommandTest {
             .withTags("P2").build();
     private final Person alice = new PersonBuilder().withName("Alice Lee").withPhone("12349876")
             .withTags("P3").build();
-    private final List<Person> storedPersons = List.of(alice, johnny, john);
+    private final Person internationalCustomer = new PersonBuilder()
+            .withName("Jane International")
+            .withTags("P4")
+            .withPhone("+6591234567")
+            .build();
+    private final List<Person> storedPersons = List.of(alice, johnny, john, internationalCustomer);
     private Model model;
 
     /**
@@ -52,11 +57,16 @@ public class FindPhoneCommandTest {
      * Phone prefixes return every matching customer in stored order and preserve stored data.
      */
     @Test
-    public void execute_phonePrefix_returnsAllMatchingCustomers() throws ParseException, CommandException {
+    public void execute_phonePrefix_returnsAllMatchingCustomers()
+            throws ParseException, CommandException {
         assertSearch("find p/9876", List.of(johnny, john));
         assertSearch("find p/98765432", List.of(johnny, john));
         assertSearch("find p/9", List.of(johnny, john));
-        assertEquals(storedPersons, model.getInsureConnect().getPersonList());
+        assertSearch("find p/+65", List.of(internationalCustomer));
+
+        assertEquals(
+                storedPersons,
+                model.getInsureConnect().getPersonList());
     }
 
     /**

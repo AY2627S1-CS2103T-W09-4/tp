@@ -14,6 +14,13 @@ public interface Model {
     /** {@code Predicate} that always evaluates to true */
     Predicate<Person> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
 
+    /** {@code Comparator} that orders customers by name from A to Z, ignoring case. */
+    Comparator<Person> COMPARATOR_BY_NAME =
+            Comparator.comparing(person -> person.getName().fullName, String.CASE_INSENSITIVE_ORDER);
+
+    /** {@code Comparator} that orders customers from the oldest to the newest creation time. */
+    Comparator<Person> COMPARATOR_BY_CREATION_TIME = Comparator.comparing(Person::getCreatedAt);
+
     /**
      * Returns the user prefs.
      */

@@ -31,7 +31,7 @@ public class CommandFormats {
     public static final String DELETE_COMMAND_FORMAT = DeleteCommand.COMMAND_WORD + " INDEX";
     public static final String FIND_COMMAND_FORMAT = FindCommand.COMMAND_WORD
             + " KEYWORD [MORE_KEYWORDS]... or " + FindCommand.COMMAND_WORD
-            + " [" + PREFIX_NAME + "KEYWORDS] [" + PREFIX_PHONE + "DIGITS] [" + PREFIX_TAG + "POLICY_NUMBER]";
+            + " [" + PREFIX_NAME + "KEYWORDS] [" + PREFIX_PHONE + "PHONE_PREFIX] [" + PREFIX_TAG + "POLICY_NUMBER]";
     public static final String LIST_COMMAND_FORMAT = ListCommand.COMMAND_WORD + " [n/|c/]";
     public static final String CLEAR_COMMAND_FORMAT = ClearCommand.COMMAND_WORD;
     public static final String HELP_COMMAND_FORMAT = HelpCommand.COMMAND_WORD;

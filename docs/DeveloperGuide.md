@@ -74,6 +74,12 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/AY2
 
 The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `CustomerDetailsPanel`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts. `CommandHistory`, `FocusNavigation`, and `ColourSchemeStyles` are helper classes that are not GUI parts, so they do not inherit from `UiPart`.
 
+The sequence diagram below illustrates how the customer list and details panel remain synchronized when the selected customer changes.
+
+<img src="images/CustomerSelectionSequenceDiagram.png" width="650" />
+
+When a customer is selected, `MainWindow` receives the selection change and asks `CustomerDetailsPanel` to display that customer's information. If the displayed list becomes empty, the selection becomes `null` and the details panel displays its empty state. If the selected customer is removed while other customers remain, `PersonListPanel` selects the nearest remaining customer.
+
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-W09-4/tp/tree/master/src/main/java/seedu/insureconnect/ui/MainWindow.java).
 
 `MainWindow` opens the `HelpWindow` when the user enters `help`, selects the Help menu item, or presses F1.
@@ -94,7 +100,7 @@ Here's a (partial) class diagram of the `Logic` component:
 
 <img src="images/LogicClassDiagram.png" width="550"/>
 
-The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` API call as an example.
+The sequence diagram below illustrates the interactions within the `Logic` component, taking `execute("delete 1")` followed by `execute("confirm")` API calls as an example.
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
@@ -133,7 +139,7 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `InsureConnect`, and each `Person` references tags from that list. This lets `InsureConnect` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+<div markdown="span" class="alert alert-info">:information_source: **Note:** In the current design, each `Person` owns one or more `Tag` values, which represent that customer's insurance policy numbers. `UniquePersonList` prevents the same policy number from being assigned to different customers.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -406,7 +412,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Policy**: An insurance contract held by a customer, such as a life, health, motor or travel insurance plan
 * **Policy number**: The unique code that identifies a policy, made up of 1 to 30 letters and digits (e.g. `LIFE20481`). Every customer has at least one, and no two customers can share the same policy number. Entered with the `t/` prefix
 * **Remark**: An optional free text note attached to a customer, used for follow-ups and preferences (e.g. `Prefers WhatsApp after 6pm`). The `r/` prefix sets it, and `edit INDEX r/` clears it. An omitted remark is stored as an empty string when adding a customer
-* **Duplicate customer**: A customer whose name (ignoring case and extra spaces) and phone number are both identical to those of an existing customer. Two customers with the same name but different phone numbers are not duplicates
+* **Duplicate customer**: A customer whose name and phone number match those of an existing customer. Name matching ignores case and extra spaces. Phone matching ignores a leading `+`; for Singapore numbers, the `65` country code is also ignored when comparing it with an 8-digit local number
 * **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
 * **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
 * **Prefix**: The short marker that comes before a value in a command, such as `n/` for name or `p/` for phone
