@@ -23,6 +23,7 @@ import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.commands.HelpCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.ListCommand.SortOrder;
+import seedu.insureconnect.logic.commands.UserGuideCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.NameContainsKeywordsPredicate;
 import seedu.insureconnect.model.person.Person;
@@ -107,5 +108,15 @@ public class InsureConnectParserTest {
     @Test
     public void parseCommand_unknownCommand_throwsParseException() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("unknownCommand"));
+    }
+
+    @Test
+    public void parseCommand_userGuide() throws Exception {
+        // EP: no arguments
+        assertTrue(parser.parseCommand(UserGuideCommand.COMMAND_WORD) instanceof UserGuideCommand);
+
+        // EP: extraneous arguments are ignored
+        assertTrue(parser.parseCommand(UserGuideCommand.COMMAND_WORD + " extra")
+                instanceof UserGuideCommand);
     }
 }

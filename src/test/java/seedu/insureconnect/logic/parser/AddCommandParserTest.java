@@ -74,6 +74,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_addressWithEscapedPrefixAndExclamation_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withAddress("Blk 123 t/4!")
+                .withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + " " + PREFIX_ADDRESS + "Blk 123 !t/4!!" + TAG_DESC_FRIEND, new AddCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_repeatedNonTagValue_failure() {
         String validExpectedPersonString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;

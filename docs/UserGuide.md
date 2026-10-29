@@ -112,17 +112,22 @@ preserves your command text, output, and selected contact.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* **Escape character (`!`) for name and remark prefix collisions**:
-  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names or remarks that contain these patterns can conflict with command prefixes if typed directly.<br>
-  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name or remark field:
+* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, `/`, and `!`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
+
+* **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
+
+* **Escape character (`!`) for name, address, and remark prefix collisions**:
+  Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names, addresses, or remarks that contain these patterns can conflict with command prefixes if typed directly.<br>
+  To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name, address, or remark field:
   * `n/Mohd !a/l Kassim` or `n/Mohd a!/l Kassim` will be saved as `Mohd a/l Kassim`.
   * Indian patronymics such as `s/o` or `d/o` (e.g. `n/Ravi s/o Muthu`) do not conflict with existing prefixes and do not require escaping (though `!s/o` is also supported).
   * In a remark, `r/dietary restrictions: !n/a` will be saved as `dietary restrictions: n/a`.
-  * If you need a literal exclamation mark in a name or remark, type `!!` (for example, `r/Follow up!!` is saved as `Follow up!`).
+  * In an address, `a/Blk 123 !t/4` will be saved as `Blk 123 t/4`.
+  * If you need a literal exclamation mark in a name, address, or remark, type `!!` (for example, `a/Block!! A` is saved as `Block! A`).
   * **Warning:** A single `!` before any character is treated as an escape marker and removed. For example, `r/Great! Thanks` is saved as `Great Thanks`.
-  * **Note:** `!` is treated as an escape character only in the name (`n/`) and remark (`r/`) fields. Other fields (such as `e/` email or `a/` address) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
+  * **Note:** `!` is treated as an escape character only in the name (`n/`), address (`a/`), and remark (`r/`) fields. Other fields (such as `e/` email) do not use `!` as an escape character. Their own validation rules still apply; for example, email addresses containing `!` are not accepted.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for commands that take no parameters, such as `help`, `exit`, `clear`, and `userguide`, are ignored.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -143,7 +148,7 @@ These rules apply when adding a customer or changing a field with `edit`:
 
 ### Viewing help: `help`
 
-Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
+Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, `userguide`, and `exit`.
 The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
 
 You can open the same window from the **Help** menu or by pressing **F1**.
@@ -153,6 +158,12 @@ Press **F1** again or **Esc** to close the Help window while the Help window is 
 
 Format: `help`
 
+
+### Opening the User Guide: `userguide`
+
+Opens the online User Guide in your default web browser.
+
+Format: `userguide`
 
 ### Adding a person: `add`
 
@@ -368,3 +379,4 @@ Action | Format, Examples
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
+**User Guide** | `userguide`

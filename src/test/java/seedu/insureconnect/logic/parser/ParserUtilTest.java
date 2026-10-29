@@ -168,6 +168,17 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parseAddress_escapedPrefixAndExclamation_returnsUnescapedAddress() throws Exception {
+        assertEquals(new Address("Blk 123 t/4!"), ParserUtil.parseAddress("Blk 123 !t/4!!"));
+    }
+
+    @Test
+    public void parseAddress_lengthCheckedAfterUnescaping() throws Exception {
+        String address = "a".repeat(Address.MAX_LENGTH - 1) + "!!";
+        assertEquals(new Address("a".repeat(Address.MAX_LENGTH - 1) + "!"), ParserUtil.parseAddress(address));
+    }
+
+    @Test
     public void parseAddress_tooLong_throwsParseException() {
         assertThrows(ParseException.class, Address.MESSAGE_LENGTH_CONSTRAINTS, () ->
             ParserUtil.parseAddress("a".repeat(Address.MAX_LENGTH + 1)));

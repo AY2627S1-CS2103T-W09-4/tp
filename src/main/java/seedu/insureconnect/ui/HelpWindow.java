@@ -30,6 +30,7 @@ public class HelpWindow extends UiPart<Stage> {
             CommandFormats.LIST_COMMAND_FORMAT,
             CommandFormats.CLEAR_COMMAND_FORMAT,
             CommandFormats.HELP_COMMAND_FORMAT,
+            CommandFormats.USER_GUIDE_COMMAND_FORMAT,
             CommandFormats.EXIT_COMMAND_FORMAT);
 
     private static final Logger logger = LogsCenter.getLogger(HelpWindow.class);

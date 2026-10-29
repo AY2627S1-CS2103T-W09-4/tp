@@ -35,6 +35,7 @@ public class CommandFormats {
     public static final String LIST_COMMAND_FORMAT = ListCommand.COMMAND_WORD + " [n/|c/]";
     public static final String CLEAR_COMMAND_FORMAT = ClearCommand.COMMAND_WORD;
     public static final String HELP_COMMAND_FORMAT = HelpCommand.COMMAND_WORD;
+    public static final String USER_GUIDE_COMMAND_FORMAT = UserGuideCommand.COMMAND_WORD;
     public static final String EXIT_COMMAND_FORMAT = ExitCommand.COMMAND_WORD;
 
     private CommandFormats() {}

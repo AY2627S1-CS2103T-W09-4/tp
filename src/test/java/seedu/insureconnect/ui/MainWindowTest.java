@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -83,6 +85,43 @@ public class MainWindowTest extends GuiTest {
     }
 
     @Test
+    public void submit_userGuideCommand_opensUserGuide() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            List<String> openedUrls = new ArrayList<>();
+            logic.setExecutor(command -> new CommandResult("Opening User Guide",
+                    false, false, false, true));
+            MainWindow.UserGuideOpener userGuideOpener = () ->
+                    openedUrls.add(HelpWindow.USERGUIDE_URL);
+            MainWindow window = createWindow(logic, userGuideOpener);
+
+            // EP: User Guide opens successfully
+            submit(window, "userguide");
+
+            assertEquals(List.of(HelpWindow.USERGUIDE_URL), openedUrls);
+            assertEquals("Opening User Guide", outputOf(window).getText());
+        });
+    }
+
+    @Test
+    public void submit_userGuideCommand_browserFailure() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            logic.setExecutor(command -> new CommandResult("Opening User Guide",
+                    false, false, false, true));
+            MainWindow window = createWindow(logic, () -> {
+                throw new IOException("Browser unavailable");
+            });
+
+            // EP: browser cannot open the User Guide
+            submit(window, "userguide");
+
+            assertEquals("Unable to open the User Guide in your browser.", outputOf(window).getText());
+            assertEquals("userguide", inputOf(window).getText());
+        });
+    }
+
+    @Test
     public void submit_helpThenExit_showsHelpAndClosesBothWindows() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
@@ -151,6 +190,16 @@ public class MainWindowTest extends GuiTest {
      */
     private MainWindow createWindow(UiLogicStub logic) {
         MainWindow window = new MainWindow(new Stage(), logic, Path.of("test.json"));
+        window.show();
+        window.fillInnerParts();
+        return window;
+    }
+
+    /**
+     * Creates a populated window with a deterministic User Guide opener.
+     */
+    private MainWindow createWindow(UiLogicStub logic, MainWindow.UserGuideOpener userGuideOpener) {
+        MainWindow window = new MainWindow(new Stage(), logic, Path.of("test.json"), null, userGuideOpener);
         window.show();
         window.fillInnerParts();
         return window;

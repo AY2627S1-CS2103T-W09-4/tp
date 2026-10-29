@@ -18,6 +18,7 @@ import seedu.insureconnect.logic.commands.ExitCommand;
 import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.commands.HelpCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
+import seedu.insureconnect.logic.commands.UserGuideCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
 /**
@@ -61,6 +62,7 @@ public class InsureConnectParser {
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case UserGuideCommand.COMMAND_WORD -> new UserGuideCommand();
             case ConfirmDeleteCommand.COMMAND_WORD -> {
                 if (!arguments.trim().isEmpty()) {
                     throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,

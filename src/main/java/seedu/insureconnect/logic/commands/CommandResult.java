@@ -22,21 +22,33 @@ public class CommandResult {
     /** The next command input should be treated as a confirmation response. */
     private final boolean confirmationRequired;
 
+    /** The online User Guide should be opened in the default browser. */
+    private final boolean shouldOpenUserGuide;
+
     /**
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
-        this(feedbackToUser, showHelp, exit, false);
+        this(feedbackToUser, showHelp, exit, false, false);
     }
 
     /**
      * Constructs a {@code CommandResult} with the specified fields and confirmation state.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired) {
+        this(feedbackToUser, showHelp, exit, confirmationRequired, false);
+    }
+
+    /**
+     * Constructs a {@code CommandResult} with confirmation and User Guide states.
+     */
+    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
+                         boolean shouldOpenUserGuide) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.confirmationRequired = confirmationRequired;
+        this.shouldOpenUserGuide = shouldOpenUserGuide;
     }
 
     /**
@@ -63,6 +75,10 @@ public class CommandResult {
         return confirmationRequired;
     }
 
+    public boolean shouldOpenUserGuide() {
+        return shouldOpenUserGuide;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
@@ -77,12 +93,13 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
-                && confirmationRequired == otherCommandResult.confirmationRequired;
+                && confirmationRequired == otherCommandResult.confirmationRequired
+                && shouldOpenUserGuide == otherCommandResult.shouldOpenUserGuide;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired);
+        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide);
     }
 
     @Override
@@ -92,6 +109,7 @@ public class CommandResult {
                 .add("showHelp", showHelp)
                 .add("exit", exit)
                 .add("confirmationRequired", confirmationRequired)
+                .add("shouldOpenUserGuide", shouldOpenUserGuide)
                 .toString();
     }
 
