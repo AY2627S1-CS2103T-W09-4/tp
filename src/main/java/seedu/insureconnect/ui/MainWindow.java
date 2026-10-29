@@ -43,6 +43,7 @@ public class MainWindow extends UiPart<Stage> {
             "Unable to open the User Guide in your browser.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
+    private final UserGuideOpener userGuideOpener;
 
     private Stage primaryStage;
     private Logic logic;
@@ -95,11 +96,24 @@ public class MainWindow extends UiPart<Stage> {
      */
     public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath,
                       String initialFeedback) {
+        this(primaryStage, logic, ignoredDataFilePath, initialFeedback,
+                MainWindow::openUserGuideInBrowser);
+    }
+
+    /**
+     * Creates a {@code MainWindow} with a configurable User Guide opener.
+     *
+     * <p>This constructor is package-private so UI tests can replace the
+     * operating-system browser call with a deterministic test double.</p>
+     */
+    MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath,
+               String initialFeedback, UserGuideOpener userGuideOpener) {
         super(FXML, primaryStage);
 
         this.primaryStage = primaryStage;
         this.logic = logic;
         this.initialFeedback = initialFeedback;
+        this.userGuideOpener = userGuideOpener;
 
         helpWindow = new HelpWindow();
         configureWindow();
@@ -396,16 +410,24 @@ public class MainWindow extends UiPart<Stage> {
      * Opens the online User Guide in the user's default web browser.
      */
     private void openUserGuide() throws CommandException {
-        if (!Desktop.isDesktopSupported()
-                || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            throw new CommandException(MESSAGE_USER_GUIDE_OPEN_FAILURE);
-        }
-
         try {
-            Desktop.getDesktop().browse(new URI(HelpWindow.USERGUIDE_URL));
+            userGuideOpener.open();
         } catch (IOException | URISyntaxException e) {
             throw new CommandException(MESSAGE_USER_GUIDE_OPEN_FAILURE, e);
         }
+    }
+
+    /**
+     * Opens the online User Guide with the desktop browser integration.
+     */
+    private static void openUserGuideInBrowser()
+            throws IOException, URISyntaxException {
+        if (!Desktop.isDesktopSupported()
+                || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            throw new IOException("Desktop browsing is not supported.");
+        }
+
+        Desktop.getDesktop().browse(new URI(HelpWindow.USERGUIDE_URL));
     }
 
     /**
@@ -443,5 +465,10 @@ public class MainWindow extends UiPart<Stage> {
             resultDisplay.setFeedbackToUser(e.getMessage());
             throw e;
         }
+    }
+
+    @FunctionalInterface
+    interface UserGuideOpener {
+        void open() throws IOException, URISyntaxException;
     }
 }
