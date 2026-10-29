@@ -1,14 +1,18 @@
 package seedu.insureconnect.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import javafx.geometry.Bounds;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.stage.Stage;
 import seedu.insureconnect.model.person.Person;
 import seedu.insureconnect.testutil.PersonBuilder;
 
@@ -23,11 +27,35 @@ public class PersonCardTest extends GuiTest {
             assertEquals("03", label(card, "id").getText());
             assertEquals(person.getName().fullName, label(card, "name").getText());
             assertEquals(person.getPhone().value, label(card, "phone").getText());
+            // EP: normal-length valid email address
             assertEquals(person.getEmail().value, label(card, "email").getText());
 
             FlowPane tags = (FlowPane) card.getRoot().lookup("#tags");
             assertEquals(List.of("A123", "Z999"), tags.getChildren().stream()
                     .map(node -> ((Label) node).getText()).toList());
+        });
+    }
+
+    @Test
+    public void constructor_longUnbrokenEmail_wrapsWithinCardBounds() throws Exception {
+        runOnFxThread(() -> {
+            String longEmail = "a".repeat(180) + "@example.com";
+            Person person = new PersonBuilder(ALICE).withEmail(longEmail).build();
+            PersonCard card = new PersonCard(person, 1);
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(card.getRoot(), 300, 500));
+            stage.show();
+            card.getRoot().applyCss();
+            card.getRoot().layout();
+
+            Label email = label(card, "email");
+            Bounds emailBounds = email.localToScene(email.getBoundsInLocal());
+            Bounds cardBounds = card.getRoot().localToScene(card.getRoot().getBoundsInLocal());
+
+            // EP: long, unbroken but valid email address
+            assertTrue(emailBounds.getMaxX() <= cardBounds.getMaxX());
+            assertTrue(email.getHeight() > email.getFont().getSize() * 1.5);
         });
     }
 

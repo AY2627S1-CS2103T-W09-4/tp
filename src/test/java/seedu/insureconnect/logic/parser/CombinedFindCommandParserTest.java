@@ -35,9 +35,11 @@ public class CombinedFindCommandParserTest {
 
     @Test
     public void parse_singleCriteria_reusesExistingMatchingRules() {
+        // EP: one plain field
         assertParseSuccess(parser, "n/Alice Bob",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Alice", "Bob"))));
         assertParseSuccess(parser, "t/LIFE", new FindCommand(new PolicyNumberMatchesPredicate("LIFE")));
+        // EP: name containing an escaped prefix
         assertParseSuccess(parser, "n/Mohd !a/l",
                 new FindCommand(new NameContainsKeywordsPredicate(List.of("Mohd", "a/l"))));
         assertParseSuccess(parser, "n/!p/123",
@@ -74,13 +76,15 @@ public class CombinedFindCommandParserTest {
     @Test
     public void parse_missingValues_reportsInvalidValueOrUsage() {
         String usage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, FindCommand.MESSAGE_USAGE);
+        // EP: empty name value, alone or next to another field
         for (String query : List.of("n/", "n/ \t", "n/ p/912", "p/912 n/")) {
             assertParseFailure(parser, query, usage);
         }
+        // EP: empty or invalid phone and policy values
         assertParseFailure(parser, "n/Alice p/", PhoneStartsWithPredicate.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "n/Alice t/", Tag.MESSAGE_CONSTRAINTS);
         assertParseFailure(parser, "n/Alice t/LIFE-1", Tag.MESSAGE_CONSTRAINTS);
-        assertParseFailure(parser, "t/" + "A".repeat(31), Tag.MESSAGE_CONSTRAINTS);
+        assertParseFailure(parser, "t/" + "A".repeat(31), Tag.MESSAGE_CONSTRAINTS); // boundary value
     }
 
     @Test

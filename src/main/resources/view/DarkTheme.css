@@ -188,7 +188,6 @@
 /*
  * Command box
  */
-
 #commandTextField {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -197,11 +196,25 @@
     -fx-border-radius: 0;
     -fx-border-width: 2;
     -fx-border-insets: 0;
-    -fx-padding: 13 14 13 14;
+    -fx-padding: 0;
     -fx-font-family: "System";
     -fx-font-size: 15px;
     -fx-text-fill: -ic-text;
     -fx-prompt-text-fill: -ic-muted;
+}
+
+#commandTextField .scroll-pane,
+#commandTextField .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+#commandTextField .content {
+    -fx-background-color: -ic-surface;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 13 14 13 14;
 }
 
 #commandTextField:focused {
@@ -213,29 +226,15 @@
     -fx-border-color: -ic-error;
 }
 
-/* Aligns with the command text: 2px border plus 14px padding. */
-.command-ghost {
-    -fx-padding: 0 0 0 16;
-}
-
-.command-ghost-typed, .command-ghost-suggestion {
+.command-ghost-suggestion {
     -fx-font-family: "System";
     -fx-font-size: 15px;
-}
-
-.command-ghost-typed {
-    -fx-fill: transparent;
-}
-
-.command-ghost-suggestion {
     -fx-fill: -ic-muted;
 }
-
 
 /*
  * Command result / Ready area
  */
-
 .result-display {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
@@ -407,6 +406,9 @@
 }
 
 .field-icon {
+    -fx-min-width: 24;
+    -fx-pref-width: 24;
+    -fx-max-width: 24;
     -fx-font-family: "System";
     -fx-font-size: 14px;
     -fx-text-fill: -ic-card-muted;

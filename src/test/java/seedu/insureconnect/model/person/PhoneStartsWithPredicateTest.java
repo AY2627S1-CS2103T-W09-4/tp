@@ -46,9 +46,11 @@ public class PhoneStartsWithPredicateTest {
     @Test
     public void test_matchingPrefix_returnsTrue() {
         Person person = new PersonBuilder().withPhone("00123456").build();
-        assertTrue(new PhoneStartsWithPredicate("0").test(person));
+        // EP: leading digits of the number, including leading zeros
+        assertTrue(new PhoneStartsWithPredicate("0").test(person)); // boundary value
         assertTrue(new PhoneStartsWithPredicate("0012").test(person));
-        assertTrue(new PhoneStartsWithPredicate("00123456").test(person));
+        // EP: the whole number
+        assertTrue(new PhoneStartsWithPredicate("00123456").test(person)); // boundary value
     }
 
     /**
@@ -57,9 +59,11 @@ public class PhoneStartsWithPredicateTest {
     @Test
     public void test_nonMatchingPrefix_returnsFalse() {
         Person person = new PersonBuilder().withPhone("98765432").build();
+        // EP: digits from the middle or end of the number
         assertFalse(new PhoneStartsWithPredicate("7654").test(person));
         assertFalse(new PhoneStartsWithPredicate("5432").test(person));
-        assertFalse(new PhoneStartsWithPredicate("987654321").test(person));
+        // EP: query longer than the number
+        assertFalse(new PhoneStartsWithPredicate("987654321").test(person)); // boundary value
     }
 
     /**

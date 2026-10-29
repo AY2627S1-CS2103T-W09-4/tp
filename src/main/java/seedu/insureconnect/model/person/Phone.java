@@ -60,13 +60,6 @@ public class Phone {
         return digits;
     }
 
-    /**
-     * Removes the optional leading plus sign from a phone number for duplicate detection.
-     */
-    private static String withoutLeadingPlus(String phone) {
-        return phone.startsWith("+") ? phone.substring(1) : phone;
-    }
-
     @Override
     public String toString() {
         return value;

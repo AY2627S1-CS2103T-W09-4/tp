@@ -1,5 +1,7 @@
 package seedu.insureconnect.storage;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -17,15 +19,15 @@ import seedu.insureconnect.model.UserPrefs;
 public class StorageManager implements Storage {
 
     private static final Logger logger = LogsCenter.getLogger(StorageManager.class);
-    private JsonInsureConnectStorage insureConnectStorage;
-    private JsonUserPrefsStorage userPrefsStorage;
+    private final JsonInsureConnectStorage insureConnectStorage;
+    private final JsonUserPrefsStorage userPrefsStorage;
 
     /**
      * Creates a {@code StorageManager} with the given InsureConnect and user prefs storage.
      */
     public StorageManager(JsonInsureConnectStorage insureConnectStorage, JsonUserPrefsStorage userPrefsStorage) {
-        this.insureConnectStorage = insureConnectStorage;
-        this.userPrefsStorage = userPrefsStorage;
+        this.insureConnectStorage = requireNonNull(insureConnectStorage);
+        this.userPrefsStorage = requireNonNull(userPrefsStorage);
     }
 
     // ================ UserPrefs methods ==============================

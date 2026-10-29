@@ -25,6 +25,11 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
    ![Ui](images/Ui.png)
 
 5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+
+   As you type a command prefix, InsureConnect suggests the remaining command text in grey. Press **Right Arrow** to accept the suggestion.
+
+   ![Command box showing a ghost-text command suggestion](images/commandBoxGhostText.png)
+
    Some example commands you can try:
 
    * `list` : Lists all contacts.
@@ -43,6 +48,9 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 ## Keyboard navigation
 
+Press **F2** to switch between the light and dark colour schemes.
+This shortcut works from both the main window and the Help window.
+
 Press **F6** to move focus between the **command box → output box → contacts list → command box**.
 Press **Shift+F6** to move in the reverse direction. A thin outline marks the focused area.
 These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
@@ -54,7 +62,8 @@ In the contacts list, use **Up/Down** to move between contacts and **Page Up/Pag
 In the output box, use the arrow keys to move through feedback, **Shift+arrow keys** to select text,
 and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on macOS) to copy it.
 The output is read-only. Press F6 twice from the output box to return to command entry.
-On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F1 or F6.
+
+On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F1, F2 or F6.
 
 ### Command history
 
@@ -79,6 +88,8 @@ Choose **View → Colour scheme → Light** or **Dark** from the menu bar. The
 selected option is marked in the menu and takes effect immediately in the main
 window and Help window. Command errors remain highlighted in both schemes.
 
+Alternatively, press **F2** to switch between the light and dark colour schemes.
+
 Dark is the default. Your choice is saved with your preferences when you exit
 normally, and restored the next time you launch InsureConnect. Switching schemes
 preserves your command text, output, and selected contact.
@@ -101,10 +112,6 @@ preserves your command text, output, and selected contact.
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* **Name constraints**: `NAME` must start with an alphanumeric character and can only contain alphanumeric characters, spaces, and the characters: `-`, `'`, `.`, `/`, and `!`. Names cannot consist solely of punctuation (e.g. `---`, `...`, `///` are invalid).
-
-* **Policy number constraints**: Each `t/POLICY_NUMBER` contains 1 to 30 letters or digits. Every customer needs at least one policy number, and a policy number can belong to only one customer. Policy numbers are case-insensitive and are displayed in updates. For example, life20481 and LIFE20481 refer to the same policy number.
-
 * **Escape character (`!`) for name and remark prefix collisions**:
   Command prefixes are identified by a space followed by a letter and a slash (e.g. ` a/` for address, ` t/` for policy number). Names or remarks that contain these patterns can conflict with command prefixes if typed directly.<br>
   To avoid prefix collisions, prefix the collision point with an exclamation mark `!` within the name or remark field:
@@ -121,6 +128,19 @@ preserves your command text, output, and selected contact.
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
 </div>
 
+### Customer field requirements
+
+These rules apply when adding a customer or changing a field with `edit`:
+
+| Field | Requirements |
+| --- | --- |
+| `n/NAME` | Must start with a letter or digit. The remaining characters can be letters, digits, spaces, `-`, `'`, `.`, `/`, or `!`. A name cannot be blank or consist only of punctuation. There is no fixed length limit. See the escape character note above for typing `!` and command prefixes in a name. |
+| `p/PHONE_NUMBER` | At least 3 digits, with an optional single `+` at the beginning. Spaces, letters, and other punctuation are not allowed. There is no fixed maximum length. |
+| `e/EMAIL` | Format: `local-part@domain`. The local part must start and end with a letter or digit; between them, it may also contain `+`, `_`, `.`, or `-`, each followed by a letter or digit. Domain labels may contain letters, digits, and internal hyphens, but must start and end with a letter or digit. The final domain label must contain at least 2 characters. There is no fixed length limit. For example, `jane.doe+work@example.com` is accepted, but `jane!doe@example.com` is not. |
+| `a/ADDRESS` | Must not be blank. Any nonblank text is accepted, up to 300 characters after leading and trailing whitespace is removed. |
+| `t/POLICY_NUMBER` | 1 to 30 letters or digits; no spaces or punctuation. Every customer must have at least one policy number. A policy number can belong to only one customer; matching ignores case (for example, `life20481` and `LIFE20481` are the same number). |
+| `r/REMARK` | Optional and may be empty. At most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed. See the escape character note above for typing `!` and command prefixes in a remark. |
+
 ### Viewing help: `help`
 
 Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
@@ -129,7 +149,7 @@ The window also shows a link to this User Guide; click **Copy URL** to copy the 
 You can open the same window from the **Help** menu or by pressing **F1**.
 Press **F1** again or **Esc** to close the Help window while the Help window is focused.
 
-![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
+![User Guide link and Copy URL button in the Help window](images/helpMessageWindow.png)
 
 Format: `help`
 
@@ -149,15 +169,13 @@ phone number, are allowed.
 
 Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]`
 
-* Phone numbers must contain at least 3 digits. They may begin with a single `+` for an international country code.
-  Spaces, letters, hyphens, parentheses, other punctuation, and a `+` anywhere else are not allowed.
+The [customer field requirements](#customer-field-requirements) above apply to every supplied field.
 
 <div markdown="span" class="alert alert-primary">:bulb: **Tip:**
 A customer must have at least one policy number. An existing customer's policy number cannot be reused.
 </div>
 
-* `r/REMARK` is optional. If omitted, the customer's remark is empty. Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
-* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
+* `r/REMARK` is optional. If omitted, the customer's remark is empty.
 
 Examples:
 * `add n/John Doe p/+6598765432 e/johnd@example.com a/John street, block 123, #01-01 t/LIFE20481`
@@ -184,8 +202,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLIC
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 * Fields that are omitted keep their existing values. To replace a remark, use `r/REMARK`; to clear it, use `r/` by itself. An empty `r/` counts as a field to edit.
-* Addresses can be at most 300 characters after leading and trailing whitespace is removed.
-* Remarks can be at most 500 characters after leading and trailing whitespace is removed and repeated whitespace is collapsed.
+* Supplied fields must follow the [customer field requirements](#customer-field-requirements) above.
 * An edit is rejected if the resulting name and phone number match another person, using the same duplicate rule as `add`.
 * When editing policy numbers, all of the customer's existing policy numbers are replaced by those supplied; the change is not cumulative.
 * At least one policy number must remain. `t/` without a value is rejected.
@@ -218,7 +235,7 @@ Examples:
 * `find John` returns `john` and `John Doe`
 * `find jo` returns `John Doe` and `Mary Jones`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+  ![result for 'find alex david'](images/findAlexDavid.png)
 
 To search by phone number, use `find p/PHONE_PREFIX`, for example `find p/9876` or `find p/+65`.
 
@@ -298,7 +315,7 @@ Format: `exit`
 
 ### Saving the data
 
-InsureConnect automatically saves data after every command. You do not need to save manually.
+InsureConnect automatically saves customer records after a successful `add`, `edit`, `delete`, or `clear` command that changes the records. `delete` and `clear` save only after you confirm them. Failed or cancelled commands, confirmation prompts, and commands that do not change customer records do not save the records. You do not need to save manually.
 
 ### Editing the data file
 
@@ -307,7 +324,7 @@ InsureConnect saves its files relative to the working directory (the directory f
 Addresses already saved with more than 300 characters are loaded and preserved as-is. The 300-character limit applies to addresses entered with the `add` and `edit` commands.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until you run a command (InsureConnect saves after every command). Still, we recommend backing up the file before editing it.<br>
+If your changes make the data file invalid, InsureConnect starts with an empty contact list at the next run. The invalid file remains on disk until a successful `add`, `edit`, `delete`, or `clear` changes the customer records and saves them. Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause InsureConnect to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
 
@@ -344,9 +361,10 @@ numbers: policy numbers must still be valid and unique across contacts.
 Action | Format, Examples
 --------|------------------
 **Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS t/POLICY_NUMBER [t/POLICY_NUMBER]…​ [r/REMARK]` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/LIFE20481 t/HEALTH20482` <br> e.g. escaping `a/`: `add n/Mohd !a/l Kassim p/81234567 e/mohd@example.com a/Blk 456 Clementi Ave 3 t/LIFE20483`
-**Clear** | `clear`
-**Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Clear** | `clear`, then `y` to confirm
+**Delete** | `delete INDEX`, then `y` to confirm<br> e.g., `delete 3`, then `y`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [r/REMARK] [t/POLICY_NUMBER]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`<br> e.g., `edit 1 r/Follow up next week`<br> e.g. escaping `a/`: `edit 1 n/Mohd !a/l Kassim`
+**Exit** | `exit`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
 **Help** | `help`
