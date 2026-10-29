@@ -269,17 +269,17 @@ Requests deletion of the specified person from InsureConnect. The person is dele
 
 Format: `delete INDEX`
 
-Confirmation format: `confirm`
+Confirmation response: `y`
 
-* `delete INDEX` shows the person at the specified `INDEX` and requests confirmation.
-* Enter `confirm` immediately after a delete request to permanently delete that person.
-* Any other command cancels the pending deletion.
-* The index refers to the index number shown in the displayed person list.
+* `delete INDEX` shows the customer at the specified `INDEX` and requests confirmation.
+* When prompted, enter `y` to delete the customer. The response is case-insensitive, so `y` and `Y` are equivalent. Enter `n`, press Enter without a response, or enter anything else to cancel the deletion. The default response is `n`.
+* The index refers to the index number shown in the displayed customer list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2`, then `confirm`, deletes the 2nd person in InsureConnect.
-* `find Betsy` followed by `delete 1`, then `confirm`, deletes the 1st person in the results of the `find` command.
+
+* `list` followed by `delete 2`, then `y`, deletes the 2nd customer in InsureConnect.
+* `find Betsy` followed by `delete 1`, then `y`, deletes the 1st customer in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 
