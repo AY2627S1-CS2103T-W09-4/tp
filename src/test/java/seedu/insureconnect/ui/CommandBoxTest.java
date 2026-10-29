@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -98,12 +97,37 @@ public class CommandBoxTest extends GuiTest {
     }
 
     @Test
-    public void input_wrappingEnabled() throws Exception {
+    public void commandBox_defaultConfiguration_enablesWrappingAcrossThreeRows() throws Exception {
         runOnFxThread(() -> {
             TextArea input = inputOf(new CommandBox(command -> new CommandResult("Done")));
 
             assertTrue(input.isWrapText());
             assertEquals(3, input.getPrefRowCount());
+        });
+    }
+
+    @Test
+    public void paste_lineBreaksAndTabs_replacesWithSpacesBeforeSubmission() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = new CommandBox(command -> {
+                commands.add(command);
+                return new CommandResult("Done");
+            });
+            TextArea input = inputOf(box);
+
+            // replaceText simulates inserting pasted clipboard content.
+            input.replaceText(0, 0,
+                    "add\nn/John\r\np/91234567\te/john@example.com");
+
+            String expected =
+                    "add n/John p/91234567 e/john@example.com";
+            assertEquals(expected, input.getText());
+
+            pressKey(input, KeyCode.ENTER);
+
+            assertEquals(List.of(expected), commands);
+            assertEquals("", input.getText());
         });
     }
 
@@ -114,7 +138,7 @@ public class CommandBoxTest extends GuiTest {
         TextArea input = inputOf(new CommandBox(executor));
         input.getStyleClass().add("custom-style");
         submit(input, "invalid draft");
-        pressEnter(input);
+        pressKey(input, KeyCode.ENTER);
         assertEquals("invalid draft", input.getText());
         assertEquals(1, input.getStyleClass().stream().filter(CommandBox.ERROR_STYLE_CLASS::equals).count());
         input.appendText(" corrected");
@@ -134,15 +158,6 @@ public class CommandBoxTest extends GuiTest {
      */
     private void submit(TextArea input, String command) {
         input.setText(command);
-        pressEnter(input);
-    }
-
-    /**
-     * Sends an unmodified Enter key through the control's event filters.
-     */
-    private void pressEnter(TextArea input) {
-        input.fireEvent(new KeyEvent(
-                KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER,
-                false, false, false, false));
+        pressKey(input, KeyCode.ENTER);
     }
 }

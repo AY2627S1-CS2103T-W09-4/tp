@@ -3,11 +3,14 @@ package seedu.insureconnect.ui;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -54,9 +57,6 @@ public class CommandBox extends UiPart<Region> {
 
     @FXML
     private TextArea commandTextField;
-
-    @FXML
-    private Text commandTypedText;
 
     @FXML
     private Text commandSuggestionText;
@@ -179,8 +179,12 @@ public class CommandBox extends UiPart<Region> {
      */
     private void updateSuggestion() {
         String text = commandTextField.getText();
-        commandTypedText.setText(text);
-        commandSuggestionText.setText(isCaretAtEnd() ? findSuggestion(text) : "");
+        String suggestion = isCaretAtEnd() ? findSuggestion(text) : "";
+        commandSuggestionText.setText(suggestion);
+
+        if (!suggestion.isEmpty()) {
+            Platform.runLater(this::positionSuggestionAtCaret);
+        }
     }
 
     /**
@@ -200,10 +204,10 @@ public class CommandBox extends UiPart<Region> {
             return "";
         }
         return COMMAND_WORDS.stream()
-                .filter(word -> word.length() > text.length() && word.startsWith(text))
-                .findFirst()
-                .map(word -> word.substring(text.length()))
-                .orElse("");
+            .filter(word -> word.length() > text.length() && word.startsWith(text))
+            .findFirst()
+            .map(word -> word.substring(text.length()))
+            .orElse("");
     }
 
     /**
@@ -244,5 +248,35 @@ public class CommandBox extends UiPart<Region> {
          * @see seedu.insureconnect.logic.Logic#execute(String)
          */
         CommandResult execute(String commandText) throws CommandException, ParseException;
+    }
+
+    /**
+     * Positions the suggestion beside the TextArea's rendered caret.
+     */
+    private void positionSuggestionAtCaret() {
+        if (commandSuggestionText.getText().isEmpty()) {
+            return;
+        }
+
+        commandTextField.applyCss();
+        commandTextField.requestLayout();
+        commandTextField.layout();
+        commandSuggestionText.applyCss();
+
+        if (!(commandTextField.getSkin() instanceof TextAreaSkin skin)) {
+            return;
+        }
+
+        Bounds caretInScene =
+                commandTextField.localToScene(skin.getCaretBounds());
+        Bounds caretInParent =
+                commandSuggestionText.getParent().sceneToLocal(caretInScene);
+        Bounds suggestionBounds = commandSuggestionText.getLayoutBounds();
+
+        double x = caretInParent.getMaxX();
+        double y = caretInParent.getMinY()
+                + (caretInParent.getHeight() - suggestionBounds.getHeight()) / 2;
+
+        commandSuggestionText.relocate(x, y);
     }
 }

@@ -226,28 +226,15 @@
     -fx-border-color: -ic-error;
 }
 
-.command-ghost {
-    -fx-padding: 15 0 0 16;
-}
-
-.command-ghost-typed, .command-ghost-suggestion {
+.command-ghost-suggestion {
     -fx-font-family: "System";
     -fx-font-size: 15px;
-}
-
-.command-ghost-typed {
-    -fx-fill: transparent;
-}
-
-.command-ghost-suggestion {
     -fx-fill: -ic-muted;
 }
-
 
 /*
  * Command result / Ready area
  */
-
 .result-display {
     -fx-background-color: transparent;
     -fx-background-insets: 0;

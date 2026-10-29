@@ -162,8 +162,7 @@ public class MainWindowTest extends GuiTest {
     private void submit(MainWindow window, String command) {
         TextArea input = inputOf(window);
         input.setText(command);
-        input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.ENTER,
-                false, false, false, false));
+        pressKey(input, KeyCode.ENTER);
     }
 
     /**

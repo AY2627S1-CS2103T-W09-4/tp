@@ -57,7 +57,7 @@ public class CommandBoxHistoryTest extends GuiTest {
             press(input, KeyCode.UP);
             assertEquals("invalid", input.getText());
             input.appendText(" corrected");
-            press(input, KeyCode.ENTER);
+            pressKey(input, KeyCode.ENTER);
             press(input, KeyCode.UP);
             assertEquals("invalid corrected", input.getText());
             assertEquals(List.of("invalid", "invalid corrected"), commands);
@@ -120,7 +120,7 @@ public class CommandBoxHistoryTest extends GuiTest {
      */
     private void submit(TextArea input, String text) {
         input.setText(text);
-        press(input, KeyCode.ENTER);
+        pressKey(input, KeyCode.ENTER);
     }
 
     /**
