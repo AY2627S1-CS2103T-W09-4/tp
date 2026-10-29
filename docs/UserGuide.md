@@ -15,16 +15,16 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 1. Ensure that Java `25` or later is installed on your computer.<br>
    **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
 
-1. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-W09-4/tp/releases).
+2. Download the latest `.jar` file from [here](https://github.com/AY2627S1-CS2103T-W09-4/tp/releases).
 
-1. Copy the file to the folder you want to use as InsureConnect's _working directory_. InsureConnect stores its data and preferences relative to this folder.
+3. Copy the file to the folder you want to use as InsureConnect's _working directory_. InsureConnect stores its data and preferences relative to this folder.
 
-1. Open a terminal, `cd` to that folder, and run `java -jar insureconnect.jar`.<br>
+4. Open a terminal, `cd` to that folder, and run `java -jar insureconnect.jar`.<br>
    Launch InsureConnect from this same directory each time to keep using the same records and preferences.
    A GUI similar to the one below should appear in a few seconds. <br>
    ![Ui](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
    * `list` : Lists all contacts.
@@ -37,7 +37,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
    * `exit` : Exits the app.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -48,11 +48,13 @@ Press **Shift+F6** to move in the reverse direction. A thin outline marks the fo
 These shortcuts work while typing commands or selecting output text, and preserve the command you are editing.
 If focus is outside these areas, F6 enters the command box and Shift+F6 enters the contacts list.
 
+Press **F1** to open the Help window. While the Help window is focused, press **F1** again or **Esc** to close it.
+
 In the contacts list, use **Up/Down** to move between contacts and **Page Up/Page Down** to browse longer lists.
 In the output box, use the arrow keys to move through feedback, **Shift+arrow keys** to select text,
 and your system's copy shortcut (**Ctrl+C** on Windows/Linux, **Command+C** on macOS) to copy it.
 The output is read-only. Press F6 twice from the output box to return to command entry.
-On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F6.
+On keyboards that reserve function keys for hardware controls, hold **Fn** as needed to send F1 or F6.
 
 ### Command history
 
@@ -123,7 +125,9 @@ preserves your command text, output, and selected contact.
 
 Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
 The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
+
 You can open the same window from the **Help** menu or by pressing **F1**.
+Press **F1** again or **Esc** to close the Help window while the Help window is focused.
 
 ![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
 
