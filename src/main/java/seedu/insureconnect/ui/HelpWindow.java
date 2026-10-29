@@ -109,7 +109,7 @@ public class HelpWindow extends UiPart<Stage> {
     }
 
     /**
-     * Closes the help window when Escape is pressed.
+     * Closes the help window when Escape or F1 is pressed.
      */
     private void handleKeyPressed(KeyEvent event) {
         if (event.getCode() == KeyCode.ESCAPE || event.getCode() == KeyCode.F1) {
