@@ -9,7 +9,10 @@ import static seedu.insureconnect.commons.util.AppUtil.checkArgument;
  */
 public class Address {
 
-    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank";
+    public static final int MAX_LENGTH = 300;
+    public static final String MESSAGE_CONSTRAINTS = "Addresses can take any values, and should not be blank.";
+    public static final String MESSAGE_LENGTH_CONSTRAINTS = "Addresses should be at most " + MAX_LENGTH
+            + " characters long.";
 
     /*
      * The first character of the address must not be a whitespace,
@@ -34,6 +37,7 @@ public class Address {
      * Returns true if a given string is a valid address.
      */
     public static boolean isValidAddress(String test) {
+        requireNonNull(test);
         return test.matches(VALIDATION_REGEX);
     }
 

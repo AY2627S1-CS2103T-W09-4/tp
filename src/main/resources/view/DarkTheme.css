@@ -213,6 +213,24 @@
     -fx-border-color: -ic-error;
 }
 
+/* Aligns with the command text: 2px border plus 14px padding. */
+.command-ghost {
+    -fx-padding: 0 0 0 16;
+}
+
+.command-ghost-typed, .command-ghost-suggestion {
+    -fx-font-family: "System";
+    -fx-font-size: 15px;
+}
+
+.command-ghost-typed {
+    -fx-fill: transparent;
+}
+
+.command-ghost-suggestion {
+    -fx-fill: -ic-muted;
+}
+
 
 /*
  * Command result / Ready area

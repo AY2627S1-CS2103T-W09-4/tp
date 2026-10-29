@@ -14,6 +14,8 @@ public class ClearCommand extends Command {
     public static final String MESSAGE_SUCCESS = "InsureConnect has been cleared!";
     public static final String MESSAGE_CONFIRMATION =
             "This will clear all records. Are you sure? (y/n, case-insensitive, default n)";
+    public static final String MESSAGE_NO_CUSTOMERS_TO_CLEAR =
+            "There are no customers to clear.";
     public static final String MESSAGE_CANCELLED = "Clear cancelled. No records were cleared.";
 
     @Override

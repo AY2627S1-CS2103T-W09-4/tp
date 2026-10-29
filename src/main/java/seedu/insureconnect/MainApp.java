@@ -37,7 +37,6 @@ public class MainApp extends Application {
 
     public static final String MESSAGE_DATA_FILE_ERROR =
             "Warning: Data file at %s could not be loaded. Will be starting with an empty contact list.";
-
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
     // Keep the legacy filename so existing installations continue to load their records.
