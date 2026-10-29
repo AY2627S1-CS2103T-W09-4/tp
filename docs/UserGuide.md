@@ -25,6 +25,11 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
    ![Ui](images/Ui.png)
 
 5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+
+   As you type a command prefix, InsureConnect suggests the remaining command text in grey. Press **Right Arrow** to accept the suggestion.
+
+   ![Command box showing a ghost-text command suggestion](images/commandBoxGhostText.png)
+
    Some example commands you can try:
 
    * `list` : Lists all contacts.
@@ -138,7 +143,7 @@ The window also shows a link to this User Guide; click **Copy URL** to copy the 
 You can open the same window from the **Help** menu or by pressing **F1**.
 Press **F1** again or **Esc** to close the Help window while the Help window is focused.
 
-![User Guide link and Copy URL button in the Help window](images/helpMessage.png)
+![User Guide link and Copy URL button in the Help window](images/helpMessageWindow.png)
 
 Format: `help`
 
@@ -224,7 +229,7 @@ Examples:
 * `find John` returns `john` and `John Doe`
 * `find jo` returns `John Doe` and `Mary Jones`
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
-  ![result for 'find alex david'](images/findAlexDavidResult.png)
+  ![result for 'find alex david'](images/findAlexDavid.png)
 
 To search by phone number, use `find p/PHONE_PREFIX`, for example `find p/9876` or `find p/+65`.
 
