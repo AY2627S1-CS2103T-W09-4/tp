@@ -35,3 +35,12 @@
 .navigation-target:focused, #commandTextField.navigation-target:focused {
     -fx-border-color: -fx-focus-color;
 }
+
+.customer-list.navigation-target:focused {
+    -fx-border-color: transparent;
+}
+
+#customerWorkspaceCard:customer-list-focused {
+    -fx-border-color: -fx-focus-color;
+    -fx-border-radius: 12;
+}

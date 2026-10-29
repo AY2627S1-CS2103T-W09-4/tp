@@ -22,7 +22,7 @@ import seedu.insureconnect.model.person.Person;
 
 public class PersonListPanelTest extends GuiTest {
 
-    private static final double CARD_WIDTH_MARGIN = 28;
+    private static final double CARD_WIDTH_MARGIN = 17;
 
     @Test
     public void constructor_nonEmptyList_displaysItemsSelectsFirstAndExposesFocusTarget() throws Exception {
@@ -62,17 +62,18 @@ public class PersonListPanelTest extends GuiTest {
     }
 
     @Test
-    public void layout_listWidthChanges_cardWidthTracksAvailableSpace() throws Exception {
+    public void layout_cellWidthChanges_cardWidthTracksAvailableSpace() throws Exception {
         runOnFxThread(() -> {
             PersonListPanel panel = new PersonListPanel(FXCollections.observableArrayList(ALICE));
             show(panel.getRoot());
             ListView<Person> listView = listViewOf(panel);
-            Region card = visibleCardFor(listView, ALICE);
+            ListCell<?> cell = visibleCellFor(listView, ALICE);
+            Region card = (Region) cell.getGraphic();
 
             assertTrue(card.prefWidthProperty().isBound());
-            assertEquals(listView.getWidth() - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
+            assertEquals(cell.getWidth() - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
 
-            listView.resize(500, listView.getHeight());
+            cell.resize(500, cell.getHeight());
             assertEquals(500 - CARD_WIDTH_MARGIN, card.getPrefWidth(), 0.01);
         });
     }
@@ -100,10 +101,10 @@ public class PersonListPanelTest extends GuiTest {
         return (ListView<Person>) panel.getRoot().lookup("#personListView");
     }
 
-    private Region visibleCardFor(ListView<Person> listView, Person person) {
+    private ListCell<?> visibleCellFor(ListView<Person> listView, Person person) {
         for (Node node : listView.lookupAll(".list-cell")) {
             if (node instanceof ListCell<?> cell && person.equals(cell.getItem())) {
-                return (Region) cell.getGraphic();
+                return cell;
             }
         }
         throw new AssertionError("No visible card found for " + person.getName().fullName);

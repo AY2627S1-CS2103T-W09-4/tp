@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
@@ -38,7 +39,17 @@ public class MainWindowInteractionTest extends GuiTest {
             MenuBar menus = (MenuBar) window.getRoot().getScene().lookup("#menuBar");
             Menu view = menus.getMenus().stream().filter(menu -> "View".equals(menu.getText()))
                     .findFirst().orElseThrow();
-            Menu schemes = (Menu) view.getItems().getFirst();
+            MenuItem toggle = view.getItems().stream()
+                    .filter(item -> "Toggle colour scheme".equals(item.getText()))
+                    .findFirst()
+                    .orElseThrow();
+            toggle.fire();
+            assertScheme(window.getRoot(), help, logic, ColourScheme.LIGHT);
+            Menu schemes = view.getItems().stream()
+                    .filter(Menu.class::isInstance)
+                    .map(Menu.class::cast)
+                    .findFirst()
+                    .orElseThrow();
             RadioMenuItem dark = (RadioMenuItem) schemes.getItems().get(0);
             RadioMenuItem light = (RadioMenuItem) schemes.getItems().get(1);
             light.fire();
