@@ -11,7 +11,8 @@ import seedu.insureconnect.commons.util.ToStringBuilder;
  * Matches customers whose phone numbers start with the requested digits.
  */
 public class PhoneStartsWithPredicate implements Predicate<Person> {
-    public static final String MESSAGE_CONSTRAINTS = "Phone search requires one or more digits (0-9).";
+    public static final String MESSAGE_CONSTRAINTS =
+        "Phone search requires an optional '+' followed by one or more digits (0-9).";
 
     private final String prefix;
 
@@ -25,10 +26,10 @@ public class PhoneStartsWithPredicate implements Predicate<Person> {
     }
 
     /**
-     * Returns true if the query contains only digits and is not empty.
+     * Returns true if the query contains only digits (or with optional + at the start) and is not empty.
      */
     public static boolean isValidPrefix(String prefix) {
-        return prefix.matches("[0-9]+");
+        return prefix.matches("\\+?[0-9]+");
     }
 
     @Override

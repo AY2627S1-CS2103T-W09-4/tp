@@ -56,8 +56,28 @@ public class CommandBoxTest extends GuiTest {
             });
             TextField input = inputOf(box);
             submit(input, "clear");
+            // EP: empty input is submitted so the logic can apply default n
             submit(input, "");
             assertEquals(List.of("clear", ""), commands);
+            assertEquals("", input.getText());
+        });
+    }
+
+    @Test
+    public void submit_yesWhileAwaitingConfirmation_executesResponse() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = new CommandBox(command -> {
+                commands.add(command);
+                return commands.size() == 1
+                        ? new CommandResult("Confirm?", false, false, true)
+                        : new CommandResult("Done");
+            });
+            TextField input = inputOf(box);
+            submit(input, "delete 1");
+            // EP: affirmative confirmation input is forwarded unchanged
+            submit(input, "Y");
+            assertEquals(List.of("delete 1", "Y"), commands);
             assertEquals("", input.getText());
         });
     }

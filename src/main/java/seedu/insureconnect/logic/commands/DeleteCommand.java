@@ -21,14 +21,14 @@ public class DeleteCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Requests deletion of the person identified by the index number used in the displayed person list.\n"
             + "Format: " + DELETE_COMMAND_FORMAT + " (INDEX must be a positive integer)\n"
-            + "Enter confirm immediately afterwards to delete the person.\n"
+            + "Enter y when prompted to confirm deletion. Any other response cancels the deletion.\n"
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
 
-    public static final String MESSAGE_CONFIRM_DELETE = "Confirm deletion of %s by entering: confirm";
-    public static final String MESSAGE_CONFIRM_REMINDER =
-            "Type \"confirm\" to delete the record at index %d.";
+    public static final String MESSAGE_CONFIRM_DELETE =
+            "Delete %s? (y/n, case-insensitive, default n)";
+    public static final String MESSAGE_CANCELLED = "Delete cancelled. No records were deleted.";
     private final Index targetIndex;
     private final boolean isConfirmed;
 
@@ -65,7 +65,8 @@ public class DeleteCommand extends Command {
         Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
 
         if (!isConfirmed) {
-            return new CommandResult(String.format(MESSAGE_CONFIRM_DELETE, Messages.format(personToDelete)));
+            return new CommandResult(String.format(MESSAGE_CONFIRM_DELETE, Messages.format(personToDelete)),
+                    false, false, true);
         }
 
         model.deletePerson(personToDelete);

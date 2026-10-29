@@ -195,6 +195,29 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_remarkEscapedPrefixAndExclamation_success() {
+        // EP: escaped prefix-like text and a doubled exclamation mark are unescaped in an edited remark
+        String userInput = INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_REMARK
+                + "dietary restrictions: !n/a Follow up!!";
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder()
+                .withRemark("dietary restrictions: n/a Follow up!").build();
+
+        assertParseSuccess(parser, userInput, new EditCommand(INDEX_FIRST_PERSON, descriptor));
+    }
+
+    @Test
+    public void parse_addressLengthBoundary() {
+        String maxAddress = "a".repeat(Address.MAX_LENGTH);
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withAddress(maxAddress).build();
+        assertParseSuccess(parser, INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ADDRESS + maxAddress,
+                new EditCommand(INDEX_FIRST_PERSON, descriptor));
+
+        String tooLongAddress = "a".repeat(Address.MAX_LENGTH + 1);
+        assertParseFailure(parser, INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ADDRESS + tooLongAddress,
+                Address.MESSAGE_LENGTH_CONSTRAINTS);
+    }
+
+    @Test
     public void parse_multipleRepeatedFields_failure() {
         // More extensive testing of duplicate parameter detections is done in
         // AddCommandParserTest#parse_repeatedNonTagValue_failure()

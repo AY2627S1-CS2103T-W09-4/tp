@@ -69,7 +69,8 @@ public class JsonInsureConnectStorage {
                 return Optional.empty();
             }
 
-            ReadOnlyInsureConnect loaded = jsonInsureConnect.get().toModelType();
+            JsonSerializableInsureConnect serializedData = jsonInsureConnect.get();
+            ReadOnlyInsureConnect loaded = serializedData.toModelType();
             unreadableFilePaths.remove(normalizedPath);
             return Optional.of(loaded);
         } catch (DataLoadingException | IllegalValueException e) {
