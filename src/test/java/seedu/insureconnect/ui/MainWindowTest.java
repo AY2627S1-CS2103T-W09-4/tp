@@ -3,7 +3,9 @@ package seedu.insureconnect.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
 import java.awt.Point;
@@ -29,6 +31,8 @@ import javafx.stage.WindowEvent;
 import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.WindowResize;
+import seedu.insureconnect.logic.commands.WindowResize.Preset;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
@@ -54,6 +58,93 @@ public class MainWindowTest extends GuiTest {
         GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 34, 1710, 1018));
 
         assertEquals(saved, fitted);
+    }
+
+    @Test
+    public void overlapArea_partialWindow_usesIntersectingArea() {
+        Rectangle2D window = new Rectangle2D(1800, 100, 500, 600);
+        assertEquals(72000, MainWindow.overlapArea(window, new Rectangle2D(0, 0, 1920, 1080)));
+        assertEquals(228000, MainWindow.overlapArea(window, new Rectangle2D(1920, 0, 1920, 1080)));
+        assertEquals(0, MainWindow.overlapArea(window, new Rectangle2D(4000, 0, 1920, 1080)));
+    }
+
+    @Test
+    public void resizePresetAndCustom_applyBoundsAndSaveGeometry() throws Exception {
+        runOnFxThread(() -> {
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            assumeTrue(bounds.getWidth() >= 904 && bounds.getHeight() >= 624);
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MIN)));
+            submit(window, "resize p/min");
+            assertEquals(880, window.getRoot().getWidth());
+            assertEquals(600, window.getRoot().getHeight());
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MED)));
+            submit(window, "resize p/med");
+            assertEquals(Math.max(880, Math.floor(bounds.getWidth() * 2 / 3)), window.getRoot().getWidth());
+            assertEquals(Math.max(600, Math.floor(bounds.getHeight() * 2 / 3)), window.getRoot().getHeight());
+
+            window.getRoot().setX(bounds.getMinX());
+            window.getRoot().setY(bounds.getMinY());
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MAX)));
+            submit(window, "resize p/max");
+            assertEquals(bounds.getWidth() - 24, window.getRoot().getWidth());
+            assertEquals(bounds.getHeight() - 24, window.getRoot().getHeight());
+            assertEquals(window.getRoot().getWidth(), logic.getGuiSettings().getWindowWidth());
+            assertEquals(12, window.getRoot().getX() - bounds.getMinX());
+            assertEquals(12, window.getRoot().getY() - bounds.getMinY());
+            assertEquals(12, bounds.getMaxX() - window.getRoot().getX() - window.getRoot().getWidth());
+            assertEquals(12, bounds.getMaxY() - window.getRoot().getY() - window.getRoot().getHeight());
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.custom(880, 600)));
+            submit(window, "resize s/880 600");
+            assertEquals(880, window.getRoot().getWidth());
+            assertEquals(600, window.getRoot().getHeight());
+        });
+    }
+
+    @Test
+    public void resizeTooLarge_displaysErrorAndRetainsInput() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            double originalWidth = window.getRoot().getWidth();
+            logic.setExecutor(command -> new CommandResult("Window resized.",
+                    WindowResize.custom(Integer.MAX_VALUE, Integer.MAX_VALUE)));
+            submit(window, "resize s/2147483647 2147483647");
+            assertEquals(originalWidth, window.getRoot().getWidth());
+            assertEquals("resize s/2147483647 2147483647", inputOf(window).getText());
+            assertTrue(outputOf(window).getText().contains("exceeds"));
+        });
+    }
+
+    @Test
+    public void resizeScreenTooSmall_rejectsEitherInsufficientDimension() throws Exception {
+        runOnFxThread(() -> {
+            MainWindow window = createWindow(new UiLogicStub());
+            WindowResize request = WindowResize.preset(Preset.MIN);
+
+            CommandException narrow = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(request, new Rectangle2D(0, 0, 900, 700)));
+            assertTrue(narrow.getMessage().contains("screen is too small"));
+
+            CommandException shortScreen = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(request, new Rectangle2D(0, 0, 1000, 620)));
+            assertTrue(shortScreen.getMessage().contains("screen is too small"));
+        });
+    }
+
+    @Test
+    public void resizeCustomHeightTooLarge_rejectsRequest() throws Exception {
+        runOnFxThread(() -> {
+            MainWindow window = createWindow(new UiLogicStub());
+            Rectangle2D bounds = new Rectangle2D(0, 0, 1200, 800);
+
+            CommandException error = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(WindowResize.custom(880, 800), bounds));
+            assertTrue(error.getMessage().contains("exceeds"));
+        });
     }
 
     @Test
@@ -127,7 +218,7 @@ public class MainWindowTest extends GuiTest {
             UiLogicStub logic = new UiLogicStub();
             List<String> openedUrls = new ArrayList<>();
             logic.setExecutor(command -> new CommandResult("Opening User Guide",
-                    false, false, false, true));
+                    false, false, false, true, null));
             MainWindow.UserGuideOpener userGuideOpener = () ->
                     openedUrls.add(HelpWindow.USERGUIDE_URL);
             MainWindow window = createWindow(logic, userGuideOpener);
@@ -145,7 +236,7 @@ public class MainWindowTest extends GuiTest {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
             logic.setExecutor(command -> new CommandResult("Opening User Guide",
-                    false, false, false, true));
+                    false, false, false, true, null));
             MainWindow window = createWindow(logic, () -> {
                 throw new IOException("Browser unavailable");
             });

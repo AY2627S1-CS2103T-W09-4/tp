@@ -18,6 +18,7 @@ import seedu.insureconnect.logic.commands.ExitCommand;
 import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.commands.HelpCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
+import seedu.insureconnect.logic.commands.ResizeCommand;
 import seedu.insureconnect.logic.commands.UserGuideCommand;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
@@ -60,6 +61,7 @@ public class InsureConnectParser {
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommandParser().parse(arguments);
+            case ResizeCommand.COMMAND_WORD -> new ResizeCommandParser().parse(arguments);
             case ExitCommand.COMMAND_WORD -> new ExitCommand();
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
             case UserGuideCommand.COMMAND_WORD -> new UserGuideCommand();

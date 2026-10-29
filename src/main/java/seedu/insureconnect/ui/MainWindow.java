@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.logging.Logger;
 
 import javafx.application.Platform;
@@ -14,6 +15,7 @@ import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -34,6 +36,7 @@ import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.commons.core.LogsCenter;
 import seedu.insureconnect.logic.Logic;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.WindowResize;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 import seedu.insureconnect.model.person.Person;
@@ -47,6 +50,8 @@ public class MainWindow extends UiPart<Stage> {
     private static final PseudoClass CUSTOMER_LIST_FOCUSED =
         PseudoClass.getPseudoClass("customer-list-focused");
     private static final double RESIZE_MARGIN = 12;
+    private static final double MIN_WIDTH = 880;
+    private static final double MIN_HEIGHT = 600;
     private static final KeyCombination TOGGLE_COLOUR_SCHEME =
             new KeyCodeCombination(KeyCode.F2);
     private static final String MESSAGE_USER_GUIDE_OPEN_FAILURE =
@@ -146,7 +151,7 @@ public class MainWindow extends UiPart<Stage> {
      */
     private void configureWindow() {
         GuiSettings settings = logic.getGuiSettings();
-        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings.getWindowCoordinates()).getVisualBounds());
+        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings).getVisualBounds());
         logic.setGuiSettings(safeSettings);
         setWindowDefaultSize(safeSettings);
         setAccelerators();
@@ -394,18 +399,30 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 
-    /**
-     * Returns the monitor containing the saved window origin, or the primary
-     * monitor if it is unavailable.
-     */
-    private static Screen screenFor(Point coordinates) {
-        if (coordinates != null) {
-            var screens = Screen.getScreensForRectangle(coordinates.getX(), coordinates.getY(), 1, 1);
-            if (!screens.isEmpty()) {
-                return screens.get(0);
-            }
+    /** Returns the monitor containing most of the window, or the primary monitor. */
+    private static Screen screenFor(GuiSettings settings) {
+        Point coordinates = settings.getWindowCoordinates();
+        if (coordinates == null) {
+            return Screen.getPrimary();
         }
-        return Screen.getPrimary();
+        return screenFor(new Rectangle2D(coordinates.getX(), coordinates.getY(),
+                settings.getWindowWidth(), settings.getWindowHeight()));
+    }
+
+    private static Screen screenFor(Rectangle2D windowBounds) {
+        return Screen.getScreensForRectangle(windowBounds.getMinX(), windowBounds.getMinY(),
+                        windowBounds.getWidth(), windowBounds.getHeight()).stream()
+                .max(Comparator.comparingDouble(screen -> overlapArea(windowBounds, screen.getBounds())))
+                .orElseGet(Screen::getPrimary);
+    }
+
+    /** Returns the area shared by two rectangles. */
+    static double overlapArea(Rectangle2D first, Rectangle2D second) {
+        double width = Math.max(0, Math.min(first.getMaxX(), second.getMaxX())
+                - Math.max(first.getMinX(), second.getMinX()));
+        double height = Math.max(0, Math.min(first.getMaxY(), second.getMaxY())
+                - Math.max(first.getMinY(), second.getMinY()));
+        return width * height;
     }
 
     /** Keeps the window and its resize edges within the monitor's usable area. */
@@ -421,6 +438,50 @@ public class MainWindow extends UiPart<Stage> {
             coordinates = new Point(x, y);
         }
         return settings.withWindowGeometry(width, height, coordinates);
+    }
+
+    /** Applies a requested size on the monitor containing the current window. */
+    private void resizeWindow(WindowResize request) throws CommandException {
+        Rectangle2D windowBounds = new Rectangle2D(primaryStage.getX(), primaryStage.getY(),
+                primaryStage.getWidth(), primaryStage.getHeight());
+        Rectangle2D bounds = screenFor(windowBounds).getVisualBounds();
+        resizeWindow(request, bounds);
+    }
+
+    /** Applies a requested size within the supplied monitor bounds. */
+    void resizeWindow(WindowResize request, Rectangle2D bounds) throws CommandException {
+        Point position = new Point((int) primaryStage.getX(), (int) primaryStage.getY());
+        double maxWidth = bounds.getWidth() - 2 * RESIZE_MARGIN;
+        double maxHeight = bounds.getHeight() - 2 * RESIZE_MARGIN;
+        if (maxWidth < MIN_WIDTH || maxHeight < MIN_HEIGHT) {
+            throw new CommandException("The current screen is too small for the minimum window size (880 by 600).");
+        }
+
+        Dimension2D size = switch (request.preset()) {
+            case MIN -> new Dimension2D(MIN_WIDTH, MIN_HEIGHT);
+            case MED -> new Dimension2D(
+                    Math.max(MIN_WIDTH, Math.floor(bounds.getWidth() * 2 / 3)),
+                    Math.max(MIN_HEIGHT, Math.floor(bounds.getHeight() * 2 / 3)));
+            case MAX -> new Dimension2D(maxWidth, maxHeight);
+            case CUSTOM -> new Dimension2D(request.width(), request.height());
+        };
+        double width = size.getWidth();
+        double height = size.getHeight();
+        if (width > maxWidth || height > maxHeight) {
+            throw new CommandException("Window size exceeds the current screen's usable area.");
+        }
+
+        if (request.preset() == WindowResize.Preset.MAX) {
+            position = new Point((int) (bounds.getMinX() + RESIZE_MARGIN),
+                    (int) (bounds.getMinY() + RESIZE_MARGIN));
+        }
+        GuiSettings settings = fitToScreen(logic.getGuiSettings().withWindowGeometry(width, height, position), bounds);
+        primaryStage.setMaximized(false);
+        primaryStage.setWidth(settings.getWindowWidth());
+        primaryStage.setHeight(settings.getWindowHeight());
+        primaryStage.setX(settings.getWindowCoordinates().getX());
+        primaryStage.setY(settings.getWindowCoordinates().getY());
+        logic.setGuiSettings(settings);
     }
 
     /**
@@ -453,7 +514,7 @@ public class MainWindow extends UiPart<Stage> {
                 new Point((int) primaryStage.getX(), (int) primaryStage.getY()));
 
         logic.setGuiSettings(fitToScreen(guiSettings,
-                screenFor(guiSettings.getWindowCoordinates()).getVisualBounds()));
+                screenFor(guiSettings).getVisualBounds()));
 
         helpWindow.hide();
         primaryStage.hide();
@@ -494,6 +555,10 @@ public class MainWindow extends UiPart<Stage> {
             throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
+
+            if (commandResult.getWindowResize() != null) {
+                resizeWindow(commandResult.getWindowResize());
+            }
 
             logger.info(
                     "Result: " + commandResult.getFeedbackToUser());

@@ -148,7 +148,7 @@ These rules apply when adding a customer or changing a field with `edit`:
 
 ### Viewing help: `help`
 
-Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, `userguide`, and `exit`.
+Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `resize`, `clear`, `help`, `userguide`, and `exit`.
 The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
 
 You can open the same window from the **Help** menu or by pressing **F1**.
@@ -318,6 +318,21 @@ Enter `n`, press Enter without a response, or enter anything else to cancel. The
 
 Format: `clear`
 
+### Resizing the window: `resize`
+
+Resizes the main window using either a preset or an explicit width and height. The two forms cannot be combined.
+
+Format: `resize p/min|p/med|p/max` or `resize s/WIDTH HEIGHT`
+
+* `p/min` sets the app minimum of 880 by 600 pixels.
+* `p/med` sets each dimension to two thirds of the current screen's usable area, raised to the app minimum if needed.
+* `p/max` fills the current screen's usable area while leaving a 12-pixel margin on every edge.
+* `s/` accepts whole-number width and height in pixels, in that order. Neither dimension may be below the app minimum or exceed the current screen's usable area after the edge margins.
+
+The window stays within the usable area of the screen it currently occupies. If that screen cannot fit the app minimum with the edge margins, resizing is rejected. The new size is saved with your preferences when you exit.
+
+Examples: `resize p/med`, `resize s/1000 700`
+
 ### Exiting the program: `exit`
 
 Exits the program.
@@ -362,8 +377,7 @@ numbers: policy numbers must still be valid and unique across contacts.
 
 ## Known issues
 
-1. **When using multiple screens**, if you move the application to a secondary screen, and later switch to using only the primary screen, the GUI will open off-screen. The remedy is to delete the `preferences.json` file created by the application before running the application again.
-2. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
+1. **If you minimize the Help Window** and then run the `help` command (or use the `Help` menu, or the keyboard shortcut `F1`) again, the original Help Window will remain minimized, and no new Help Window will appear. The remedy is to manually restore the minimized Help Window.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -378,5 +392,6 @@ Action | Format, Examples
 **Exit** | `exit`
 **Find** | `find KEYWORD [MORE_KEYWORDS]` or `find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]`<br> e.g., `find James Jake`, `find n/Alice p/912 t/LIFE20001`
 **List** | `list [n/|c/]`<br> e.g., `list n/`, `list c/`
+**Resize** | `resize p/min\|p/med\|p/max` or `resize s/WIDTH HEIGHT`<br> e.g., `resize p/med`, `resize s/1000 700`
 **Help** | `help`
 **User Guide** | `userguide`

@@ -35,8 +35,16 @@ public class CommandResultTest {
         assertFalse(commandResult.equals(new CommandResult("feedback", false, true)));
         assertFalse(commandResult.equals(new CommandResult("feedback", false, false, true)));
 
+        // different windowResize value -> returns false
+        assertFalse(commandResult.equals(new CommandResult("feedback", WindowResize.custom(900, 700))));
+
+        // matching non-null windowResize values -> returns true
+        CommandResult resized = new CommandResult("feedback", WindowResize.custom(900, 700));
+        assertEquals(resized, new CommandResult("feedback", WindowResize.custom(900, 700)));
+        assertNotEquals(resized, new CommandResult("feedback", WindowResize.custom(1000, 700)));
+
         // different shouldOpenUserGuide value -> returns false
-        assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true)));
+        assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true, null)));
     }
 
     @Test
@@ -56,9 +64,14 @@ public class CommandResultTest {
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, true).hashCode());
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, false, true).hashCode());
 
+        CommandResult resized = new CommandResult("feedback", WindowResize.custom(900, 700));
+        assertEquals(resized.hashCode(), new CommandResult("feedback", WindowResize.custom(900, 700)).hashCode());
+        assertNotEquals(commandResult.hashCode(), resized.hashCode());
+        assertNotEquals(resized.hashCode(), new CommandResult("feedback", WindowResize.custom(1000, 700)).hashCode());
+
         // different shouldOpenUserGuide value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(),
-                new CommandResult("feedback", false, false, false, true).hashCode());
+                new CommandResult("feedback", false, false, false, true, null).hashCode());
     }
 
     @Test
@@ -67,9 +80,15 @@ public class CommandResultTest {
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser() + ", showHelp=" + commandResult.isShowHelp()
                 + ", exit=" + commandResult.isExit() + ", confirmationRequired="
-                + commandResult.isConfirmationRequired() + ", shouldOpenUserGuide="
-                + commandResult.shouldOpenUserGuide() + "}";
+                + commandResult.isConfirmationRequired() + ", windowResize=" + commandResult.getWindowResize()
+                + ", shouldOpenUserGuide=" + commandResult.shouldOpenUserGuide() + "}";
         assertEquals(expected, commandResult.toString());
+
+        CommandResult resized = new CommandResult("feedback", WindowResize.custom(900, 700));
+        String resizedExpected = CommandResult.class.getCanonicalName() + "{feedbackToUser=feedback, showHelp=false, "
+                + "exit=false, confirmationRequired=false, windowResize=" + resized.getWindowResize()
+                + ", shouldOpenUserGuide=false}";
+        assertEquals(resizedExpected, resized.toString());
     }
 
     @Test
@@ -83,7 +102,7 @@ public class CommandResultTest {
         assertFalse(new CommandResult("result").shouldOpenUserGuide());
 
         // true shouldOpenUserGuide value -> returns true
-        assertTrue(new CommandResult("open", false, false, false, true).shouldOpenUserGuide());
+        assertTrue(new CommandResult("open", false, false, false, true, null).shouldOpenUserGuide());
     }
 
 }

@@ -21,6 +21,7 @@ public class CommandResult {
 
     /** The next command input should be treated as a confirmation response. */
     private final boolean confirmationRequired;
+    private final WindowResize windowResize;
 
     /** The online User Guide should be opened in the default browser. */
     private final boolean shouldOpenUserGuide;
@@ -29,26 +30,35 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with the specified fields.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
-        this(feedbackToUser, showHelp, exit, false, false);
+        this(feedbackToUser, showHelp, exit, false, false, null);
     }
 
     /**
      * Constructs a {@code CommandResult} with the specified fields and confirmation state.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired) {
-        this(feedbackToUser, showHelp, exit, confirmationRequired, false);
+        this(feedbackToUser, showHelp, exit, confirmationRequired, false, null);
     }
 
-    /**
-     * Constructs a {@code CommandResult} with confirmation and User Guide states.
-     */
+    /** Constructs a {@code CommandResult} with confirmation and User Guide states. */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
                          boolean shouldOpenUserGuide) {
+        this(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide, null);
+    }
+
+    /** Constructs a {@code CommandResult} with confirmation, User Guide, and resize states. */
+    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
+                         boolean shouldOpenUserGuide, WindowResize windowResize) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.confirmationRequired = confirmationRequired;
         this.shouldOpenUserGuide = shouldOpenUserGuide;
+        this.windowResize = windowResize;
+    }
+
+    public CommandResult(String feedbackToUser, WindowResize windowResize) {
+        this(feedbackToUser, false, false, false, false, requireNonNull(windowResize));
     }
 
     /**
@@ -75,6 +85,10 @@ public class CommandResult {
         return confirmationRequired;
     }
 
+    public WindowResize getWindowResize() {
+        return windowResize;
+    }
+
     public boolean shouldOpenUserGuide() {
         return shouldOpenUserGuide;
     }
@@ -94,12 +108,13 @@ public class CommandResult {
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
                 && confirmationRequired == otherCommandResult.confirmationRequired
+                && Objects.equals(windowResize, otherCommandResult.windowResize)
                 && shouldOpenUserGuide == otherCommandResult.shouldOpenUserGuide;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide);
+        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide, windowResize);
     }
 
     @Override
@@ -109,6 +124,7 @@ public class CommandResult {
                 .add("showHelp", showHelp)
                 .add("exit", exit)
                 .add("confirmationRequired", confirmationRequired)
+                .add("windowResize", windowResize)
                 .add("shouldOpenUserGuide", shouldOpenUserGuide)
                 .toString();
     }
