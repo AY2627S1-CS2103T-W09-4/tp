@@ -137,6 +137,12 @@ public class CommandBoxTest extends GuiTest {
         assertEquals("serguide", CommandBox.findSuggestion("u"));
     }
 
+    @Test
+    public void findSuggestion_confirmPrefix_returnsNoSuggestion() {
+        // EP: prefix for an unsupported command "confirm"
+        assertEquals("", CommandBox.findSuggestion("con"));
+    }
+
     /**
      * Verifies retry styling is not duplicated and that editing clears only the error state.
      */

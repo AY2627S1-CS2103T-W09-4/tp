@@ -26,8 +26,6 @@ public class CommandBoxSuggestionTest extends GuiTest {
         // EP: prefix of several command words, first in alphabetical order wins
         assertEquals("lear", CommandBox.findSuggestion("c"));
         assertEquals("dit", CommandBox.findSuggestion("e"));
-        // EP: longer prefix that narrows to a later match
-        assertEquals("nfirm", CommandBox.findSuggestion("co"));
     }
 
     @Test
