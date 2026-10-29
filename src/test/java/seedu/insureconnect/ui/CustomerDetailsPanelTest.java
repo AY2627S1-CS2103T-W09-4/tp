@@ -76,15 +76,19 @@ public class CustomerDetailsPanelTest extends GuiTest {
     @Test
     public void displayCustomer_detailsAreReadOnlyAndSelectable() throws Exception {
         runOnFxThread(() -> {
+            Person customer = new PersonBuilder(ALICE)
+                    .withRemark("Call after 6")
+                    .build();
             CustomerDetailsPanel panel = new CustomerDetailsPanel();
             show(panel.getRoot());
-            panel.displayCustomer(ALICE);
+            panel.displayCustomer(customer);
 
             List.of(
                     "detailName",
                     "detailPhone",
                     "detailEmail",
-                    "detailAddress"
+                    "detailAddress",
+                    "detailRemark"
             ).forEach(id -> {
                 TextInputControl detail = textControlOf(panel, id);
 
