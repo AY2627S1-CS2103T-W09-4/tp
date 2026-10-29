@@ -474,6 +474,29 @@
     -fx-text-fill: -ic-text;
 }
 
+.selectable-detail {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.selectable-detail .scroll-pane,
+.selectable-detail .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-color: transparent;
+}
+
+.selectable-detail .content {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+
 .detail-section {
     -fx-background-color: -ic-surface;
     -fx-background-radius: 9;

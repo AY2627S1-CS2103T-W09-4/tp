@@ -18,10 +18,10 @@ import org.junit.jupiter.api.Test;
 
 import javafx.event.Event;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Screen;
@@ -187,7 +187,8 @@ public class MainWindowTest extends GuiTest {
             ListView<?> customers = customerListOf(window);
             assertEquals(List.of(ALICE), customers.getItems());
             assertSame(ALICE, customers.getSelectionModel().getSelectedItem());
-            Label displayedName = (Label) window.getRoot().getScene().lookup("#detailName");
+            TextInputControl displayedName =
+                    (TextInputControl) window.getRoot().getScene().lookup("#detailName");
             assertEquals(ALICE.getName().fullName, displayedName.getText());
         });
     }
