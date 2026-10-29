@@ -23,6 +23,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
         // EP: prefix of exactly one command word
         assertEquals("dd", CommandBox.findSuggestion("a"));
         assertEquals("it", CommandBox.findSuggestion("ex"));
+        assertEquals("esize", CommandBox.findSuggestion("r"));
         // EP: prefix of several command words, first in alphabetical order wins
         assertEquals("lear", CommandBox.findSuggestion("c"));
         assertEquals("dit", CommandBox.findSuggestion("e"));
@@ -57,6 +58,25 @@ public class CommandBoxSuggestionTest extends GuiTest {
             press(input, KeyCode.RIGHT);
             assertEquals("find", input.getText());
             assertEquals(4, input.getCaretPosition());
+            assertEquals("", getSuggestion(box));
+            assertTrue(commands.isEmpty());
+        });
+    }
+
+    @Test
+    public void right_resizeSuggestion_fillsCommandWordWithoutExecuting() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = createBox(command -> {
+                commands.add(command);
+                return new CommandResult("Done");
+            });
+            TextArea input = getInput(box);
+            type(input, "r");
+            assertEquals("esize", getSuggestion(box));
+            press(input, KeyCode.RIGHT);
+            assertEquals("resize", input.getText());
+            assertEquals(6, input.getCaretPosition());
             assertEquals("", getSuggestion(box));
             assertTrue(commands.isEmpty());
         });

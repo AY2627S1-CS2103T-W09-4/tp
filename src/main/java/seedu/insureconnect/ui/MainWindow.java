@@ -37,14 +37,11 @@ import seedu.insureconnect.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
-<<<<<<< HEAD
     private static final double RESIZE_MARGIN = 12;
     private static final double MIN_WIDTH = 880;
     private static final double MIN_HEIGHT = 600;
-=======
     private static final KeyCombination TOGGLE_COLOUR_SCHEME =
         new KeyCodeCombination(KeyCode.F2);
->>>>>>> c367afa420b3565596aa0b423e553eda46d681b5
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
