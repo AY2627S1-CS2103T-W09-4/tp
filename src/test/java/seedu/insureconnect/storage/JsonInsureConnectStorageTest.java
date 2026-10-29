@@ -33,6 +33,11 @@ public class JsonInsureConnectStorageTest {
     public Path testFolder;
 
     @Test
+    public void constructor_nullFilePath_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new JsonInsureConnectStorage(null));
+    }
+
+    @Test
     public void readInsureConnect_nullFilePath_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> readInsureConnect(null));
     }

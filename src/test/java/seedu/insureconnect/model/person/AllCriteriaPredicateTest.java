@@ -3,6 +3,7 @@ package seedu.insureconnect.model.person;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.insureconnect.testutil.Assert.assertThrows;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,17 @@ public class AllCriteriaPredicateTest {
         assertFalse(predicate.test(new PersonBuilder().withName("Carol").withPhone("91234567").build()));
         assertEquals(name, predicate.getNamePredicate().orElseThrow());
         assertTrue(new AllCriteriaPredicate(List.of(phone)).getNamePredicate().isEmpty());
+    }
+
+    @Test
+    public void constructor_nullCriteria_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new AllCriteriaPredicate(null));
+    }
+
+    @Test
+    public void constructor_emptyCriteria_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, AllCriteriaPredicate.MESSAGE_NO_CRITERIA, () ->
+                new AllCriteriaPredicate(List.of()));
     }
 
     @Test

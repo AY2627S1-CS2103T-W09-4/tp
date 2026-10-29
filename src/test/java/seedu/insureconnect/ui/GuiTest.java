@@ -11,8 +11,11 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.parallel.ResourceLock;
 
 import javafx.application.Platform;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -93,6 +96,15 @@ public abstract class GuiTest {
         root.applyCss();
         root.layout();
         return stage;
+    }
+
+    /**
+     * Sends an unmodified key press through a node's event filters.
+     */
+    protected static void pressKey(Node target, KeyCode key) {
+        target.fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", key,
+                false, false, false, false));
     }
 
     /**

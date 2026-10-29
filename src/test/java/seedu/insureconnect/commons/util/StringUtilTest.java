@@ -141,8 +141,10 @@ public class StringUtilTest {
      */
     @Test
     public void hasWordStartingWithIgnoreCase_invalidPrefix_throwsIllegalArgumentException() {
+        // EP: no word left after trimming
         assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", ""));
         assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", " \t "));
+        // EP: more than one word
         assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", "Jo Ta"));
         assertThrows(IllegalArgumentException.class, () -> StringUtil.hasWordStartingWithIgnoreCase("John", "Jo\tTa"));
     }
@@ -152,11 +154,13 @@ public class StringUtilTest {
      */
     @Test
     public void hasWordStartingWithIgnoreCase_matchingPrefix_returnsTrue() {
+        // EP: partial prefix of any word, in a different case
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "jO"));
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "mA"));
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John Mary Tan", "tA"));
-        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "j"));
-        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "JOHN"));
+        // EP: shortest and longest matching prefix
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "j")); // boundary value
+        assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John", "JOHN")); // boundary value
     }
 
     /**
@@ -164,8 +168,10 @@ public class StringUtilTest {
      */
     @Test
     public void hasWordStartingWithIgnoreCase_extraWhitespace_returnsTrue() {
+        // EP: whitespace around the prefix
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("  John   Mary\tTan\nLee  ", " mA "));
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John\tTan", "\tTa\t"));
+        // EP: words separated by whitespace other than a space
         assertTrue(StringUtil.hasWordStartingWithIgnoreCase("John\nLee", "Le"));
     }
 
@@ -174,11 +180,15 @@ public class StringUtilTest {
      */
     @Test
     public void hasWordStartingWithIgnoreCase_nonMatchingPrefix_returnsFalse() {
-        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("", "Jo"));
+        // EP: sentence without words
+        assertFalse(StringUtil.hasWordStartingWithIgnoreCase("", "Jo")); // boundary value
         assertFalse(StringUtil.hasWordStartingWithIgnoreCase(" \t ", "Jo"));
+        // EP: text from inside or at the end of a word
         assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "oh"));
         assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "ohn"));
+        // EP: prefix longer than every word
         assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "Johnny"));
+        // EP: prefix of no word
         assertFalse(StringUtil.hasWordStartingWithIgnoreCase("John Tan", "Mary"));
     }
 

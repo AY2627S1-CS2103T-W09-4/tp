@@ -14,6 +14,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -35,9 +37,14 @@ import seedu.insureconnect.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+<<<<<<< HEAD
     private static final double RESIZE_MARGIN = 12;
     private static final double MIN_WIDTH = 880;
     private static final double MIN_HEIGHT = 600;
+=======
+    private static final KeyCombination TOGGLE_COLOUR_SCHEME =
+        new KeyCodeCombination(KeyCode.F2);
+>>>>>>> c367afa420b3565596aa0b423e553eda46d681b5
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -175,6 +182,35 @@ public class MainWindow extends UiPart<Stage> {
      */
     private void setAccelerators() {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
+        setColourSchemeShortcut(primaryStage);
+        setColourSchemeShortcut(helpWindow.getRoot());
+    }
+
+    /**
+     * Registers the colour-scheme shortcut for the given window.
+     */
+    private void setColourSchemeShortcut(Stage stage) {
+        stage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+            if (TOGGLE_COLOUR_SCHEME.match(event)) {
+                toggleColourScheme();
+                event.consume();
+            }
+        });
+    }
+
+    /**
+     * Switches between the light and dark colour schemes.
+     */
+    private void toggleColourScheme() {
+        ColourScheme currentScheme =
+                logic.getGuiSettings().getColourScheme();
+
+        ColourScheme newScheme =
+                currentScheme == ColourScheme.DARK
+                        ? ColourScheme.LIGHT
+                        : ColourScheme.DARK;
+
+        applyColourScheme(newScheme);
     }
 
     /**
