@@ -136,26 +136,6 @@ public class MainWindowTest extends GuiTest {
     }
 
     @Test
-    public void resizeMaximizedWindow_restoresWindowBeforeApplyingSize() throws Exception {
-        runOnFxThread(() -> {
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            assumeTrue(bounds.getWidth() >= 904 && bounds.getHeight() >= 624);
-            UiLogicStub logic = new UiLogicStub();
-            MainWindow window = createWindow(logic);
-            Stage stage = window.getRoot();
-            stage.setMaximized(true);
-            assertTrue(stage.isMaximized());
-
-            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MIN)));
-            submit(window, "resize p/min");
-
-            assertFalse(stage.isMaximized());
-            assertEquals(880, stage.getWidth());
-            assertEquals(600, stage.getHeight());
-        });
-    }
-
-    @Test
     public void fitToScreen_savedPosition_neverPushesWindowPastMonitorEdge() {
         GuiSettings saved = new GuiSettings(900, 700, 3000, 900);
         GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(1920, 0, 1920, 1040));

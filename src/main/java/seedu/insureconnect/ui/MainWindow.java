@@ -432,9 +432,7 @@ public class MainWindow extends UiPart<Stage> {
         }
 
         GuiSettings settings = fitToScreen(logic.getGuiSettings().withWindowGeometry(width, height, position), bounds);
-        if (primaryStage.isMaximized()) {
-            primaryStage.setMaximized(false);
-        }
+        primaryStage.setMaximized(false);
         primaryStage.setWidth(settings.getWindowWidth());
         primaryStage.setHeight(settings.getWindowHeight());
         primaryStage.setX(settings.getWindowCoordinates().getX());
