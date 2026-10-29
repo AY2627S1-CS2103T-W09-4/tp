@@ -26,6 +26,7 @@
            minHeight="44"
            styleClass="card-number" />
 
+    <!-- Separate rows give long email addresses a bounded width so they can wrap. -->
     <VBox minWidth="0"
           spacing="6"
           HBox.hgrow="ALWAYS">
@@ -35,7 +36,9 @@
              wrapText="true"
              styleClass="card-name" />
 
-      <FlowPane hgap="12" vgap="5">
+      <VBox minWidth="0"
+            maxWidth="Infinity"
+            spacing="5">
         <HBox alignment="CENTER_LEFT" spacing="6">
           <Label text="☎" styleClass="field-icon" />
           <Label fx:id="phone"
@@ -43,13 +46,19 @@
                  styleClass="field-value" />
         </HBox>
 
-        <HBox alignment="CENTER_LEFT" spacing="6">
-          <Label text="✉" styleClass="field-icon" />
+        <HBox alignment="CENTER_LEFT"
+              spacing="6"
+              minWidth="0"
+              maxWidth="Infinity">
+          <Label text="✉" styleClass="field-icon"/>
           <Label fx:id="email"
+                 minWidth="0"
+                 maxWidth="Infinity"
                  wrapText="true"
+                 HBox.hgrow="ALWAYS"
                  styleClass="field-value" />
         </HBox>
-      </FlowPane>
+      </VBox>
 
       <FlowPane fx:id="tags"
                 hgap="6"
