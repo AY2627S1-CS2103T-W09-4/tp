@@ -40,9 +40,13 @@ public class CommandResult {
         this(feedbackToUser, showHelp, exit, confirmationRequired, false, null);
     }
 
-    /**
-     * Constructs a {@code CommandResult} with confirmation and User Guide states.
-     */
+    /** Constructs a {@code CommandResult} with confirmation and User Guide states. */
+    public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
+                         boolean shouldOpenUserGuide) {
+        this(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide, null);
+    }
+
+    /** Constructs a {@code CommandResult} with confirmation, User Guide, and resize states. */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
                          boolean shouldOpenUserGuide, WindowResize windowResize) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
@@ -84,7 +88,7 @@ public class CommandResult {
     public WindowResize getWindowResize() {
         return windowResize;
     }
-    
+
     public boolean shouldOpenUserGuide() {
         return shouldOpenUserGuide;
     }

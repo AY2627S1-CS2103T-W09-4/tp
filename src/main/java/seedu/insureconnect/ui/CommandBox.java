@@ -47,7 +47,7 @@ public class CommandBox extends UiPart<Region> {
     private static final List<String> COMMAND_WORDS = Stream.of(AddCommand.COMMAND_WORD,
             ClearCommand.COMMAND_WORD, DeleteCommand.COMMAND_WORD,
             EditCommand.COMMAND_WORD, ExitCommand.COMMAND_WORD, FindCommand.COMMAND_WORD,
-            HelpCommand.COMMAND_WORD, ListCommand.COMMAND_WORD, ResizeCommand.COMMAND_WORD, 
+            HelpCommand.COMMAND_WORD, ListCommand.COMMAND_WORD, ResizeCommand.COMMAND_WORD,
             UserGuideCommand.COMMAND_WORD).sorted().toList();
 
     private final CommandExecutor commandExecutor;

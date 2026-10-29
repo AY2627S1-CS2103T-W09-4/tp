@@ -86,7 +86,8 @@ public class CommandResultTest {
 
         CommandResult resized = new CommandResult("feedback", WindowResize.custom(900, 700));
         String resizedExpected = CommandResult.class.getCanonicalName() + "{feedbackToUser=feedback, showHelp=false, "
-                + "exit=false, confirmationRequired=false, windowResize=" + resized.getWindowResize() + "}";
+                + "exit=false, confirmationRequired=false, windowResize=" + resized.getWindowResize()
+                + ", shouldOpenUserGuide=false}";
         assertEquals(resizedExpected, resized.toString());
     }
 

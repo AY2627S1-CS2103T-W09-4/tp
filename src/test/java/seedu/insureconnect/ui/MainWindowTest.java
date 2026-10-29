@@ -45,7 +45,15 @@ public class MainWindowTest extends GuiTest {
         GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 0, 1920, 1040));
         assertEquals(1896, fitted.getWindowWidth());
         assertEquals(1016, fitted.getWindowHeight());
-        assertEquals(new Point(12, 12), fitted.getWindowCoordinates());
+        assertEquals(new Point(0, 0), fitted.getWindowCoordinates());
+    }
+
+    @Test
+    public void fitToScreen_windowAlreadyFits_keepsGeometry() {
+        GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 34, 1710, 1018));
+
+        assertEquals(saved, fitted);
     }
 
     @Test
@@ -70,8 +78,8 @@ public class MainWindowTest extends GuiTest {
             assertEquals(bounds.getWidth() - 24, window.getRoot().getWidth());
             assertEquals(bounds.getHeight() - 24, window.getRoot().getHeight());
             assertEquals(window.getRoot().getWidth(), logic.getGuiSettings().getWindowWidth());
-            assertTrue(window.getRoot().getX() >= bounds.getMinX() + 12);
-            assertTrue(window.getRoot().getY() >= bounds.getMinY() + 12);
+            assertTrue(window.getRoot().getX() >= bounds.getMinX());
+            assertTrue(window.getRoot().getY() >= bounds.getMinY());
 
             logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.custom(880, 600)));
             submit(window, "resize s/880 600");
@@ -96,16 +104,19 @@ public class MainWindowTest extends GuiTest {
     }
 
     @Test
-    public void initialize_savedGeometryAndFeedback_restoresWindowAndCustomerWorkspace() throws Exception {
+    public void initialize_savedGeometryAndFeedback_fitsWindowAndRestoresCustomerWorkspace() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
-            logic.setGuiSettings(new GuiSettings(900, 700, 30, 40));
+            GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+            logic.setGuiSettings(saved);
             logic.getFilteredPersonList().add(ALICE);
             MainWindow window = new MainWindow(new Stage(), logic, Path.of("data", "test.json"), "Load warning");
-            assertEquals(900, window.getRoot().getWidth());
-            assertEquals(700, window.getRoot().getHeight());
-            assertEquals(30, window.getRoot().getX());
-            assertEquals(40, window.getRoot().getY());
+            GuiSettings fitted = MainWindow.fitToScreen(saved, Screen.getPrimary().getVisualBounds());
+            assertEquals(fitted, logic.getGuiSettings());
+            assertEquals(fitted.getWindowWidth(), window.getRoot().getWidth());
+            assertEquals(fitted.getWindowHeight(), window.getRoot().getHeight());
+            assertEquals(fitted.getWindowCoordinates().getX(), window.getRoot().getX());
+            assertEquals(fitted.getWindowCoordinates().getY(), window.getRoot().getY());
             window.show();
             window.fillInnerParts();
             window.getRoot().getScene().getRoot().applyCss();

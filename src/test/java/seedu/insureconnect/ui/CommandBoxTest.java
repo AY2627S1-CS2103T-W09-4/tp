@@ -139,7 +139,7 @@ public class CommandBoxTest extends GuiTest {
 
     @Test
     public void findSuggestion_confirmPrefix_returnsNoSuggestion() {
-        // EP: prefix for an unsupported command "confirm"
+        // EP: prefix for a confirmation-only command that is excluded from suggestions
         assertEquals("", CommandBox.findSuggestion("con"));
     }
 
