@@ -33,7 +33,7 @@ import seedu.insureconnect.ui.UiManager;
  */
 public class MainApp extends Application {
 
-    public static final String VERSION = "V0.5.1";
+    public static final String VERSION = "V1.5";
 
     public static final String MESSAGE_DATA_FILE_ERROR =
             "Warning: Data file at %s could not be loaded. Will be starting with an empty contact list.";
