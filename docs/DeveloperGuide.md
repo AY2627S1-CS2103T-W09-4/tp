@@ -416,7 +416,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Prefix matching**: The way `find` compares keywords with names: a keyword matches a name if any word in the name starts with the keyword, ignoring case (e.g. `wei` matches `Tan Wei Ming`, but `ei` does not)
 * **Index**: The position number of a customer in the currently displayed list, used to identify the customer in commands such as `delete`. Indices start from 1 and change when the list is filtered by `find` or a customer is deleted
 * **Prefix**: The short marker that comes before a value in a command, such as `n/` for name or `p/` for phone
-* **Escape character**: A character (`!`) used within the `n/` name field to prevent patterns (like ` a/` in Malaysian/Singaporean patronymics `a/l` and `a/p`, or ` t/`) from being misinterpreted as command prefixes
+* **Escape character**: A character (`!`) used within the `n/` name, `a/` address, and `r/` remark fields to prevent patterns (such as ` a/` or ` t/`) from being misinterpreted as command prefixes
 * **Data file**: The JSON file in which InsureConnect stores all customer records on the user's computer
 * **MSS**: Main Success Scenario, the most common sequence of steps in a use case when nothing goes wrong
 

@@ -206,6 +206,13 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_addressWithEscapedPrefixAndExclamation_success() {
+        String userInput = INDEX_FIRST_PERSON.getOneBased() + " " + PREFIX_ADDRESS + "Blk 123 !t/4!!";
+        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withAddress("Blk 123 t/4!").build();
+        assertParseSuccess(parser, userInput, new EditCommand(INDEX_FIRST_PERSON, descriptor));
+    }
+
+    @Test
     public void parse_addressLengthBoundary() {
         String maxAddress = "a".repeat(Address.MAX_LENGTH);
         EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withAddress(maxAddress).build();
