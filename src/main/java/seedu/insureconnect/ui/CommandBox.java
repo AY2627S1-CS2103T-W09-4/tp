@@ -20,7 +20,6 @@ import javafx.scene.text.Text;
 import seedu.insureconnect.logic.commands.AddCommand;
 import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
-import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
 import seedu.insureconnect.logic.commands.DeleteCommand;
 import seedu.insureconnect.logic.commands.EditCommand;
 import seedu.insureconnect.logic.commands.ExitCommand;
@@ -28,6 +27,7 @@ import seedu.insureconnect.logic.commands.FindCommand;
 import seedu.insureconnect.logic.commands.HelpCommand;
 import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.ResizeCommand;
+import seedu.insureconnect.logic.commands.UserGuideCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
@@ -45,9 +45,10 @@ public class CommandBox extends UiPart<Region> {
 
     // Sorted so that the alphabetically first match is suggested when several command words fit.
     private static final List<String> COMMAND_WORDS = Stream.of(AddCommand.COMMAND_WORD,
-            ClearCommand.COMMAND_WORD, ConfirmDeleteCommand.COMMAND_WORD, DeleteCommand.COMMAND_WORD,
+            ClearCommand.COMMAND_WORD, DeleteCommand.COMMAND_WORD,
             EditCommand.COMMAND_WORD, ExitCommand.COMMAND_WORD, FindCommand.COMMAND_WORD,
-            HelpCommand.COMMAND_WORD, ListCommand.COMMAND_WORD, ResizeCommand.COMMAND_WORD).sorted().toList();
+            HelpCommand.COMMAND_WORD, ListCommand.COMMAND_WORD, ResizeCommand.COMMAND_WORD, 
+            UserGuideCommand.COMMAND_WORD).sorted().toList();
 
     private final CommandExecutor commandExecutor;
     private boolean awaitingConfirmation;

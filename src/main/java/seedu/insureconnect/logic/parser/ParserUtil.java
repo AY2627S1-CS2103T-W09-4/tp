@@ -90,20 +90,21 @@ public class ParserUtil {
 
     /**
      * Parses a {@code String address} into an {@code Address}.
-     * Leading and trailing whitespaces will be trimmed.
+     * Leading and trailing whitespaces will be trimmed, and escape markers will be removed.
      *
      * @throws ParseException if the given {@code address} is invalid.
      */
     public static Address parseAddress(String address) throws ParseException {
         requireNonNull(address);
         String trimmedAddress = address.trim();
-        if (trimmedAddress.length() > Address.MAX_LENGTH) {
+        String unescapedAddress = unescape(trimmedAddress);
+        if (unescapedAddress.length() > Address.MAX_LENGTH) {
             throw new ParseException(Address.MESSAGE_LENGTH_CONSTRAINTS);
         }
-        if (!Address.isValidAddress(trimmedAddress)) {
+        if (!Address.isValidAddress(unescapedAddress)) {
             throw new ParseException(Address.MESSAGE_CONSTRAINTS);
         }
-        return new Address(trimmedAddress);
+        return new Address(unescapedAddress);
     }
 
     /**
