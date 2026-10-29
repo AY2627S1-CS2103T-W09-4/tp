@@ -143,7 +143,7 @@ These rules apply when adding a customer or changing a field with `edit`:
 
 ### Viewing help: `help`
 
-Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, and `exit`.
+Opens the Help window. It lists the formats for `add`, `edit`, `delete`, `find`, `list`, `clear`, `help`, `userguide`, and `exit`.
 The window also shows a link to this User Guide; click **Copy URL** to copy the link to your clipboard.
 
 You can open the same window from the **Help** menu or by pressing **F1**.

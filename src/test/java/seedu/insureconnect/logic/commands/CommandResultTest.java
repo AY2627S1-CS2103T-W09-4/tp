@@ -35,7 +35,7 @@ public class CommandResultTest {
         assertFalse(commandResult.equals(new CommandResult("feedback", false, true)));
         assertFalse(commandResult.equals(new CommandResult("feedback", false, false, true)));
 
-        // different openUserGuide value -> returns false
+        // different shouldOpenUserGuide value -> returns false
         assertFalse(commandResult.equals(new CommandResult("feedback", false, false, false, true)));
     }
 
@@ -56,7 +56,7 @@ public class CommandResultTest {
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, true).hashCode());
         assertNotEquals(commandResult.hashCode(), new CommandResult("feedback", false, false, true).hashCode());
 
-        // different openUserGuide value -> returns different hashcode
+        // different shouldOpenUserGuide value -> returns different hashcode
         assertNotEquals(commandResult.hashCode(),
                 new CommandResult("feedback", false, false, false, true).hashCode());
     }
@@ -67,7 +67,8 @@ public class CommandResultTest {
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser() + ", showHelp=" + commandResult.isShowHelp()
                 + ", exit=" + commandResult.isExit() + ", confirmationRequired="
-                + commandResult.isConfirmationRequired() + ", openUserGuide=" + commandResult.isOpenUserGuide() + "}";
+                + commandResult.isConfirmationRequired() + ", shouldOpenUserGuide="
+                + commandResult.shouldOpenUserGuide() + "}";
         assertEquals(expected, commandResult.toString());
     }
 
@@ -77,12 +78,12 @@ public class CommandResultTest {
     }
 
     @Test
-    public void openUserGuide_isExposedByResult() {
-        // default openUserGuide value -> returns false
-        assertFalse(new CommandResult("result").isOpenUserGuide());
+    public void shouldOpenUserGuide_isExposedByResult() {
+        // default shouldOpenUserGuide value -> returns false
+        assertFalse(new CommandResult("result").shouldOpenUserGuide());
 
-        // true openUserGuide value -> returns true
-        assertTrue(new CommandResult("open", false, false, false, true).isOpenUserGuide());
+        // true shouldOpenUserGuide value -> returns true
+        assertTrue(new CommandResult("open", false, false, false, true).shouldOpenUserGuide());
     }
 
 }

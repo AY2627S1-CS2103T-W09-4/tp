@@ -448,7 +448,7 @@ public class MainWindow extends UiPart<Stage> {
                 handleHelp();
             }
 
-            if (commandResult.isOpenUserGuide()) {
+            if (commandResult.shouldOpenUserGuide()) {
                 openUserGuide();
             }
 

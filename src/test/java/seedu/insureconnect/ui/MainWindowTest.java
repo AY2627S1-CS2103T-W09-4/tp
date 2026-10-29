@@ -195,6 +195,7 @@ public class MainWindowTest extends GuiTest {
         return window;
     }
 
+    /**
      * Creates a populated window with a deterministic User Guide opener.
      */
     private MainWindow createWindow(UiLogicStub logic, MainWindow.UserGuideOpener userGuideOpener) {

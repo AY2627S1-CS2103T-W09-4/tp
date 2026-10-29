@@ -23,7 +23,7 @@ public class CommandResult {
     private final boolean confirmationRequired;
 
     /** The online User Guide should be opened in the default browser. */
-    private final boolean openUserGuide;
+    private final boolean shouldOpenUserGuide;
 
     /**
      * Constructs a {@code CommandResult} with the specified fields.
@@ -43,12 +43,12 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with confirmation and User Guide states.
      */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit, boolean confirmationRequired,
-                         boolean openUserGuide) {
+                         boolean shouldOpenUserGuide) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.confirmationRequired = confirmationRequired;
-        this.openUserGuide = openUserGuide;
+        this.shouldOpenUserGuide = shouldOpenUserGuide;
     }
 
     /**
@@ -75,8 +75,8 @@ public class CommandResult {
         return confirmationRequired;
     }
 
-    public boolean isOpenUserGuide() {
-        return openUserGuide;
+    public boolean shouldOpenUserGuide() {
+        return shouldOpenUserGuide;
     }
 
     @Override
@@ -94,12 +94,12 @@ public class CommandResult {
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
                 && confirmationRequired == otherCommandResult.confirmationRequired
-                && openUserGuide == otherCommandResult.openUserGuide;
+                && shouldOpenUserGuide == otherCommandResult.shouldOpenUserGuide;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, openUserGuide);
+        return Objects.hash(feedbackToUser, showHelp, exit, confirmationRequired, shouldOpenUserGuide);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class CommandResult {
                 .add("showHelp", showHelp)
                 .add("exit", exit)
                 .add("confirmationRequired", confirmationRequired)
-                .add("openUserGuide", openUserGuide)
+                .add("shouldOpenUserGuide", shouldOpenUserGuide)
                 .toString();
     }
 
