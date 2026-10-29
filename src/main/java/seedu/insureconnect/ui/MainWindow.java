@@ -373,9 +373,9 @@ public class MainWindow extends UiPart<Stage> {
         double height = Math.min(settings.getWindowHeight(), Math.max(1, bounds.getHeight() - 2 * RESIZE_MARGIN));
         Point coordinates = settings.getWindowCoordinates();
         if (coordinates != null) {
-            int x = (int) Math.max(bounds.getMinX() + RESIZE_MARGIN,
+            int x = (int) Math.max(bounds.getMinX(),
                     Math.min(coordinates.getX(), bounds.getMaxX() - width - RESIZE_MARGIN));
-            int y = (int) Math.max(bounds.getMinY() + RESIZE_MARGIN,
+            int y = (int) Math.max(bounds.getMinY(),
                     Math.min(coordinates.getY(), bounds.getMaxY() - height - RESIZE_MARGIN));
             coordinates = new Point(x, y);
         }
