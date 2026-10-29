@@ -8,8 +8,6 @@ import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
@@ -40,48 +38,23 @@ public class FocusNavigationGuiTest extends GuiTest {
 
     @Test
     public void customerListFocus_updatesCustomerWorkspaceCardFocusState() throws Exception {
-        AtomicReference<Scene> sceneReference = new AtomicReference<>();
-        CountDownLatch listFocused = new CountDownLatch(1);
-        CountDownLatch listUnfocused = new CountDownLatch(1);
-
-        runOnFxThread(() ->
-                sceneReference.set(createScene(new UiLogicStub())));
-
         runOnFxThread(() -> {
-            Node customers = sceneReference.get().lookup("#personListView");
-            customers.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
-                if (isFocused) {
-                    listFocused.countDown();
-                } else {
-                    listUnfocused.countDown();
-                }
-            });
-            customers.requestFocus();
-        });
-
-        assertTrue(listFocused.await(5, TimeUnit.SECONDS),
-                "Customer list did not receive focus");
-
-        runOnFxThread(() -> {
-            Scene scene = sceneReference.get();
+            Scene scene = createScene(new UiLogicStub());
+            Node input = scene.lookup("#commandTextField");
+            Node customers = scene.lookup("#personListView");
             Node customerWorkspaceCard = scene.lookup("#customerWorkspaceCard");
             PseudoClass customerListFocused =
                     PseudoClass.getPseudoClass("customer-list-focused");
 
+            input.requestFocus();
+            assertFalse(customerWorkspaceCard.getPseudoClassStates()
+                    .contains(customerListFocused));
+
+            customers.requestFocus();
             assertTrue(customerWorkspaceCard.getPseudoClassStates()
                     .contains(customerListFocused));
-            scene.lookup("#commandTextField").requestFocus();
-        });
 
-        assertTrue(listUnfocused.await(5, TimeUnit.SECONDS),
-                "Customer list did not lose focus");
-
-        runOnFxThread(() -> {
-            Node customerWorkspaceCard =
-                    sceneReference.get().lookup("#customerWorkspaceCard");
-            PseudoClass customerListFocused =
-                    PseudoClass.getPseudoClass("customer-list-focused");
-
+            input.requestFocus();
             assertFalse(customerWorkspaceCard.getPseudoClassStates()
                     .contains(customerListFocused));
         });

@@ -15,6 +15,7 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -288,8 +289,10 @@ public class MainWindow extends UiPart<Stage> {
         personListPanelPlaceholder.getChildren()
                 .setAll(personListPanel.getRoot());
 
-        personListPanel.getFocusTarget().focusedProperty().addListener((observable, wasFocused, isFocused) ->
-                customerWorkspaceCard.pseudoClassStateChanged(CUSTOMER_LIST_FOCUSED, isFocused));
+        Node customerListFocusTarget = personListPanel.getFocusTarget();
+        getRoot().getScene().focusOwnerProperty().addListener((observable, oldFocusOwner, newFocusOwner) ->
+                customerWorkspaceCard.pseudoClassStateChanged(
+                        CUSTOMER_LIST_FOCUSED, newFocusOwner == customerListFocusTarget));
 
         customerDetailsPlaceholder.getChildren()
                 .setAll(customerDetailsPanel.getRoot());
