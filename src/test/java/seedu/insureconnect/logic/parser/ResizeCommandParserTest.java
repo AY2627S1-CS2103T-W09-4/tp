@@ -25,9 +25,17 @@ public class ResizeCommandParserTest {
     @Test
     public void invalidInputs_rejected() {
         for (String input : new String[] {"resize", "resize p/large", "resize p/min s/880 600",
-            "resize s/879 600", "resize s/880 599", "resize s/880", "resize s/880 600 700",
+            "resize s/880", "resize s/880 600 700",
             "resize s/-880 600", "resize s/999999999999999999 600"}) {
             assertThrows(ParseException.class, () -> parser.parseCommand(input), input);
+        }
+    }
+
+    @Test
+    public void customBelowMinimum_reportsSizeConstraint() {
+        for (String input : new String[] {"resize s/879 600", "resize s/880 599"}) {
+            ParseException error = assertThrows(ParseException.class, () -> parser.parseCommand(input));
+            assertEquals(ResizeCommandParser.MESSAGE_SIZE_TOO_SMALL, error.getMessage());
         }
     }
 

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.logging.Logger;
 
 import javafx.beans.binding.Bindings;
@@ -136,7 +137,7 @@ public class MainWindow extends UiPart<Stage> {
      */
     private void configureWindow() {
         GuiSettings settings = logic.getGuiSettings();
-        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings.getWindowCoordinates()).getVisualBounds());
+        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings).getVisualBounds());
         logic.setGuiSettings(safeSettings);
         setWindowDefaultSize(safeSettings);
         setAccelerators();
@@ -375,15 +376,30 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 
-    /** Returns the monitor containing the window origin, or the primary monitor. */
-    private static Screen screenFor(Point coordinates) {
-        if (coordinates != null) {
-            var screens = Screen.getScreensForRectangle(coordinates.getX(), coordinates.getY(), 1, 1);
-            if (!screens.isEmpty()) {
-                return screens.get(0);
-            }
+    /** Returns the monitor containing most of the window, or the primary monitor. */
+    private static Screen screenFor(GuiSettings settings) {
+        Point coordinates = settings.getWindowCoordinates();
+        if (coordinates == null) {
+            return Screen.getPrimary();
         }
-        return Screen.getPrimary();
+        return screenFor(new Rectangle2D(coordinates.getX(), coordinates.getY(),
+                settings.getWindowWidth(), settings.getWindowHeight()));
+    }
+
+    private static Screen screenFor(Rectangle2D windowBounds) {
+        return Screen.getScreensForRectangle(windowBounds.getMinX(), windowBounds.getMinY(),
+                        windowBounds.getWidth(), windowBounds.getHeight()).stream()
+                .max(Comparator.comparingDouble(screen -> overlapArea(windowBounds, screen.getBounds())))
+                .orElseGet(Screen::getPrimary);
+    }
+
+    /** Returns the area shared by two rectangles. */
+    static double overlapArea(Rectangle2D first, Rectangle2D second) {
+        double width = Math.max(0, Math.min(first.getMaxX(), second.getMaxX())
+                - Math.max(first.getMinX(), second.getMinX()));
+        double height = Math.max(0, Math.min(first.getMaxY(), second.getMaxY())
+                - Math.max(first.getMinY(), second.getMinY()));
+        return width * height;
     }
 
     /** Keeps the window and its resize edges within the monitor's usable area. */
@@ -403,8 +419,9 @@ public class MainWindow extends UiPart<Stage> {
 
     /** Applies a requested size on the monitor containing the current window. */
     private void resizeWindow(WindowResize request) throws CommandException {
-        Point position = new Point((int) primaryStage.getX(), (int) primaryStage.getY());
-        Rectangle2D bounds = screenFor(position).getVisualBounds();
+        Rectangle2D windowBounds = new Rectangle2D(primaryStage.getX(), primaryStage.getY(),
+                primaryStage.getWidth(), primaryStage.getHeight());
+        Rectangle2D bounds = screenFor(windowBounds).getVisualBounds();
         resizeWindow(request, bounds);
     }
 
@@ -431,6 +448,10 @@ public class MainWindow extends UiPart<Stage> {
             throw new CommandException("Window size exceeds the current screen's usable area.");
         }
 
+        if (request.preset() == WindowResize.Preset.MAX) {
+            position = new Point((int) (bounds.getMinX() + RESIZE_MARGIN),
+                    (int) (bounds.getMinY() + RESIZE_MARGIN));
+        }
         GuiSettings settings = fitToScreen(logic.getGuiSettings().withWindowGeometry(width, height, position), bounds);
         primaryStage.setMaximized(false);
         primaryStage.setWidth(settings.getWindowWidth());
@@ -470,7 +491,7 @@ public class MainWindow extends UiPart<Stage> {
                 new Point((int) primaryStage.getX(), (int) primaryStage.getY()));
 
         logic.setGuiSettings(fitToScreen(guiSettings,
-                screenFor(guiSettings.getWindowCoordinates()).getVisualBounds()));
+                screenFor(guiSettings).getVisualBounds()));
 
         helpWindow.hide();
         primaryStage.hide();

@@ -13,6 +13,7 @@ import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
 /** Parses an exclusive preset or custom window-size argument. */
 public class ResizeCommandParser implements Parser<ResizeCommand> {
+    public static final String MESSAGE_SIZE_TOO_SMALL = "Window size must be at least 880 by 600 pixels.";
     private static final Pattern PRESET = Pattern.compile("\\s+p/(min|med|max)\\s*");
     private static final Pattern CUSTOM = Pattern.compile("\\s+s/(\\d+)\\s+(\\d+)\\s*");
 
@@ -28,9 +29,10 @@ public class ResizeCommandParser implements Parser<ResizeCommand> {
             try {
                 int width = Integer.parseInt(custom.group(1));
                 int height = Integer.parseInt(custom.group(2));
-                if (width >= 880 && height >= 600) {
-                    return new ResizeCommand(WindowResize.custom(width, height));
+                if (width < 880 || height < 600) {
+                    throw new ParseException(MESSAGE_SIZE_TOO_SMALL);
                 }
+                return new ResizeCommand(WindowResize.custom(width, height));
             } catch (NumberFormatException ignored) {
                 // Oversized integer input is invalid command syntax.
             }

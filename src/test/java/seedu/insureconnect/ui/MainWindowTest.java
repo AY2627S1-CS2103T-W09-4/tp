@@ -61,6 +61,14 @@ public class MainWindowTest extends GuiTest {
     }
 
     @Test
+    public void overlapArea_partialWindow_usesIntersectingArea() {
+        Rectangle2D window = new Rectangle2D(1800, 100, 500, 600);
+        assertEquals(72000, MainWindow.overlapArea(window, new Rectangle2D(0, 0, 1920, 1080)));
+        assertEquals(228000, MainWindow.overlapArea(window, new Rectangle2D(1920, 0, 1920, 1080)));
+        assertEquals(0, MainWindow.overlapArea(window, new Rectangle2D(4000, 0, 1920, 1080)));
+    }
+
+    @Test
     public void resizePresetAndCustom_applyBoundsAndSaveGeometry() throws Exception {
         runOnFxThread(() -> {
             Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
@@ -77,13 +85,17 @@ public class MainWindowTest extends GuiTest {
             assertEquals(Math.max(880, Math.floor(bounds.getWidth() * 2 / 3)), window.getRoot().getWidth());
             assertEquals(Math.max(600, Math.floor(bounds.getHeight() * 2 / 3)), window.getRoot().getHeight());
 
+            window.getRoot().setX(bounds.getMinX());
+            window.getRoot().setY(bounds.getMinY());
             logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MAX)));
             submit(window, "resize p/max");
             assertEquals(bounds.getWidth() - 24, window.getRoot().getWidth());
             assertEquals(bounds.getHeight() - 24, window.getRoot().getHeight());
             assertEquals(window.getRoot().getWidth(), logic.getGuiSettings().getWindowWidth());
-            assertTrue(window.getRoot().getX() >= bounds.getMinX());
-            assertTrue(window.getRoot().getY() >= bounds.getMinY());
+            assertEquals(12, window.getRoot().getX() - bounds.getMinX());
+            assertEquals(12, window.getRoot().getY() - bounds.getMinY());
+            assertEquals(12, bounds.getMaxX() - window.getRoot().getX() - window.getRoot().getWidth());
+            assertEquals(12, bounds.getMaxY() - window.getRoot().getY() - window.getRoot().getHeight());
 
             logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.custom(880, 600)));
             submit(window, "resize s/880 600");
