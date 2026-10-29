@@ -39,7 +39,8 @@ public class MainApp extends Application {
             "Warning: Data file at %s could not be loaded. Will be starting with an empty contact list.";
     private static final Logger logger = LogsCenter.getLogger(MainApp.class);
     private static final Path USER_PREFS_FILE_PATH = Paths.get("preferences.json");
-    // Keep the legacy filename so existing installations continue to load their records.
+    // Keep the legacy filename so existing installations continue to load their
+    // records.
     private static final Path INSURE_CONNECT_FILE_PATH = Paths.get("data", "addressbook.json");
 
     protected Ui ui;
@@ -84,7 +85,8 @@ public class MainApp extends Application {
     }
 
     /**
-     * Returns a {@code ModelManager} with the data from {@code storage}'s InsureConnect and {@code userPrefs}. <br>
+     * Returns a {@code ModelManager} with the data from {@code storage}'s
+     * InsureConnect and {@code userPrefs}. <br>
      * Uses an empty InsureConnect when the data file is missing or cannot be read.
      */
     private Model initModelManager(Storage storage, ReadOnlyUserPrefs userPrefs) {
@@ -110,7 +112,8 @@ public class MainApp extends Application {
     }
 
     /**
-     * Returns a {@code UserPrefs} using the file at {@code storage}'s user prefs file path,
+     * Returns a {@code UserPrefs} using the file at {@code storage}'s user prefs
+     * file path,
      * or a new {@code UserPrefs} with default configuration if errors occur when
      * reading from the file.
      */
@@ -131,7 +134,8 @@ public class MainApp extends Application {
             initializedPrefs = new UserPrefs();
         }
 
-        //Update prefs file in case it was missing to begin with or there are new/unused fields
+        // Update prefs file in case it was missing to begin with or there are
+        // new/unused fields
         try {
             storage.saveUserPrefs(initializedPrefs);
         } catch (IOException e) {

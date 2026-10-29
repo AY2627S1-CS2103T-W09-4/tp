@@ -88,8 +88,10 @@ public class MainWindow extends UiPart<Stage> {
     /**
      * Creates a {@code MainWindow}.
      *
-     * <p>The data file path parameter is temporarily retained so existing callers
-     * continue to compile. It is no longer displayed in the interface.</p>
+     * <p>
+     * The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.
+     * </p>
      */
     public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath) {
         this(primaryStage, logic, ignoredDataFilePath, null);
@@ -98,8 +100,10 @@ public class MainWindow extends UiPart<Stage> {
     /**
      * Creates a {@code MainWindow} with optional startup feedback.
      *
-     * <p>The data file path parameter is temporarily retained so existing callers
-     * continue to compile. It is no longer displayed in the interface.</p>
+     * <p>
+     * The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.
+     * </p>
      */
     public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath,
                       String initialFeedback) {
@@ -219,13 +223,11 @@ public class MainWindow extends UiPart<Stage> {
      * Switches between the light and dark colour schemes.
      */
     private void toggleColourScheme() {
-        ColourScheme currentScheme =
-                logic.getGuiSettings().getColourScheme();
+        ColourScheme currentScheme = logic.getGuiSettings().getColourScheme();
 
-        ColourScheme newScheme =
-                currentScheme == ColourScheme.DARK
-                        ? ColourScheme.LIGHT
-                        : ColourScheme.DARK;
+        ColourScheme newScheme = currentScheme == ColourScheme.DARK
+                ? ColourScheme.LIGHT
+                : ColourScheme.DARK;
 
         applyColourScheme(newScheme);
     }
@@ -234,7 +236,7 @@ public class MainWindow extends UiPart<Stage> {
      * Sets the accelerator for a menu item.
      */
     private void setAccelerator(MenuItem menuItem,
-                                KeyCombination keyCombination) {
+            KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
 
         /*
@@ -242,8 +244,7 @@ public class MainWindow extends UiPart<Stage> {
          * so F1 continues to open the Help window when a text control is focused.
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            boolean isTextControl =
-                    event.getTarget() instanceof TextInputControl;
+            boolean isTextControl = event.getTarget() instanceof TextInputControl;
 
             if (isTextControl && keyCombination.match(event)) {
                 menuItem.getOnAction().handle(new ActionEvent());
@@ -265,8 +266,7 @@ public class MainWindow extends UiPart<Stage> {
      * Creates the customer list and details panels and connects their selection.
      */
     private void fillCustomerWorkspace() {
-        ObservableList<Person> displayedCustomers =
-                logic.getFilteredPersonList();
+        ObservableList<Person> displayedCustomers = logic.getFilteredPersonList();
 
         personListPanel = new PersonListPanel(displayedCustomers);
         customerDetailsPanel = new CustomerDetailsPanel();
@@ -280,8 +280,7 @@ public class MainWindow extends UiPart<Stage> {
         bindCustomerCount(displayedCustomers);
 
         personListPanel.selectedPersonProperty().addListener((observable, oldCustomer,
-            selectedCustomer) ->
-                updateDisplayedCustomer(selectedCustomer));
+                selectedCustomer) -> updateDisplayedCustomer(selectedCustomer));
 
         updateDisplayedCustomer(personListPanel.getSelectedPerson());
     }
@@ -293,7 +292,7 @@ public class MainWindow extends UiPart<Stage> {
             ObservableList<Person> displayedCustomers) {
         customerCountLabel.textProperty().bind(
                 Bindings.createStringBinding(() -> formatCustomerCount(displayedCustomers.size()),
-                    displayedCustomers));
+                        displayedCustomers));
     }
 
     /**
@@ -337,8 +336,7 @@ public class MainWindow extends UiPart<Stage> {
      * Creates the command input.
      */
     private CommandBox fillCommandBox() {
-        CommandBox commandBox =
-                new CommandBox(this::executeCommand);
+        CommandBox commandBox = new CommandBox(this::executeCommand);
 
         commandBoxPlaceholder.getChildren()
                 .setAll(commandBox.getRoot());

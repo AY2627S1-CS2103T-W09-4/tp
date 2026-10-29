@@ -41,7 +41,7 @@ public class CommandBox extends UiPart<Region> {
 
     private static final KeyCombination HISTORY_PREVIOUS = new KeyCodeCombination(KeyCode.UP);
     private static final KeyCombination HISTORY_NEXT = new KeyCodeCombination(KeyCode.DOWN);
-    private static final KeyCombination ACCEPT_SUGGESTION = new KeyCodeCombination(KeyCode.RIGHT);
+    private static final KeyCombination ACCEPT_SUGGESTION = new KeyCodeCombination(KeyCode.TAB);
 
     // Sorted so that the alphabetically first match is suggested when several command words fit.
     private static final List<String> COMMAND_WORDS = Stream.of(AddCommand.COMMAND_WORD,
@@ -164,7 +164,7 @@ public class CommandBox extends UiPart<Region> {
     }
 
     /**
-     * Fills in the suggested command word when Right is pressed with a suggestion showing.
+     * Fills in the suggested command word when Tab is pressed with a suggestion showing.
      */
     private void handleSuggestionKey(KeyEvent event) {
         String suggestion = commandSuggestionText.getText();

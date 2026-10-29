@@ -27,6 +27,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.WindowResize;
@@ -40,12 +41,14 @@ public class MainWindowTest extends GuiTest {
             "Ready. Type a command to search or manage customers.";
 
     @Test
-    public void fitToScreen_oversizedGeometry_keepsResizeEdgesVisible() {
-        GuiSettings saved = new GuiSettings(1936, 1048, -8, -8);
+    public void fitToScreen_maximizedGeometry_keepsResizeEdgesVisible() {
+        GuiSettings saved = new GuiSettings(1936, 1048, -8, -8).withColourScheme(ColourScheme.LIGHT);
         GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 0, 1920, 1040));
+
         assertEquals(1896, fitted.getWindowWidth());
         assertEquals(1016, fitted.getWindowHeight());
         assertEquals(new Point(0, 0), fitted.getWindowCoordinates());
+        assertEquals(ColourScheme.LIGHT, fitted.getColourScheme());
     }
 
     @Test
@@ -101,6 +104,16 @@ public class MainWindowTest extends GuiTest {
             assertEquals("resize s/2147483647 2147483647", inputOf(window).getText());
             assertTrue(outputOf(window).getText().contains("exceeds"));
         });
+    }
+
+    @Test
+    public void fitToScreen_savedPosition_neverPushesWindowPastMonitorEdge() {
+        GuiSettings saved = new GuiSettings(900, 700, 3000, 900);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(1920, 0, 1920, 1040));
+
+        assertEquals(900, fitted.getWindowWidth());
+        assertEquals(700, fitted.getWindowHeight());
+        assertEquals(new Point(2928, 328), fitted.getWindowCoordinates());
     }
 
     @Test
@@ -223,6 +236,27 @@ public class MainWindowTest extends GuiTest {
             assertFalse(window.getRoot().isShowing());
             assertEquals((int) window.getRoot().getX(), logic.getGuiSettings().getWindowCoordinates().x);
             assertEquals((int) window.getRoot().getY(), logic.getGuiSettings().getWindowCoordinates().y);
+        });
+    }
+
+    @Test
+    public void closeRequest_oversizedWindow_savesGeometryWithinMonitor() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            var bounds = Screen.getPrimary().getVisualBounds();
+            window.getRoot().setX(bounds.getMinX());
+            window.getRoot().setY(bounds.getMinY());
+            window.getRoot().setWidth(bounds.getWidth() + 16);
+            window.getRoot().setHeight(bounds.getHeight() + 16);
+
+            Event.fireEvent(window.getRoot(), new WindowEvent(window.getRoot(), WindowEvent.WINDOW_CLOSE_REQUEST));
+
+            GuiSettings saved = logic.getGuiSettings();
+            assertTrue(saved.getWindowWidth() < bounds.getWidth());
+            assertTrue(saved.getWindowHeight() < bounds.getHeight());
+            assertTrue(saved.getWindowCoordinates().x >= bounds.getMinX());
+            assertTrue(saved.getWindowCoordinates().y >= bounds.getMinY());
         });
     }
 

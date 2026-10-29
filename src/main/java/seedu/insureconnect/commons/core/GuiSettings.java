@@ -75,7 +75,9 @@ public class GuiSettings implements Serializable {
         return new GuiSettings(windowWidth, windowHeight, windowCoordinates, colourScheme);
     }
 
-    /** Returns settings with the given window geometry, preserving the colour scheme. */
+    /**
+     * Returns settings with the given window geometry, preserving the colour scheme.
+     */
     public GuiSettings withWindowGeometry(double width, double height, Point coordinates) {
         return new GuiSettings(width, height, coordinates, getColourScheme());
     }
