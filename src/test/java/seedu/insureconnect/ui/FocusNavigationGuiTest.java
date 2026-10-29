@@ -3,13 +3,16 @@ package seedu.insureconnect.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.jupiter.api.Test;
 
+import javafx.css.PseudoClass;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
@@ -19,6 +22,39 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class FocusNavigationGuiTest extends GuiTest {
+
+    @Test
+    public void startup_commandBoxReceivesInitialFocus() throws Exception {
+        AtomicReference<Scene> sceneReference = new AtomicReference<>();
+
+        runOnFxThread(() -> sceneReference.set(createScene(new UiLogicStub())));
+
+        // Use a second task so MainWindow's deferred focus request runs before the assertion.
+        runOnFxThread(() -> {
+            Scene scene = sceneReference.get();
+            assertSame(scene.lookup("#commandTextField"), scene.getFocusOwner());
+        });
+    }
+
+    @Test
+    public void customerListFocus_updatesCustomerWorkspaceCardFocusState() throws Exception {
+        runOnFxThread(() -> {
+            Scene scene = createScene(new UiLogicStub());
+            Node input = scene.lookup("#commandTextField");
+            Node customers = scene.lookup("#personListView");
+            Node customerWorkspaceCard = scene.lookup("#customerWorkspaceCard");
+            PseudoClass customerListFocused = PseudoClass.getPseudoClass("customer-list-focused");
+
+            input.requestFocus();
+            assertFalse(customerWorkspaceCard.getPseudoClassStates().contains(customerListFocused));
+
+            customers.requestFocus();
+            assertTrue(customerWorkspaceCard.getPseudoClassStates().contains(customerListFocused));
+
+            input.requestFocus();
+            assertFalse(customerWorkspaceCard.getPseudoClassStates().contains(customerListFocused));
+        });
+    }
 
     @Test
     public void f6_realControls_cyclesInBothDirectionsAndPreservesDraft() throws Exception {
