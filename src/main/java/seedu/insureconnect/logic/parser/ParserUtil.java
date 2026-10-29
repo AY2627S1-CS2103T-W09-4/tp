@@ -46,7 +46,7 @@ public class ParserUtil {
     public static Name parseName(String name) throws ParseException {
         requireNonNull(name);
         String trimmedName = name.trim();
-        String unescapedName = unescapeName(trimmedName);
+        String unescapedName = unescape(trimmedName);
         if (!Name.isValidName(unescapedName)) {
             throw new ParseException(Name.MESSAGE_CONSTRAINTS);
         }
@@ -54,9 +54,9 @@ public class ParserUtil {
     }
 
     /**
-     * Unescapes characters preceded by '!' in a name field. E.g. "!a" -> "a", "!/" -> "/", "!!" -> "!".
+     * Unescapes characters preceded by '!'. E.g. "!a" -> "a", "!/" -> "/", "!!" -> "!".
      */
-    public static String unescapeName(String input) {
+    public static String unescape(String input) {
         if (!input.contains("!")) {
             return input;
         }
@@ -97,6 +97,9 @@ public class ParserUtil {
     public static Address parseAddress(String address) throws ParseException {
         requireNonNull(address);
         String trimmedAddress = address.trim();
+        if (trimmedAddress.length() > Address.MAX_LENGTH) {
+            throw new ParseException(Address.MESSAGE_LENGTH_CONSTRAINTS);
+        }
         if (!Address.isValidAddress(trimmedAddress)) {
             throw new ParseException(Address.MESSAGE_CONSTRAINTS);
         }
@@ -147,13 +150,14 @@ public class ParserUtil {
 
     /**
      * Parses a {@code String remark} into a {@code Remark}.
-     * Leading/trailing whitespace is removed and internal whitespace is collapsed.
+     * Escape markers are removed, leading/trailing whitespace is removed, and internal whitespace is collapsed.
      *
      * @throws ParseException if the remark is longer than 500 characters after normalisation.
      */
     public static Remark parseRemark(String remark) throws ParseException {
         requireNonNull(remark);
-        String normalizedRemark = remark.trim().replaceAll("\\s+", " ");
+        String unescapedRemark = unescape(remark);
+        String normalizedRemark = unescapedRemark.trim().replaceAll("\\s+", " ");
 
         if (!Remark.isValidRemark(normalizedRemark)) {
             throw new ParseException(Remark.MESSAGE_CONSTRAINTS);

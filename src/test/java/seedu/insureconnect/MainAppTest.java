@@ -23,13 +23,15 @@ import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyUserPrefs;
 import seedu.insureconnect.model.UserPrefs;
+import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.storage.JsonInsureConnectStorage;
 import seedu.insureconnect.storage.JsonUserPrefsStorage;
 import seedu.insureconnect.storage.StorageManager;
 import seedu.insureconnect.ui.GuiTest;
 
 /**
- * Exercises application startup and shutdown using isolated, real storage files.
+ * Exercises application startup and shutdown using isolated, real storage
+ * files.
  */
 public class MainAppTest extends GuiTest {
     @TempDir
@@ -83,6 +85,21 @@ public class MainAppTest extends GuiTest {
     }
 
     @Test
+    public void init_longAddress_preservesAddressAndShowsNoWarning() throws Exception {
+        new JsonInsureConnectStorage(dataPath()).saveInsureConnect(getTypicalInsureConnect());
+        String longAddress = "x".repeat(Address.MAX_LENGTH + 1);
+        String originalData = Files.readString(dataPath()).replace("123, Jurong West Ave 6, #08-111", longAddress);
+        Files.writeString(dataPath(), originalData);
+
+        MainApp app = newApplication();
+        app.init();
+
+        assertEquals(longAddress, app.model.getInsureConnect().getPersonList().get(0).getAddress().value);
+        assertNull(app.initialFeedback);
+        assertEquals(originalData, Files.readString(dataPath()));
+    }
+
+    @Test
     public void init_corruptFiles_preservesCustomerFileAndShowsWarning() throws Exception {
         Files.writeString(dataPath(), "invalid customers");
         Files.writeString(preferencesPath(), "invalid preferences");
@@ -133,7 +150,8 @@ public class MainAppTest extends GuiTest {
     }
 
     /**
-     * Creates an application whose writes are confined to this test's temporary directory.
+     * Creates an application whose writes are confined to this test's temporary
+     * directory.
      */
     private MainApp newApplication() {
         return new MainApp(preferencesPath(), dataPath());
@@ -148,7 +166,8 @@ public class MainAppTest extends GuiTest {
     }
 
     /**
-     * Simulates an unwritable preferences file without platform-specific permission changes.
+     * Simulates an unwritable preferences file without platform-specific permission
+     * changes.
      */
     private JsonUserPrefsStorage failingPreferencesStorage() {
         return new JsonUserPrefsStorage(preferencesPath()) {

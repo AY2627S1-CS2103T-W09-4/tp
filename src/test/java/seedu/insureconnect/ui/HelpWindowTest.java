@@ -14,6 +14,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.DataFormat;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 
 public class HelpWindowTest extends GuiTest {
@@ -47,7 +49,7 @@ public class HelpWindowTest extends GuiTest {
         runOnFxThread(() -> {
             HelpWindow help = new HelpWindow();
             TextArea formats = (TextArea) help.getRoot().getScene().lookup("#commandFormats");
-            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/DIGITS] [t/POLICY_NUMBER]"));
+            assertTrue(formats.getText().contains("find [n/KEYWORDS] [p/PHONE_PREFIX] [t/POLICY_NUMBER]"));
         });
     }
 
@@ -65,6 +67,48 @@ public class HelpWindowTest extends GuiTest {
                 clipboard.setContent(original);
             }
         });
+    }
+
+    @Test
+    public void escapeKey_closesHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            pressKey(help, KeyCode.ESCAPE);
+
+            assertFalse(help.isShowing());
+        });
+    }
+
+    @Test
+    public void f1Key_closesHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            pressKey(help, KeyCode.F1);
+
+            assertFalse(help.isShowing());
+        });
+    }
+
+    @Test
+    public void enterKey_doesNotCloseHelpWindow() throws Exception {
+        runOnFxThread(() -> {
+            HelpWindow help = new HelpWindow();
+            help.show();
+
+            pressKey(help, KeyCode.ENTER);
+
+            assertTrue(help.isShowing());
+        });
+    }
+
+    private void pressKey(HelpWindow help, KeyCode keyCode) {
+        help.getRoot().getScene().getRoot().fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", keyCode,
+                false, false, false, false));
     }
 
     /**
