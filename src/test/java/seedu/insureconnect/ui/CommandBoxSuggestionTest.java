@@ -80,6 +80,24 @@ public class CommandBoxSuggestionTest extends GuiTest {
     }
 
     @Test
+    public void tab_noSuggestion_insertsSpace() throws Exception {
+        runOnFxThread(() -> {
+            CommandBox box = createBox(command -> new CommandResult("Done"));
+            TextArea input = getInput(box);
+            for (String text : List.of(
+                    // EP: text that starts no command word
+                    "x",
+                    // EP: command word that is already complete
+                    "find")) {
+                type(input, text);
+                assertEquals("", getSuggestion(box));
+                press(input, KeyCode.TAB);
+                assertEquals(text + " ", input.getText());
+            }
+        });
+    }
+
+    @Test
     public void tab_modified_keepsText() throws Exception {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
