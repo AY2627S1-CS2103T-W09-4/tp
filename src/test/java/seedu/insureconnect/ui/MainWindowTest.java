@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -14,15 +15,19 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import javafx.event.Event;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.stage.WindowEvent;
+import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
@@ -34,16 +39,48 @@ public class MainWindowTest extends GuiTest {
             "Ready. Type a command to search or manage customers.";
 
     @Test
-    public void initialize_savedGeometryAndFeedback_restoresWindowAndCustomerWorkspace() throws Exception {
+    public void fitToScreen_maximizedGeometry_keepsResizeEdgesVisible() {
+        GuiSettings saved = new GuiSettings(1936, 1048, -8, -8).withColourScheme(ColourScheme.LIGHT);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 0, 1920, 1040));
+
+        assertEquals(1896, fitted.getWindowWidth());
+        assertEquals(1016, fitted.getWindowHeight());
+        assertEquals(new Point(0, 0), fitted.getWindowCoordinates());
+        assertEquals(ColourScheme.LIGHT, fitted.getColourScheme());
+    }
+
+    @Test
+    public void fitToScreen_windowAlreadyFits_keepsGeometry() {
+        GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(0, 34, 1710, 1018));
+
+        assertEquals(saved, fitted);
+    }
+
+    @Test
+    public void fitToScreen_savedPosition_neverPushesWindowPastMonitorEdge() {
+        GuiSettings saved = new GuiSettings(900, 700, 3000, 900);
+        GuiSettings fitted = MainWindow.fitToScreen(saved, new Rectangle2D(1920, 0, 1920, 1040));
+
+        assertEquals(900, fitted.getWindowWidth());
+        assertEquals(700, fitted.getWindowHeight());
+        assertEquals(new Point(2928, 328), fitted.getWindowCoordinates());
+    }
+
+    @Test
+    public void initialize_savedGeometryAndFeedback_fitsWindowAndRestoresCustomerWorkspace() throws Exception {
         runOnFxThread(() -> {
             UiLogicStub logic = new UiLogicStub();
-            logic.setGuiSettings(new GuiSettings(900, 700, 30, 40));
+            GuiSettings saved = new GuiSettings(900, 700, 30, 40);
+            logic.setGuiSettings(saved);
             logic.getFilteredPersonList().add(ALICE);
             MainWindow window = new MainWindow(new Stage(), logic, Path.of("data", "test.json"), "Load warning");
-            assertEquals(900, window.getRoot().getWidth());
-            assertEquals(700, window.getRoot().getHeight());
-            assertEquals(30, window.getRoot().getX());
-            assertEquals(40, window.getRoot().getY());
+            GuiSettings fitted = MainWindow.fitToScreen(saved, Screen.getPrimary().getVisualBounds());
+            assertEquals(fitted, logic.getGuiSettings());
+            assertEquals(fitted.getWindowWidth(), window.getRoot().getWidth());
+            assertEquals(fitted.getWindowHeight(), window.getRoot().getHeight());
+            assertEquals(fitted.getWindowCoordinates().getX(), window.getRoot().getX());
+            assertEquals(fitted.getWindowCoordinates().getY(), window.getRoot().getY());
             window.show();
             window.fillInnerParts();
             window.getRoot().getScene().getRoot().applyCss();
@@ -151,6 +188,27 @@ public class MainWindowTest extends GuiTest {
             assertFalse(window.getRoot().isShowing());
             assertEquals((int) window.getRoot().getX(), logic.getGuiSettings().getWindowCoordinates().x);
             assertEquals((int) window.getRoot().getY(), logic.getGuiSettings().getWindowCoordinates().y);
+        });
+    }
+
+    @Test
+    public void closeRequest_oversizedWindow_savesGeometryWithinMonitor() throws Exception {
+        runOnFxThread(() -> {
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            var bounds = Screen.getPrimary().getVisualBounds();
+            window.getRoot().setX(bounds.getMinX());
+            window.getRoot().setY(bounds.getMinY());
+            window.getRoot().setWidth(bounds.getWidth() + 16);
+            window.getRoot().setHeight(bounds.getHeight() + 16);
+
+            Event.fireEvent(window.getRoot(), new WindowEvent(window.getRoot(), WindowEvent.WINDOW_CLOSE_REQUEST));
+
+            GuiSettings saved = logic.getGuiSettings();
+            assertTrue(saved.getWindowWidth() < bounds.getWidth());
+            assertTrue(saved.getWindowHeight() < bounds.getHeight());
+            assertTrue(saved.getWindowCoordinates().x >= bounds.getMinX());
+            assertTrue(saved.getWindowCoordinates().y >= bounds.getMinY());
         });
     }
 

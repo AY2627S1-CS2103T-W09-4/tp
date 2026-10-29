@@ -26,7 +26,7 @@ InsureConnect is a **desktop application for managing contacts, optimized for us
 
 5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
 
-   As you type a command prefix, InsureConnect suggests the remaining command text in grey. Press **Right Arrow** to accept the suggestion.
+   As you type a command prefix, InsureConnect suggests the remaining command text in grey. Press **Tab** to accept the suggestion.
 
    ![Command box showing a ghost-text command suggestion](images/commandBoxGhostText.png)
 
@@ -77,8 +77,8 @@ Modified arrow shortcuts and arrow keys in other areas retain their usual behavi
 ### Command suggestions
 
 As you type the start of a command word, the rest of the word appears as faded text after the caret.
-For example, typing `ed` shows `edit`. Press **Right** to fill in the suggested word, then continue typing as usual.
-Pressing Right only fills in the word; press Enter to run the command.
+For example, typing `ed` shows `edit`. Press **Tab** to fill in the suggested word, then continue typing as usual.
+Pressing Tab only fills in the word; press Enter to run the command.
 When several commands match, the first in alphabetical order is suggested, so `c` suggests `clear`. Type more letters to narrow it down, such as `co` for `confirm`.
 Suggestions appear only for command words, only while the caret is at the end of the text, and match lowercase input exactly.
 

@@ -29,7 +29,8 @@ import seedu.insureconnect.storage.StorageManager;
 import seedu.insureconnect.ui.GuiTest;
 
 /**
- * Exercises application startup and shutdown using isolated, real storage files.
+ * Exercises application startup and shutdown using isolated, real storage
+ * files.
  */
 public class MainAppTest extends GuiTest {
     @TempDir
@@ -131,7 +132,8 @@ public class MainAppTest extends GuiTest {
     }
 
     /**
-     * Creates an application whose writes are confined to this test's temporary directory.
+     * Creates an application whose writes are confined to this test's temporary
+     * directory.
      */
     private MainApp newApplication() {
         return new MainApp(preferencesPath(), dataPath());
@@ -146,7 +148,8 @@ public class MainAppTest extends GuiTest {
     }
 
     /**
-     * Simulates an unwritable preferences file without platform-specific permission changes.
+     * Simulates an unwritable preferences file without platform-specific permission
+     * changes.
      */
     private JsonUserPrefsStorage failingPreferencesStorage() {
         return new JsonUserPrefsStorage(preferencesPath()) {

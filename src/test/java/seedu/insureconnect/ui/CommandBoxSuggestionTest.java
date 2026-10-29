@@ -1,6 +1,7 @@
 package seedu.insureconnect.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
     }
 
     @Test
-    public void right_suggestionShowing_fillsCommandWordWithoutExecuting() throws Exception {
+    public void tab_suggestionShowing_fillsCommandWordWithoutExecuting() throws Exception {
         runOnFxThread(() -> {
             List<String> commands = new ArrayList<>();
             CommandBox box = createBox(command -> {
@@ -52,7 +53,10 @@ public class CommandBoxSuggestionTest extends GuiTest {
             TextArea input = getInput(box);
             type(input, "fi");
             assertEquals("nd", getSuggestion(box));
-            press(input, KeyCode.RIGHT);
+            press(input, KeyCode.TAB);
+            // A real key press also sends the typed tab character, which must not add a space.
+            input.fireEvent(new KeyEvent(KeyEvent.KEY_TYPED, "\t", "", KeyCode.UNDEFINED,
+                    false, false, false, false));
             assertEquals("find", input.getText());
             assertEquals(4, input.getCaretPosition());
             assertEquals("", getSuggestion(box));
@@ -61,32 +65,62 @@ public class CommandBoxSuggestionTest extends GuiTest {
     }
 
     @Test
-    public void right_caretNotAtEnd_hidesSuggestionAndKeepsText() throws Exception {
+    public void tab_caretNotAtEnd_hidesSuggestionAndDoesNotFillWord() throws Exception {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
             TextArea input = getInput(box);
             type(input, "fi");
             input.positionCaret(1);
             assertEquals("", getSuggestion(box));
-            press(input, KeyCode.RIGHT);
-            assertEquals("fi", input.getText());
+            press(input, KeyCode.TAB);
+            assertFalse(input.getText().contains("find"));
             input.selectAll();
             assertEquals("", getSuggestion(box));
         });
     }
 
     @Test
-    public void right_modified_keepsText() throws Exception {
+    public void tab_noSuggestion_insertsSpace() throws Exception {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
             TextArea input = getInput(box);
-            // Presses Shift, Ctrl, Alt, then Meta with Right, one modifier at a time.
+            for (String text : List.of(
+                    // EP: text that starts no command word
+                    "x",
+                    // EP: command word that is already complete
+                    "find")) {
+                type(input, text);
+                assertEquals("", getSuggestion(box));
+                press(input, KeyCode.TAB);
+                assertEquals(text + " ", input.getText());
+            }
+        });
+    }
+
+    @Test
+    public void tab_modified_keepsText() throws Exception {
+        runOnFxThread(() -> {
+            CommandBox box = createBox(command -> new CommandResult("Done"));
+            TextArea input = getInput(box);
+            // Presses Shift, Ctrl, Alt, then Meta with Tab, one modifier at a time.
             for (int modifier = 0; modifier < 4; modifier++) {
                 type(input, "fi");
-                input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.RIGHT,
+                input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.TAB,
                         modifier == 0, modifier == 1, modifier == 2, modifier == 3));
                 assertEquals("fi", input.getText());
             }
+        });
+    }
+
+    @Test
+    public void right_suggestionShowing_keepsTypedText() throws Exception {
+        runOnFxThread(() -> {
+            CommandBox box = createBox(command -> new CommandResult("Done"));
+            TextArea input = getInput(box);
+            type(input, "fi");
+            press(input, KeyCode.RIGHT);
+            assertEquals("fi", input.getText());
+            assertEquals("nd", getSuggestion(box));
         });
     }
 
