@@ -39,12 +39,15 @@ public class FindCommandParserTest {
      */
     @Test
     public void parse_phonePrefix_returnsPhoneSearch() {
-        assertParseSuccess(parser, "p/9",
+        // EP: digits only, from one digit to a full number
+        assertParseSuccess(parser, "p/9", // boundary value
                 new FindCommand(new PhoneStartsWithPredicate("9")));
         assertParseSuccess(parser, "p/98765432",
                 new FindCommand(new PhoneStartsWithPredicate("98765432")));
+        // EP: whitespace around the query
         assertParseSuccess(parser, " \t p/ 0012 \n",
                 new FindCommand(new PhoneStartsWithPredicate("0012")));
+        // EP: country code with a leading plus
         assertParseSuccess(parser, "p/+65",
                 new FindCommand(new PhoneStartsWithPredicate("+65")));
     }
