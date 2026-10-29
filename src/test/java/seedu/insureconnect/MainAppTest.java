@@ -123,6 +123,38 @@ public class MainAppTest extends GuiTest {
     }
 
     @Test
+    public void start_offScreenPreferences_savesCorrectedGeometry() throws Exception {
+        UserPrefs prefs = offScreenPreferences();
+        new JsonUserPrefsStorage(preferencesPath()).saveUserPrefs(prefs);
+        MainApp app = newApplication();
+        app.init();
+
+        runOnFxThread(() -> app.start(new Stage()));
+
+        GuiSettings corrected = app.model.getGuiSettings();
+        assertFalse(prefs.getGuiSettings().equals(corrected));
+        assertEquals(corrected, app.storage.readUserPrefs().orElseThrow().getGuiSettings());
+    }
+
+    @Test
+    public void start_correctedPreferencesSaveFailure_stillShowsWindow() throws Exception {
+        UserPrefs prefs = offScreenPreferences();
+        new JsonUserPrefsStorage(preferencesPath()).saveUserPrefs(prefs);
+        MainApp app = newApplication();
+        app.init();
+        app.storage = new StorageManager(new JsonInsureConnectStorage(dataPath()), failingPreferencesStorage());
+
+        runOnFxThread(() -> {
+            Stage stage = new Stage();
+            assertDoesNotThrow(() -> app.start(stage));
+            assertTrue(stage.isShowing());
+        });
+
+        assertFalse(prefs.getGuiSettings().equals(app.model.getGuiSettings()));
+        assertEquals(prefs.getGuiSettings(), app.storage.readUserPrefs().orElseThrow().getGuiSettings());
+    }
+
+    @Test
     public void stop_saveFailure_doesNotPreventShutdown() throws Exception {
         MainApp app = newApplication();
         app.init();
@@ -137,6 +169,12 @@ public class MainAppTest extends GuiTest {
      */
     private MainApp newApplication() {
         return new MainApp(preferencesPath(), dataPath());
+    }
+
+    private UserPrefs offScreenPreferences() {
+        UserPrefs prefs = new UserPrefs();
+        prefs.setGuiSettings(new GuiSettings(100000, 100000, -100000, -100000));
+        return prefs;
     }
 
     private Path preferencesPath() {

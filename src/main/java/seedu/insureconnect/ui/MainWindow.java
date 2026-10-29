@@ -12,6 +12,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
@@ -404,33 +405,28 @@ public class MainWindow extends UiPart<Stage> {
     private void resizeWindow(WindowResize request) throws CommandException {
         Point position = new Point((int) primaryStage.getX(), (int) primaryStage.getY());
         Rectangle2D bounds = screenFor(position).getVisualBounds();
+        resizeWindow(request, bounds);
+    }
+
+    /** Applies a requested size within the supplied monitor bounds. */
+    void resizeWindow(WindowResize request, Rectangle2D bounds) throws CommandException {
+        Point position = new Point((int) primaryStage.getX(), (int) primaryStage.getY());
         double maxWidth = bounds.getWidth() - 2 * RESIZE_MARGIN;
         double maxHeight = bounds.getHeight() - 2 * RESIZE_MARGIN;
         if (maxWidth < MIN_WIDTH || maxHeight < MIN_HEIGHT) {
             throw new CommandException("The current screen is too small for the minimum window size (880 by 600).");
         }
 
-        double width;
-        double height;
-        switch (request.preset()) {
-            case MIN -> {
-                width = MIN_WIDTH;
-                height = MIN_HEIGHT;
-            }
-            case MED -> {
-                width = Math.max(MIN_WIDTH, Math.floor(bounds.getWidth() * 2 / 3));
-                height = Math.max(MIN_HEIGHT, Math.floor(bounds.getHeight() * 2 / 3));
-            }
-            case MAX -> {
-                width = maxWidth;
-                height = maxHeight;
-            }
-            case CUSTOM -> {
-                width = request.width();
-                height = request.height();
-            }
-            default -> throw new IllegalStateException("Unknown resize preset");
-        }
+        Dimension2D size = switch (request.preset()) {
+            case MIN -> new Dimension2D(MIN_WIDTH, MIN_HEIGHT);
+            case MED -> new Dimension2D(
+                    Math.max(MIN_WIDTH, Math.floor(bounds.getWidth() * 2 / 3)),
+                    Math.max(MIN_HEIGHT, Math.floor(bounds.getHeight() * 2 / 3)));
+            case MAX -> new Dimension2D(maxWidth, maxHeight);
+            case CUSTOM -> new Dimension2D(request.width(), request.height());
+        };
+        double width = size.getWidth();
+        double height = size.getHeight();
         if (width > maxWidth || height > maxHeight) {
             throw new CommandException("Window size exceeds the current screen's usable area.");
         }

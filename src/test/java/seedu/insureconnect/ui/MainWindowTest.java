@@ -3,6 +3,7 @@ package seedu.insureconnect.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static seedu.insureconnect.testutil.TypicalPersons.ALICE;
@@ -103,6 +104,54 @@ public class MainWindowTest extends GuiTest {
             assertEquals(originalWidth, window.getRoot().getWidth());
             assertEquals("resize s/2147483647 2147483647", inputOf(window).getText());
             assertTrue(outputOf(window).getText().contains("exceeds"));
+        });
+    }
+
+    @Test
+    public void resizeScreenTooSmall_rejectsEitherInsufficientDimension() throws Exception {
+        runOnFxThread(() -> {
+            MainWindow window = createWindow(new UiLogicStub());
+            WindowResize request = WindowResize.preset(Preset.MIN);
+
+            CommandException narrow = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(request, new Rectangle2D(0, 0, 900, 700)));
+            assertTrue(narrow.getMessage().contains("screen is too small"));
+
+            CommandException shortScreen = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(request, new Rectangle2D(0, 0, 1000, 620)));
+            assertTrue(shortScreen.getMessage().contains("screen is too small"));
+        });
+    }
+
+    @Test
+    public void resizeCustomHeightTooLarge_rejectsRequest() throws Exception {
+        runOnFxThread(() -> {
+            MainWindow window = createWindow(new UiLogicStub());
+            Rectangle2D bounds = new Rectangle2D(0, 0, 1200, 800);
+
+            CommandException error = assertThrows(CommandException.class, ()
+                    -> window.resizeWindow(WindowResize.custom(880, 800), bounds));
+            assertTrue(error.getMessage().contains("exceeds"));
+        });
+    }
+
+    @Test
+    public void resizeMaximizedWindow_restoresWindowBeforeApplyingSize() throws Exception {
+        runOnFxThread(() -> {
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            assumeTrue(bounds.getWidth() >= 904 && bounds.getHeight() >= 624);
+            UiLogicStub logic = new UiLogicStub();
+            MainWindow window = createWindow(logic);
+            Stage stage = window.getRoot();
+            stage.setMaximized(true);
+            assertTrue(stage.isMaximized());
+
+            logic.setExecutor(command -> new CommandResult("Window resized.", WindowResize.preset(Preset.MIN)));
+            submit(window, "resize p/min");
+
+            assertFalse(stage.isMaximized());
+            assertEquals(880, stage.getWidth());
+            assertEquals(600, stage.getHeight());
         });
     }
 
