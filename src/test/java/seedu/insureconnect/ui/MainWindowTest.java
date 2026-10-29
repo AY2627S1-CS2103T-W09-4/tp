@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 
 import javafx.event.Event;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
