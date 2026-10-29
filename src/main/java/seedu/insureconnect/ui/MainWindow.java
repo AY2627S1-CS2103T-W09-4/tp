@@ -1,6 +1,7 @@
 package seedu.insureconnect.ui;
 
 import java.awt.Desktop;
+import java.awt.Point;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +12,7 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
@@ -21,6 +23,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import seedu.insureconnect.commons.core.ColourScheme;
 import seedu.insureconnect.commons.core.GuiSettings;
@@ -37,6 +40,7 @@ import seedu.insureconnect.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+    private static final double RESIZE_MARGIN = 12;
     private static final KeyCombination TOGGLE_COLOUR_SCHEME =
             new KeyCodeCombination(KeyCode.F2);
     private static final String MESSAGE_USER_GUIDE_OPEN_FAILURE =
@@ -81,8 +85,10 @@ public class MainWindow extends UiPart<Stage> {
     /**
      * Creates a {@code MainWindow}.
      *
-     * <p>The data file path parameter is temporarily retained so existing callers
-     * continue to compile. It is no longer displayed in the interface.</p>
+     * <p>
+     * The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.
+     * </p>
      */
     public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath) {
         this(primaryStage, logic, ignoredDataFilePath, null);
@@ -91,8 +97,10 @@ public class MainWindow extends UiPart<Stage> {
     /**
      * Creates a {@code MainWindow} with optional startup feedback.
      *
-     * <p>The data file path parameter is temporarily retained so existing callers
-     * continue to compile. It is no longer displayed in the interface.</p>
+     * <p>
+     * The data file path parameter is temporarily retained so existing callers
+     * continue to compile. It is no longer displayed in the interface.
+     * </p>
      */
     public MainWindow(Stage primaryStage, Logic logic, Path ignoredDataFilePath,
                       String initialFeedback) {
@@ -123,7 +131,10 @@ public class MainWindow extends UiPart<Stage> {
      * Restores window preferences and connects menu actions.
      */
     private void configureWindow() {
-        setWindowDefaultSize(logic.getGuiSettings());
+        GuiSettings settings = logic.getGuiSettings();
+        GuiSettings safeSettings = fitToScreen(settings, screenFor(settings.getWindowCoordinates()).getVisualBounds());
+        logic.setGuiSettings(safeSettings);
+        setWindowDefaultSize(safeSettings);
         setAccelerators();
         configureColourSchemeMenu();
         applyColourScheme(logic.getGuiSettings().getColourScheme());
@@ -209,13 +220,11 @@ public class MainWindow extends UiPart<Stage> {
      * Switches between the light and dark colour schemes.
      */
     private void toggleColourScheme() {
-        ColourScheme currentScheme =
-                logic.getGuiSettings().getColourScheme();
+        ColourScheme currentScheme = logic.getGuiSettings().getColourScheme();
 
-        ColourScheme newScheme =
-                currentScheme == ColourScheme.DARK
-                        ? ColourScheme.LIGHT
-                        : ColourScheme.DARK;
+        ColourScheme newScheme = currentScheme == ColourScheme.DARK
+                ? ColourScheme.LIGHT
+                : ColourScheme.DARK;
 
         applyColourScheme(newScheme);
     }
@@ -224,7 +233,7 @@ public class MainWindow extends UiPart<Stage> {
      * Sets the accelerator for a menu item.
      */
     private void setAccelerator(MenuItem menuItem,
-                                KeyCombination keyCombination) {
+            KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
 
         /*
@@ -232,8 +241,7 @@ public class MainWindow extends UiPart<Stage> {
          * so F1 continues to open the Help window when a text control is focused.
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
-            boolean isTextControl =
-                    event.getTarget() instanceof TextInputControl;
+            boolean isTextControl = event.getTarget() instanceof TextInputControl;
 
             if (isTextControl && keyCombination.match(event)) {
                 menuItem.getOnAction().handle(new ActionEvent());
@@ -255,8 +263,7 @@ public class MainWindow extends UiPart<Stage> {
      * Creates the customer list and details panels and connects their selection.
      */
     private void fillCustomerWorkspace() {
-        ObservableList<Person> displayedCustomers =
-                logic.getFilteredPersonList();
+        ObservableList<Person> displayedCustomers = logic.getFilteredPersonList();
 
         personListPanel = new PersonListPanel(displayedCustomers);
         customerDetailsPanel = new CustomerDetailsPanel();
@@ -270,8 +277,7 @@ public class MainWindow extends UiPart<Stage> {
         bindCustomerCount(displayedCustomers);
 
         personListPanel.selectedPersonProperty().addListener((observable, oldCustomer,
-            selectedCustomer) ->
-                updateDisplayedCustomer(selectedCustomer));
+                selectedCustomer) -> updateDisplayedCustomer(selectedCustomer));
 
         updateDisplayedCustomer(personListPanel.getSelectedPerson());
     }
@@ -283,7 +289,7 @@ public class MainWindow extends UiPart<Stage> {
             ObservableList<Person> displayedCustomers) {
         customerCountLabel.textProperty().bind(
                 Bindings.createStringBinding(() -> formatCustomerCount(displayedCustomers.size()),
-                    displayedCustomers));
+                        displayedCustomers));
     }
 
     /**
@@ -327,8 +333,7 @@ public class MainWindow extends UiPart<Stage> {
      * Creates the command input.
      */
     private CommandBox fillCommandBox() {
-        CommandBox commandBox =
-                new CommandBox(this::executeCommand);
+        CommandBox commandBox = new CommandBox(this::executeCommand);
 
         commandBoxPlaceholder.getChildren()
                 .setAll(commandBox.getRoot());
@@ -353,6 +358,8 @@ public class MainWindow extends UiPart<Stage> {
      * Sets the default window size and position.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
+        primaryStage.setMinWidth(Math.min(primaryStage.getMinWidth(), guiSettings.getWindowWidth()));
+        primaryStage.setMinHeight(Math.min(primaryStage.getMinHeight(), guiSettings.getWindowHeight()));
         primaryStage.setHeight(guiSettings.getWindowHeight());
         primaryStage.setWidth(guiSettings.getWindowWidth());
 
@@ -362,6 +369,35 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setY(
                     guiSettings.getWindowCoordinates().getY());
         }
+    }
+
+    /**
+     * Returns the monitor containing the saved window origin, or the primary
+     * monitor if it is unavailable.
+     */
+    private static Screen screenFor(Point coordinates) {
+        if (coordinates != null) {
+            var screens = Screen.getScreensForRectangle(coordinates.getX(), coordinates.getY(), 1, 1);
+            if (!screens.isEmpty()) {
+                return screens.get(0);
+            }
+        }
+        return Screen.getPrimary();
+    }
+
+    /** Keeps the window and its resize edges within the monitor's usable area. */
+    static GuiSettings fitToScreen(GuiSettings settings, Rectangle2D bounds) {
+        double width = Math.min(settings.getWindowWidth(), Math.max(1, bounds.getWidth() - 2 * RESIZE_MARGIN));
+        double height = Math.min(settings.getWindowHeight(), Math.max(1, bounds.getHeight() - 2 * RESIZE_MARGIN));
+        Point coordinates = settings.getWindowCoordinates();
+        if (coordinates != null) {
+            int x = (int) Math.max(bounds.getMinX(),
+                    Math.min(coordinates.getX(), bounds.getMaxX() - width - RESIZE_MARGIN));
+            int y = (int) Math.max(bounds.getMinY(),
+                    Math.min(coordinates.getY(), bounds.getMaxY() - height - RESIZE_MARGIN));
+            coordinates = new Point(x, y);
+        }
+        return settings.withWindowGeometry(width, height, coordinates);
     }
 
     /**
@@ -388,15 +424,13 @@ public class MainWindow extends UiPart<Stage> {
      */
     @FXML
     private void handleExit() {
-        GuiSettings guiSettings = new GuiSettings(
+        GuiSettings guiSettings = logic.getGuiSettings().withWindowGeometry(
                 primaryStage.getWidth(),
                 primaryStage.getHeight(),
-                (int) primaryStage.getX(),
-                (int) primaryStage.getY());
+                new Point((int) primaryStage.getX(), (int) primaryStage.getY()));
 
-        logic.setGuiSettings(
-                guiSettings.withColourScheme(
-                        logic.getGuiSettings().getColourScheme()));
+        logic.setGuiSettings(fitToScreen(guiSettings,
+                screenFor(guiSettings.getWindowCoordinates()).getVisualBounds()));
 
         helpWindow.hide();
         primaryStage.hide();
