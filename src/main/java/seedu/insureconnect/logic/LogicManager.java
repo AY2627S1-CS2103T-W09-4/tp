@@ -80,10 +80,13 @@ public class LogicManager implements Logic {
         Command command = insureConnectParser.parseCommand(commandText);
 
         if (command instanceof ClearCommand) {
+            if (model.getInsureConnect().getPersonList().isEmpty()) {
+                return new CommandResult(ClearCommand.MESSAGE_NO_CUSTOMERS_TO_CLEAR);
+            }
+
             pendingConfirmationCommand = command;
             return new CommandResult(ClearCommand.MESSAGE_CONFIRMATION, false, false, true);
         }
-
         return executeCommand(command);
     }
 

@@ -92,6 +92,35 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_clearWithNoCustomers_reportsNothingToClearWithoutConfirmation() throws Exception {
+        CommandResult result = logic.execute(ClearCommand.COMMAND_WORD);
+
+        // EP: empty customer list
+        assertEquals(ClearCommand.MESSAGE_NO_CUSTOMERS_TO_CLEAR, result.getFeedbackToUser());
+        assertFalse(result.isConfirmationRequired());
+        assertTrue(model.getInsureConnect().getPersonList().isEmpty());
+        assertFalse(Files.exists(insureConnectFile));
+    }
+
+    @Test
+    public void execute_clearWithCustomersHiddenByFilter_promptsAndClearsAll() throws Exception {
+        model.setInsureConnect(getTypicalInsureConnect());
+        model.updateFilteredPersonList(person -> false);
+
+        CommandResult prompt = logic.execute(ClearCommand.COMMAND_WORD);
+
+        // EP: customers exist but the displayed list is empty due to a filter
+        assertEquals(ClearCommand.MESSAGE_CONFIRMATION, prompt.getFeedbackToUser());
+        assertTrue(prompt.isConfirmationRequired());
+
+        CommandResult result = logic.execute("y");
+
+        // EP: lowercase affirmative confirmation response
+        assertEquals(ClearCommand.MESSAGE_SUCCESS, result.getFeedbackToUser());
+        assertEquals(new InsureConnect(), model.getInsureConnect());
+    }
+
+    @Test
     public void execute_clearThenConfirm_clearsAndPersistsRecords() throws Exception {
         model.setInsureConnect(getTypicalInsureConnect());
         ReadOnlyInsureConnect recordsBeforePrompt = new InsureConnect(model.getInsureConnect());
@@ -343,6 +372,7 @@ public class LogicManagerTest {
         ReadOnlyInsureConnect savedData = storage.readInsureConnect().orElseThrow();
         assertFalse(savedData.getPersonList().contains(AMY));
     }
+
     @Test
     public void execute_deleteRequiresConfirmation() throws Exception {
         model.addPerson(AMY);
