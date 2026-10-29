@@ -15,6 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -38,6 +39,12 @@ public class MainWindowInteractionTest extends GuiTest {
             MenuBar menus = (MenuBar) window.getRoot().getScene().lookup("#menuBar");
             Menu view = menus.getMenus().stream().filter(menu -> "View".equals(menu.getText()))
                     .findFirst().orElseThrow();
+            MenuItem toggle = view.getItems().stream()
+                    .filter(item -> "Toggle colour scheme".equals(item.getText()))
+                    .findFirst()
+                    .orElseThrow();
+            toggle.fire();
+            assertScheme(window.getRoot(), help, logic, ColourScheme.LIGHT);
             Menu schemes = view.getItems().stream()
                     .filter(Menu.class::isInstance)
                     .map(Menu.class::cast)
