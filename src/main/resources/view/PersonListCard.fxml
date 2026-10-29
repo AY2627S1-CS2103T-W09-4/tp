@@ -50,7 +50,7 @@
               spacing="6"
               minWidth="0"
               maxWidth="Infinity">
-          <Label text="✉" minWidth="24" prefWidth="24" maxWidth="24" styleClass="field-icon" />
+          <Label text="✉" styleClass="field-icon"/>
           <Label fx:id="email"
                  minWidth="0"
                  maxWidth="Infinity"

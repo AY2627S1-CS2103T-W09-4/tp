@@ -389,6 +389,9 @@
 }
 
 .field-icon {
+    -fx-min-width: 24;
+    -fx-pref-width: 24;
+    -fx-max-width: 24;
     -fx-font-family: "System";
     -fx-font-size: 14px;
     -fx-text-fill: -ic-card-muted;
