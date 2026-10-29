@@ -28,7 +28,7 @@ public class DeleteCommandTest {
     private Model model = new ModelManager(getTypicalInsureConnect(), new UserPrefs());
 
     @Test
-    public void execute_validIndexWithoutConfirmation_showsConfirmationAndDoesNotDelete() {
+    public void execute_validIndexWithoutConfirmation_showsConfirmationAndDoesNotDelete() throws Exception {
         Person personToDelete = model.getFilteredPersonList().get(INDEX_FIRST_PERSON.getZeroBased());
         DeleteCommand deleteCommand = new DeleteCommand(INDEX_FIRST_PERSON);
 
@@ -36,7 +36,11 @@ public class DeleteCommandTest {
 
         Model expectedModel = new ModelManager(model.getInsureConnect(), new UserPrefs());
 
-        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        CommandResult result = deleteCommand.execute(model);
+
+        assertEquals(expectedMessage, result.getFeedbackToUser());
+        assertTrue(result.isConfirmationRequired());
+        assertEquals(expectedModel, model);
     }
 
     @Test

@@ -1,15 +1,29 @@
 package seedu.insureconnect.ui;
 
+import java.util.List;
+import java.util.stream.Stream;
+
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
+import seedu.insureconnect.logic.commands.AddCommand;
+import seedu.insureconnect.logic.commands.ClearCommand;
 import seedu.insureconnect.logic.commands.CommandResult;
+import seedu.insureconnect.logic.commands.ConfirmDeleteCommand;
+import seedu.insureconnect.logic.commands.DeleteCommand;
+import seedu.insureconnect.logic.commands.EditCommand;
+import seedu.insureconnect.logic.commands.ExitCommand;
+import seedu.insureconnect.logic.commands.FindCommand;
+import seedu.insureconnect.logic.commands.HelpCommand;
+import seedu.insureconnect.logic.commands.ListCommand;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
 
@@ -23,6 +37,13 @@ public class CommandBox extends UiPart<Region> {
 
     private static final KeyCombination HISTORY_PREVIOUS = new KeyCodeCombination(KeyCode.UP);
     private static final KeyCombination HISTORY_NEXT = new KeyCodeCombination(KeyCode.DOWN);
+    private static final KeyCombination ACCEPT_SUGGESTION = new KeyCodeCombination(KeyCode.RIGHT);
+
+    // Sorted so that the alphabetically first match is suggested when several command words fit.
+    private static final List<String> COMMAND_WORDS = Stream.of(AddCommand.COMMAND_WORD,
+            ClearCommand.COMMAND_WORD, ConfirmDeleteCommand.COMMAND_WORD, DeleteCommand.COMMAND_WORD,
+            EditCommand.COMMAND_WORD, ExitCommand.COMMAND_WORD, FindCommand.COMMAND_WORD,
+            HelpCommand.COMMAND_WORD, ListCommand.COMMAND_WORD).sorted().toList();
 
     private final CommandExecutor commandExecutor;
     private boolean awaitingConfirmation;
@@ -34,6 +55,12 @@ public class CommandBox extends UiPart<Region> {
     @FXML
     private TextArea commandTextField;
 
+    @FXML
+    private Text commandTypedText;
+
+    @FXML
+    private Text commandSuggestionText;
+
     /**
      * Creates a {@code CommandBox} with the given {@code CommandExecutor}.
      */
@@ -41,8 +68,17 @@ public class CommandBox extends UiPart<Region> {
         super(FXML);
         this.commandExecutor = commandExecutor;
         commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleCommandKey);
+        commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleSuggestionKey);
+
+        commandTextField.setTextFormatter(new TextFormatter<>(change -> {
+            change.setText(change.getText().replaceAll("[\\r\\n\\t]+", " "));
+            return change;
+        }));
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
+        commandTextField.textProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
+        commandTextField.caretPositionProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
+        commandTextField.selectionProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
     }
 
     /**
@@ -123,6 +159,51 @@ public class CommandBox extends UiPart<Region> {
         } else {
             commandTextField.positionCaret(text.length());
         }
+    }
+
+    /**
+     * Fills in the suggested command word when Right is pressed with a suggestion showing.
+     */
+    private void handleSuggestionKey(KeyEvent event) {
+        String suggestion = commandSuggestionText.getText();
+        if (!ACCEPT_SUGGESTION.match(event) || suggestion.isEmpty()) {
+            return;
+        }
+        commandTextField.appendText(suggestion);
+        commandTextField.end();
+        event.consume();
+    }
+
+    /**
+     * Shows the rest of the suggested command word as faded text after the typed text.
+     */
+    private void updateSuggestion() {
+        String text = commandTextField.getText();
+        commandTypedText.setText(text);
+        commandSuggestionText.setText(isCaretAtEnd() ? findSuggestion(text) : "");
+    }
+
+    /**
+     * Returns whether the caret is at the end of the text with nothing selected.
+     */
+    private boolean isCaretAtEnd() {
+        return commandTextField.getSelection().getLength() == 0
+                && commandTextField.getCaretPosition() == commandTextField.getLength();
+    }
+
+    /**
+     * Returns the untyped rest of the first command word that starts with {@code text},
+     * or an empty string if no command word extends it.
+     */
+    static String findSuggestion(String text) {
+        if (text.isEmpty()) {
+            return "";
+        }
+        return COMMAND_WORDS.stream()
+                .filter(word -> word.length() > text.length() && word.startsWith(text))
+                .findFirst()
+                .map(word -> word.substring(text.length()))
+                .orElse("");
     }
 
     /**

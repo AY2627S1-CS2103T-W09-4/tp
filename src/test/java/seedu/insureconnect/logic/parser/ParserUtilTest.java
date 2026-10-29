@@ -21,13 +21,14 @@ import seedu.insureconnect.model.tag.Tag;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = "65+1234";
     private static final String INVALID_ADDRESS = " ";
     private static final String INVALID_EMAIL = "example.com";
     private static final String INVALID_TAG = "#friend";
 
     private static final String VALID_NAME = "Rachel Walker";
     private static final String VALID_PHONE = "123456";
+    private static final String VALID_PHONE_WITH_PLUS = "+65123456";
     private static final String VALID_ADDRESS = "123 Main Street #0505";
     private static final String VALID_EMAIL = "rachel@example.com";
     private static final String VALID_TAG_1 = "friend";
@@ -100,12 +101,18 @@ public class ParserUtilTest {
     }
 
     @Test
-    public void unescapeName() {
-        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd !a/l Kassim"));
-        assertEquals("Mohd a/l Kassim", ParserUtil.unescapeName("Mohd a!/l Kassim"));
-        assertEquals("Ravi s/o Muthu", ParserUtil.unescapeName("Ravi s/o Muthu"));
-        assertEquals("!Exclamation", ParserUtil.unescapeName("!!Exclamation"));
-        assertEquals("Ending with !", ParserUtil.unescapeName("Ending with !"));
+    public void parseName_escapedExclamationMark_returnsLiteralExclamationMark() throws Exception {
+        assertEquals(new Name("Zoe !"), ParserUtil.parseName("Zoe !!"));
+        assertEquals(new Name("Zoe! Tan"), ParserUtil.parseName("Zoe!! Tan"));
+    }
+
+    @Test
+    public void unescape() {
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescape("Mohd !a/l Kassim"));
+        assertEquals("Mohd a/l Kassim", ParserUtil.unescape("Mohd a!/l Kassim"));
+        assertEquals("Ravi s/o Muthu", ParserUtil.unescape("Ravi s/o Muthu"));
+        assertEquals("!Exclamation", ParserUtil.unescape("!!Exclamation"));
+        assertEquals("Ending with !", ParserUtil.unescape("Ending with !"));
     }
 
     @Test
@@ -132,6 +139,12 @@ public class ParserUtilTest {
     }
 
     @Test
+    public void parsePhone_validValueWithLeadingPlus_returnsPhone() throws Exception {
+        Phone expectedPhone = new Phone(VALID_PHONE_WITH_PLUS);
+        assertEquals(expectedPhone, ParserUtil.parsePhone(VALID_PHONE_WITH_PLUS));
+    }
+
+    @Test
     public void parseAddress_null_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> ParserUtil.parseAddress((String) null));
     }
@@ -152,6 +165,12 @@ public class ParserUtilTest {
         String addressWithWhitespace = WHITESPACE + VALID_ADDRESS + WHITESPACE;
         Address expectedAddress = new Address(VALID_ADDRESS);
         assertEquals(expectedAddress, ParserUtil.parseAddress(addressWithWhitespace));
+    }
+
+    @Test
+    public void parseAddress_tooLong_throwsParseException() {
+        assertThrows(ParseException.class, Address.MESSAGE_LENGTH_CONSTRAINTS, () ->
+            ParserUtil.parseAddress("a".repeat(Address.MAX_LENGTH + 1)));
     }
 
     @Test
@@ -230,9 +249,23 @@ public class ParserUtilTest {
 
     @Test
     public void parseRemark_validValue_returnsNormalizedRemark() throws Exception {
+        // EP: remarks with leading, trailing, and repeated whitespace
         assertEquals(new Remark("Prefers WhatsApp after 6pm"),
                 ParserUtil.parseRemark("   Prefers   WhatsApp after 6pm   "));
         assertEquals(new Remark(""), ParserUtil.parseRemark("   "));
+    }
+
+    @Test
+    public void parseRemark_escapingAndPunctuation_returnsExpectedRemark() throws Exception {
+        // EP: escape marker before a prefix-like sequence is removed
+        assertEquals(new Remark("dietary restrictions: n/a Follow up!"),
+                ParserUtil.parseRemark("dietary restrictions: !n/a Follow up!!"));
+
+        // EP: doubled exclamation mark represents one literal exclamation mark
+        assertEquals(new Remark("Follow up!"), ParserUtil.parseRemark("Follow up!!"));
+
+        // EP: single exclamation mark before another character is removed
+        assertEquals(new Remark("Great Thanks"), ParserUtil.parseRemark("Great! Thanks"));
     }
 
     @Test
