@@ -2,6 +2,7 @@ package seedu.insureconnect.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static seedu.insureconnect.testutil.Assert.assertThrows;
 import static seedu.insureconnect.testutil.TypicalPersons.getTypicalInsureConnect;
 
 import java.nio.file.Path;
@@ -31,6 +32,16 @@ public class StorageManagerTest {
 
     private Path getTempFilePath(String fileName) {
         return testFolder.resolve(fileName);
+    }
+
+    @Test
+    public void constructor_nullStorage_throwsNullPointerException() {
+        JsonInsureConnectStorage insureConnectStorage = new JsonInsureConnectStorage(getTempFilePath("ab"));
+        JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(getTempFilePath("prefs"));
+        // EP: missing customer data storage
+        assertThrows(NullPointerException.class, () -> new StorageManager(null, userPrefsStorage));
+        // EP: missing preferences storage
+        assertThrows(NullPointerException.class, () -> new StorageManager(insureConnectStorage, null));
     }
 
     @Test

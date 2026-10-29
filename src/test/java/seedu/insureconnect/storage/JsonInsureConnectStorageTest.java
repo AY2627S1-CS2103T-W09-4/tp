@@ -24,12 +24,18 @@ import seedu.insureconnect.commons.exceptions.DataLoadingException;
 import seedu.insureconnect.commons.util.FileUtil;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyInsureConnect;
+import seedu.insureconnect.model.person.Address;
 
 public class JsonInsureConnectStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonInsureConnectStorageTest");
 
     @TempDir
     public Path testFolder;
+
+    @Test
+    public void constructor_nullFilePath_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> new JsonInsureConnectStorage(null));
+    }
 
     @Test
     public void readInsureConnect_nullFilePath_throwsNullPointerException() {
@@ -113,6 +119,21 @@ public class JsonInsureConnectStorageTest {
         assertEquals(Instant.EPOCH, reloaded.getPersonList().get(0).getCreatedAt());
         assertEquals(BENSON.getCreatedAt(), reloaded.getPersonList().get(1).getCreatedAt());
         assertTrue(Files.readString(filePath).contains("1970-01-01T00:00:00Z"));
+    }
+
+    @Test
+    public void readInsureConnect_longAddress_preservesAddressAndFile() throws Exception {
+        Path filePath = testFolder.resolve("longAddress.json");
+        String longAddress = "x".repeat(Address.MAX_LENGTH + 1);
+        String json = Files.readString(TEST_DATA_FOLDER.resolve("legacyInsureConnect.json"))
+                .replace("123, Jurong West Ave 6, #08-111", longAddress);
+        Files.writeString(filePath, json);
+        JsonInsureConnectStorage storage = new JsonInsureConnectStorage(filePath);
+
+        ReadOnlyInsureConnect restored = storage.readInsureConnect().orElseThrow();
+
+        assertEquals(longAddress, restored.getPersonList().get(0).getAddress().value);
+        assertEquals(json, Files.readString(filePath));
     }
 
     @Test

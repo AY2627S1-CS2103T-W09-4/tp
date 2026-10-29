@@ -22,6 +22,7 @@ import seedu.insureconnect.commons.core.GuiSettings;
 import seedu.insureconnect.model.InsureConnect;
 import seedu.insureconnect.model.ReadOnlyUserPrefs;
 import seedu.insureconnect.model.UserPrefs;
+import seedu.insureconnect.model.person.Address;
 import seedu.insureconnect.storage.JsonInsureConnectStorage;
 import seedu.insureconnect.storage.JsonUserPrefsStorage;
 import seedu.insureconnect.storage.StorageManager;
@@ -62,6 +63,21 @@ public class MainAppTest extends GuiTest {
         assertEquals(data.getPersonList(), app.logic.getFilteredPersonList());
         assertEquals(prefs.getGuiSettings(), app.logic.getGuiSettings());
         assertNull(app.initialFeedback);
+    }
+
+    @Test
+    public void init_longAddress_preservesAddressAndShowsNoWarning() throws Exception {
+        new JsonInsureConnectStorage(dataPath()).saveInsureConnect(getTypicalInsureConnect());
+        String longAddress = "x".repeat(Address.MAX_LENGTH + 1);
+        String originalData = Files.readString(dataPath()).replace("123, Jurong West Ave 6, #08-111", longAddress);
+        Files.writeString(dataPath(), originalData);
+
+        MainApp app = newApplication();
+        app.init();
+
+        assertEquals(longAddress, app.model.getInsureConnect().getPersonList().get(0).getAddress().value);
+        assertNull(app.initialFeedback);
+        assertEquals(originalData, Files.readString(dataPath()));
     }
 
     @Test

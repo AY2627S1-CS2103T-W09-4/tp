@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.event.ActionEvent;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
 import seedu.insureconnect.logic.commands.CommandResult;
 import seedu.insureconnect.logic.commands.exceptions.CommandException;
 import seedu.insureconnect.logic.parser.exceptions.ParseException;
@@ -25,7 +25,7 @@ public class CommandBoxTest extends GuiTest {
                 commands.add(command);
                 return new CommandResult("Done");
             });
-            TextField input = inputOf(box);
+            TextArea input = inputOf(box);
             submit(input, "  list n/  ");
             assertEquals(List.of("  list n/  "), commands);
             assertEquals("", input.getText());
@@ -54,10 +54,30 @@ public class CommandBoxTest extends GuiTest {
                         ? new CommandResult("Confirm?", false, false, true)
                         : new CommandResult("Cancelled");
             });
-            TextField input = inputOf(box);
+            TextArea input = inputOf(box);
             submit(input, "clear");
+            // EP: empty input is submitted so the logic can apply default n
             submit(input, "");
             assertEquals(List.of("clear", ""), commands);
+            assertEquals("", input.getText());
+        });
+    }
+
+    @Test
+    public void submit_yesWhileAwaitingConfirmation_executesResponse() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = new CommandBox(command -> {
+                commands.add(command);
+                return commands.size() == 1
+                        ? new CommandResult("Confirm?", false, false, true)
+                        : new CommandResult("Done");
+            });
+            TextArea input = inputOf(box);
+            submit(input, "delete 1");
+            // EP: affirmative confirmation input is forwarded unchanged
+            submit(input, "Y");
+            assertEquals(List.of("delete 1", "Y"), commands);
             assertEquals("", input.getText());
         });
     }
@@ -76,14 +96,49 @@ public class CommandBoxTest extends GuiTest {
         }));
     }
 
+    @Test
+    public void commandBox_defaultConfiguration_enablesWrappingAcrossThreeRows() throws Exception {
+        runOnFxThread(() -> {
+            TextArea input = inputOf(new CommandBox(command -> new CommandResult("Done")));
+
+            assertTrue(input.isWrapText());
+            assertEquals(3, input.getPrefRowCount());
+        });
+    }
+
+    @Test
+    public void paste_lineBreaksAndTabs_replacesWithSpacesBeforeSubmission() throws Exception {
+        runOnFxThread(() -> {
+            List<String> commands = new ArrayList<>();
+            CommandBox box = new CommandBox(command -> {
+                commands.add(command);
+                return new CommandResult("Done");
+            });
+            TextArea input = inputOf(box);
+
+            // replaceText simulates inserting pasted clipboard content.
+            input.replaceText(0, 0,
+                    "add\nn/John\r\np/91234567\te/john@example.com");
+
+            String expected =
+                    "add n/John p/91234567 e/john@example.com";
+            assertEquals(expected, input.getText());
+
+            pressKey(input, KeyCode.ENTER);
+
+            assertEquals(List.of(expected), commands);
+            assertEquals("", input.getText());
+        });
+    }
+
     /**
      * Verifies retry styling is not duplicated and that editing clears only the error state.
      */
     private void assertFailurePreservesDraft(CommandBox.CommandExecutor executor) {
-        TextField input = inputOf(new CommandBox(executor));
+        TextArea input = inputOf(new CommandBox(executor));
         input.getStyleClass().add("custom-style");
         submit(input, "invalid draft");
-        input.fireEvent(new ActionEvent());
+        pressKey(input, KeyCode.ENTER);
         assertEquals("invalid draft", input.getText());
         assertEquals(1, input.getStyleClass().stream().filter(CommandBox.ERROR_STYLE_CLASS::equals).count());
         input.appendText(" corrected");
@@ -92,17 +147,17 @@ public class CommandBoxTest extends GuiTest {
     }
 
     /**
-     * Retrieves the real text field loaded from FXML.
+     * Retrieves the real text area loaded from FXML.
      */
-    private TextField inputOf(CommandBox box) {
-        return (TextField) box.getRoot().lookup("#commandTextField");
+    private TextArea inputOf(CommandBox box) {
+        return (TextArea) box.getRoot().lookup("#commandTextField");
     }
 
     /**
-     * Submits a command through the control's FXML action handler.
+     * Submits a command through the control's Enter-key handler.
      */
-    private void submit(TextField input, String command) {
+    private void submit(TextArea input, String command) {
         input.setText(command);
-        input.fireEvent(new ActionEvent());
+        pressKey(input, KeyCode.ENTER);
     }
 }

@@ -14,7 +14,6 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -25,7 +24,7 @@ public class FocusNavigationGuiTest extends GuiTest {
     public void f6_realControls_cyclesInBothDirectionsAndPreservesDraft() throws Exception {
         runOnFxThread(() -> {
             Scene scene = createScene(new UiLogicStub());
-            TextField input = (TextField) scene.lookup("#commandTextField");
+            TextArea input = (TextArea) scene.lookup("#commandTextField");
             Node output = scene.lookup("#resultDisplay");
             Node customers = scene.lookup("#personListView");
             input.setText("add n/Unfinished customer");
@@ -56,7 +55,7 @@ public class FocusNavigationGuiTest extends GuiTest {
     public void otherKeys_textControlsAndList_remainAvailable() throws Exception {
         runOnFxThread(() -> {
             Scene scene = createScene(new UiLogicStub());
-            TextField input = (TextField) scene.lookup("#commandTextField");
+            TextArea input = (TextArea) scene.lookup("#commandTextField");
             input.setText("draft");
             input.requestFocus();
             input.positionCaret(input.getLength());

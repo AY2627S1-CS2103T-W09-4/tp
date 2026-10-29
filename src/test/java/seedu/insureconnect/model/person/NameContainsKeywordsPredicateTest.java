@@ -81,10 +81,12 @@ public class NameContainsKeywordsPredicateTest {
     @Test
     public void test_nameWordPrefixes_returnsTrue() {
         Person person = new PersonBuilder().withName("Alice   Mary Bob").build();
+        // EP: prefix of any name word, in a different case
         assertTrue(new NameContainsKeywordsPredicate(List.of("aL")).test(person));
         assertTrue(new NameContainsKeywordsPredicate(List.of("mA")).test(person));
         assertTrue(new NameContainsKeywordsPredicate(List.of("bO")).test(person));
-        assertTrue(new NameContainsKeywordsPredicate(List.of("a")).test(person));
+        // EP: single-letter prefix
+        assertTrue(new NameContainsKeywordsPredicate(List.of("a")).test(person)); // boundary value
     }
 
     /**
@@ -93,8 +95,10 @@ public class NameContainsKeywordsPredicateTest {
     @Test
     public void test_multiplePrefixesWithOneMatch_returnsTrue() {
         Person person = new PersonBuilder().withName("Alice Bob").build();
+        // EP: one matching keyword among non-matching ones, in any position
         assertTrue(new NameContainsKeywordsPredicate(List.of("Car", "Al")).test(person));
         assertTrue(new NameContainsKeywordsPredicate(List.of("Al", "Car")).test(person));
+        // EP: repeated matching keyword
         assertTrue(new NameContainsKeywordsPredicate(List.of("Al", "Al")).test(person));
     }
 
@@ -136,7 +140,9 @@ public class NameContainsKeywordsPredicateTest {
     @Test
     public void hasExactMatch_completeWord_returnsTrue() {
         Person person = new PersonBuilder().withName("Alice   Mary Bob").build();
+        // EP: one keyword equal to a name word, in a different case
         assertTrue(new NameContainsKeywordsPredicate(List.of("aLICE")).hasExactMatch(person));
+        // EP: exact keyword among non-matching or repeated keywords
         assertTrue(new NameContainsKeywordsPredicate(List.of("car", "MARY")).hasExactMatch(person));
         assertTrue(new NameContainsKeywordsPredicate(List.of("bob", "bob")).hasExactMatch(person));
     }
@@ -147,8 +153,10 @@ public class NameContainsKeywordsPredicateTest {
     @Test
     public void hasExactMatch_partialOrMissingWord_returnsFalse() {
         Person person = new PersonBuilder().withName("Alice Bob").build();
+        // EP: keywords that are only part of a name word
         assertFalse(new NameContainsKeywordsPredicate(List.of("Al", "Bo")).hasExactMatch(person));
         assertFalse(new NameContainsKeywordsPredicate(List.of("lice", "Bobby")).hasExactMatch(person));
-        assertFalse(new NameContainsKeywordsPredicate(List.of()).hasExactMatch(person));
+        // EP: no keywords
+        assertFalse(new NameContainsKeywordsPredicate(List.of()).hasExactMatch(person)); // boundary value
     }
 }

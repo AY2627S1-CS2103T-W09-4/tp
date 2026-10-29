@@ -11,12 +11,10 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -160,19 +158,19 @@ public class MainWindowTest extends GuiTest {
     }
 
     /**
-     * Submits text through the FXML command handler.
+     * Submits text through the command input's Enter-key handler.
      */
     private void submit(MainWindow window, String command) {
-        TextField input = inputOf(window);
+        TextArea input = inputOf(window);
         input.setText(command);
-        input.fireEvent(new ActionEvent());
+        pressKey(input, KeyCode.ENTER);
     }
 
     /**
      * Retrieves the command input from the live scene.
      */
-    private TextField inputOf(MainWindow window) {
-        return (TextField) window.getRoot().getScene().lookup("#commandTextField");
+    private TextArea inputOf(MainWindow window) {
+        return (TextArea) window.getRoot().getScene().lookup("#commandTextField");
     }
 
     /**

@@ -74,6 +74,14 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_addressWithEscapedPrefixAndExclamation_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withAddress("Blk 123 t/4!")
+                .withTags(VALID_TAG_FRIEND).build();
+        assertParseSuccess(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + " " + PREFIX_ADDRESS + "Blk 123 !t/4!!" + TAG_DESC_FRIEND, new AddCommand(expectedPerson));
+    }
+
+    @Test
     public void parse_repeatedNonTagValue_failure() {
         String validExpectedPersonString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
                 + ADDRESS_DESC_BOB + TAG_DESC_FRIEND;
@@ -302,6 +310,23 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_addressLengthBoundary() {
+        String validAddressDescription = " " + PREFIX_ADDRESS + "a".repeat(Address.MAX_LENGTH);
+        String validCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + validAddressDescription + TAG_DESC_FRIEND;
+        Person expectedPerson = new PersonBuilder(BOB)
+                .withAddress("a".repeat(Address.MAX_LENGTH))
+                .withTags(VALID_TAG_FRIEND)
+                .build();
+        assertParseSuccess(parser, validCommand, new AddCommand(expectedPerson));
+
+        String invalidAddressDescription = " " + PREFIX_ADDRESS + "a".repeat(Address.MAX_LENGTH + 1);
+        String invalidCommand = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
+                + invalidAddressDescription + TAG_DESC_FRIEND;
+        assertParseFailure(parser, invalidCommand, "Invalid address: " + Address.MESSAGE_LENGTH_CONSTRAINTS);
+    }
+
+    @Test
     public void parse_remarkWhitespaceNormalized_success() {
         String remarkWithExtraWhitespace = " " + PREFIX_REMARK
                 + "  Prefers   WhatsApp after 6pm  ";
@@ -313,6 +338,19 @@ public class AddCommandParserTest {
         assertParseSuccess(parser,
                 NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY
                         + ADDRESS_DESC_AMY + TAG_DESC_FRIEND + remarkWithExtraWhitespace,
+                new AddCommand(expectedPerson));
+    }
+
+    @Test
+    public void parse_remarkEscapedPrefixAndExclamation_success() {
+        // EP: escaped prefix-like text and a doubled exclamation mark are unescaped in an added remark
+        Person expectedPerson = new PersonBuilder(AMY)
+                .withRemark("dietary restrictions: n/a Follow up!")
+                .build();
+
+        assertParseSuccess(parser,
+                NAME_DESC_AMY + PHONE_DESC_AMY + EMAIL_DESC_AMY + ADDRESS_DESC_AMY + TAG_DESC_FRIEND
+                        + " " + PREFIX_REMARK + "dietary restrictions: !n/a Follow up!!",
                 new AddCommand(expectedPerson));
     }
 

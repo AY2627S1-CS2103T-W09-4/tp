@@ -39,9 +39,17 @@ public class FindCommandParserTest {
      */
     @Test
     public void parse_phonePrefix_returnsPhoneSearch() {
-        assertParseSuccess(parser, "p/9", new FindCommand(new PhoneStartsWithPredicate("9")));
-        assertParseSuccess(parser, "p/98765432", new FindCommand(new PhoneStartsWithPredicate("98765432")));
-        assertParseSuccess(parser, " \t p/ 0012 \n", new FindCommand(new PhoneStartsWithPredicate("0012")));
+        // EP: digits only, from one digit to a full number
+        assertParseSuccess(parser, "p/9", // boundary value
+                new FindCommand(new PhoneStartsWithPredicate("9")));
+        assertParseSuccess(parser, "p/98765432",
+                new FindCommand(new PhoneStartsWithPredicate("98765432")));
+        // EP: whitespace around the query
+        assertParseSuccess(parser, " \t p/ 0012 \n",
+                new FindCommand(new PhoneStartsWithPredicate("0012")));
+        // EP: country code with a leading plus
+        assertParseSuccess(parser, "p/+65",
+                new FindCommand(new PhoneStartsWithPredicate("+65")));
     }
 
     /**
@@ -49,9 +57,13 @@ public class FindCommandParserTest {
      */
     @Test
     public void parse_invalidPhoneQuery_throwsParseException() {
-        for (String query : List.of("p/", "p/  ", "p/abc", "p/+6598765432", "p/987-654", "p/98 76",
-                "p/9876 Alice", "p/１２３")) {
-            assertParseFailure(parser, query, PhoneStartsWithPredicate.MESSAGE_CONSTRAINTS);
+        for (String query : List.of(
+                "p/", "p/  ", "p/abc", "p/+", "p/++65", "p/65+1234",
+                "p/987-654", "p/98 76", "p/9876 Alice", "p/１２３")) {
+            assertParseFailure(
+                    parser,
+                    query,
+                    PhoneStartsWithPredicate.MESSAGE_CONSTRAINTS);
         }
     }
 
