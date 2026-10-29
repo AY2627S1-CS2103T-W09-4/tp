@@ -23,7 +23,7 @@ import seedu.insureconnect.testutil.PersonBuilder;
 
 public class JsonAdaptedPersonTest {
     private static final String INVALID_NAME = "R@chel";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = "65+1234";
     private static final String INVALID_ADDRESS = " ";
     private static final String INVALID_EMAIL = "example.com";
     private static final String INVALID_TAG = "#friend";
@@ -197,6 +197,20 @@ public class JsonAdaptedPersonTest {
         );
 
         assertThrows(IllegalValueException.class, Remark.MESSAGE_CONSTRAINTS, person::toModelType);
+    }
+
+    /**
+     * Restores a phone number containing a valid leading plus sign.
+     */
+    @Test
+    public void toModelType_phoneWithLeadingPlus_returnsPerson() throws Exception {
+        JsonAdaptedPerson person = new JsonAdaptedPerson(
+                VALID_NAME, "+6591234567", VALID_EMAIL, VALID_ADDRESS,
+                VALID_TAGS, null, VALID_CREATED_AT);
+
+        assertEquals(
+                new Phone("+6591234567"),
+                person.toModelType().getPhone());
     }
 
 }

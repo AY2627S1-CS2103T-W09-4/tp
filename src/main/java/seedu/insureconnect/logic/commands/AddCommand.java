@@ -35,7 +35,8 @@ public class AddCommand extends Command {
     public static final String MESSAGE_SUCCESS = "New customer added: %1$s";
     public static final String MESSAGE_DUPLICATE_PERSON = "This customer is a duplicate "
             + "because a customer with the same "
-            + "name and phone number already exists. Existing record at index %d: %s (phone: %s).";
+            + "name and phone number already exists. Existing record at index %d: %s (phone: %s). "
+            + "All customers are now shown.";
     public static final String MESSAGE_DUPLICATE_POLICY_NUMBER =
             "Policy number %s already belongs to %s (phone: %s).";
 
