@@ -3,10 +3,14 @@ package seedu.insureconnect.ui;
 import java.util.List;
 import java.util.stream.Stream;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.Node;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -52,10 +56,7 @@ public class CommandBox extends UiPart<Region> {
     private int draftCaret;
 
     @FXML
-    private TextField commandTextField;
-
-    @FXML
-    private Text commandTypedText;
+    private TextArea commandTextField;
 
     @FXML
     private Text commandSuggestionText;
@@ -66,13 +67,31 @@ public class CommandBox extends UiPart<Region> {
     public CommandBox(CommandExecutor commandExecutor) {
         super(FXML);
         this.commandExecutor = commandExecutor;
-        commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleHistoryKey);
+        commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleCommandKey);
         commandTextField.addEventFilter(KeyEvent.KEY_PRESSED, this::handleSuggestionKey);
+
+        commandTextField.setTextFormatter(new TextFormatter<>(change -> {
+            change.setText(change.getText().replaceAll("[\\r\\n\\t]+", " "));
+            return change;
+        }));
         // calls #setStyleToDefault() whenever there is a change to the text of the command box.
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> setStyleToDefault());
         commandTextField.textProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
         commandTextField.caretPositionProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
         commandTextField.selectionProperty().addListener((unused1, unused2, unused3) -> updateSuggestion());
+    }
+
+    /**
+     * Submits on Enter and handles command-history navigation.
+     */
+    private void handleCommandKey(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            handleCommandEntered();
+            event.consume();
+            return;
+        }
+
+        handleHistoryKey(event);
     }
 
     /**
@@ -160,8 +179,12 @@ public class CommandBox extends UiPart<Region> {
      */
     private void updateSuggestion() {
         String text = commandTextField.getText();
-        commandTypedText.setText(text);
-        commandSuggestionText.setText(isCaretAtEnd() ? findSuggestion(text) : "");
+        String suggestion = isCaretAtEnd() ? findSuggestion(text) : "";
+        commandSuggestionText.setText(suggestion);
+
+        if (!suggestion.isEmpty()) {
+            Platform.runLater(this::positionSuggestionAtCaret);
+        }
     }
 
     /**
@@ -181,10 +204,10 @@ public class CommandBox extends UiPart<Region> {
             return "";
         }
         return COMMAND_WORDS.stream()
-                .filter(word -> word.length() > text.length() && word.startsWith(text))
-                .findFirst()
-                .map(word -> word.substring(text.length()))
-                .orElse("");
+            .filter(word -> word.length() > text.length() && word.startsWith(text))
+            .findFirst()
+            .map(word -> word.substring(text.length()))
+            .orElse("");
     }
 
     /**
@@ -225,5 +248,35 @@ public class CommandBox extends UiPart<Region> {
          * @see seedu.insureconnect.logic.Logic#execute(String)
          */
         CommandResult execute(String commandText) throws CommandException, ParseException;
+    }
+
+    /**
+     * Positions the suggestion beside the TextArea's rendered caret.
+     */
+    private void positionSuggestionAtCaret() {
+        if (commandSuggestionText.getText().isEmpty()) {
+            return;
+        }
+
+        commandTextField.applyCss();
+        commandTextField.requestLayout();
+        commandTextField.layout();
+        commandSuggestionText.applyCss();
+
+        if (!(commandTextField.getSkin() instanceof TextAreaSkin skin)) {
+            return;
+        }
+
+        Bounds caretInScene =
+                commandTextField.localToScene(skin.getCaretBounds());
+        Bounds caretInParent =
+                commandSuggestionText.getParent().sceneToLocal(caretInScene);
+        Bounds suggestionBounds = commandSuggestionText.getLayoutBounds();
+
+        double x = caretInParent.getMaxX();
+        double y = caretInParent.getMinY()
+                + (caretInParent.getHeight() - suggestionBounds.getHeight()) / 2;
+
+        commandSuggestionText.relocate(x, y);
     }
 }

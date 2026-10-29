@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.text.TextFlow?>
 
-<StackPane styleClass="stack-pane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <TextField fx:id="commandTextField" onAction="#handleCommandEntered" promptText="Type a command... (F6: next area, Shift+F6: previous area)"/>
-  <TextFlow styleClass="command-ghost" mouseTransparent="true" StackPane.alignment="CENTER_LEFT"
-            maxWidth="-Infinity" maxHeight="-Infinity">
-    <Text fx:id="commandTypedText" styleClass="command-ghost-typed"/>
-    <Text fx:id="commandSuggestionText" styleClass="command-ghost-suggestion"/>
-  </TextFlow>
+<StackPane styleClass="stack-pane"
+           xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1">
+  <TextArea fx:id="commandTextField"
+            prefRowCount="3"
+            wrapText="true"
+            promptText="Type a command... (F6: next area, Shift+F6: previous area)"/>
+
+  <Text fx:id="commandSuggestionText"
+        managed="false"
+        mouseTransparent="true"
+        styleClass="command-ghost-suggestion"/>
 </StackPane>

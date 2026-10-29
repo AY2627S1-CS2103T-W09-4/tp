@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
@@ -51,7 +51,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
                 commands.add(command);
                 return new CommandResult("Done");
             });
-            TextField input = getInput(box);
+            TextArea input = getInput(box);
             type(input, "fi");
             assertEquals("nd", getSuggestion(box));
             press(input, KeyCode.RIGHT);
@@ -66,7 +66,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
     public void right_caretNotAtEnd_hidesSuggestionAndKeepsText() throws Exception {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
-            TextField input = getInput(box);
+            TextArea input = getInput(box);
             type(input, "fi");
             input.positionCaret(1);
             assertEquals("", getSuggestion(box));
@@ -81,7 +81,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
     public void right_modified_keepsText() throws Exception {
         runOnFxThread(() -> {
             CommandBox box = createBox(command -> new CommandResult("Done"));
-            TextField input = getInput(box);
+            TextArea input = getInput(box);
             // Presses Shift, Ctrl, Alt, then Meta with Right, one modifier at a time.
             for (int modifier = 0; modifier < 4; modifier++) {
                 type(input, "fi");
@@ -105,8 +105,8 @@ public class CommandBoxSuggestionTest extends GuiTest {
     /**
      * Returns the command input of the given box.
      */
-    private TextField getInput(CommandBox box) {
-        return (TextField) box.getFocusTarget();
+    private TextArea getInput(CommandBox box) {
+        return (TextArea) box.getFocusTarget();
     }
 
     /**
@@ -119,7 +119,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
     /**
      * Replaces the input text and leaves the caret at the end, as typing would.
      */
-    private void type(TextField input, String text) {
+    private void type(TextArea input, String text) {
         input.setText(text);
         input.end();
     }
@@ -127,7 +127,7 @@ public class CommandBoxSuggestionTest extends GuiTest {
     /**
      * Sends an unmodified key through the control's event filters.
      */
-    private void press(TextField input, KeyCode key) {
+    private void press(TextArea input, KeyCode key) {
         input.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", "", key, false, false, false, false));
     }
 }
